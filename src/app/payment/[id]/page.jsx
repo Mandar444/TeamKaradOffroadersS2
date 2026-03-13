@@ -18,19 +18,21 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [regData, setRegData] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // In a real app, you'd fetch reg details by ID
-    // For now, we'll try to get it from context or just handle the UI
     async function fetchDetails() {
       try {
         const res = await fetch(`/api/registration-details?id=${id}`);
+        const data = await res.json();
         if (res.ok) {
-          const data = await res.json();
           setRegData(data);
+        } else {
+          setError(data.error || "Registration not found");
         }
       } catch (e) {
         console.error("Failed to fetch data");
+        setError("Technical error connecting to server");
       }
     }
     fetchDetails();
@@ -77,10 +79,28 @@ export default function PaymentPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
+        <Card className="max-w-md w-full bg-zinc-900 border-red-500/20 text-center p-8">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-heading text-white mb-2">Ops! Payment Link Expired</h2>
+          <p className="text-zinc-500 mb-6">{error}</p>
+          <Button onClick={() => router.push("/register")} className="w-full bg-primary text-black font-bold">
+            BACK TO REGISTRATION
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   if (!regData && id) {
      return (
        <div className="min-h-screen flex items-center justify-center bg-black">
-         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+         <div className="text-center">
+           <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+           <p className="text-zinc-500 font-heading tracking-widest uppercase animate-pulse">Generating Secure QR...</p>
+         </div>
        </div>
      );
   }

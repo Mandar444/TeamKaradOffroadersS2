@@ -26,6 +26,11 @@ export async function GET(request) {
       status: row.get("status")
     });
   } catch (error) {
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    console.error("REGISTRATION DETAILS FETCH ERROR:", {
+      message: error.message,
+      stack: error.stack,
+      id
+    });
+    return NextResponse.json({ error: "Failed to fetch registration details", details: error.message }, { status: 500 });
   }
 }
