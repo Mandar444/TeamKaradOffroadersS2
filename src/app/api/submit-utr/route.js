@@ -24,11 +24,15 @@ export async function POST(request) {
     }
 
     const sheet = await getSheetByName("Registrations");
+    if (!sheet) {
+        return NextResponse.json({ error: "Registrations sheet not found. Ensure headers are initialized." }, { status: 500 });
+    }
+
     const rows = await sheet.getRows();
     const row = rows.find(r => r.get("reg_id") === regId);
 
     if (!row) {
-      return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+      return NextResponse.json({ error: "Registration reference not found in database" }, { status: 404 });
     }
 
     row.set("utr_number", utr);
@@ -41,7 +45,14 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("UTR submission error:", error);
-    return NextResponse.json({ error: "Failed to submit" }, { status: 500 });
+    console.error("UTR SUBMISSION ERROR:", {
+       message: error.message,
+       stack: error.stack,
+       regId: regId
+    });
+    return NextResponse.json({ 
+      error: "Final submission failed", 
+      details: error.message 
+    }, { status: 500 });
   }
 }

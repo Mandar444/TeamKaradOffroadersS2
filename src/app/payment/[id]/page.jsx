@@ -61,10 +61,11 @@ export default function PaymentPage() {
         body: formData,
       });
 
+      const result = await res.json();
       if (res.ok) {
         router.push(`/success/${id}`);
       } else {
-        alert("Failed to submit. Please try again.");
+        alert(`${result.error}: ${result.details || "Unknown error"}`);
       }
     } catch (e) {
       alert("Error submitting payment info");
