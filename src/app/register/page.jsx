@@ -26,6 +26,8 @@ const registrationSchema = z.object({
   coDriverBloodGroup: z.string().min(1, "Required"),
   category: z.string().min(1, "Required"),
   carNumber: z.string().min(1, "Pick a car number"),
+  vehicleName: z.string().min(2, "Vehicle name/brand required"),
+  vehicleModel: z.string().min(1, "Model/Year required"),
   ageAgreement: z.literal(true, {
     errorMap: () => ({ message: "You must agree to the age requirement" }),
   }),
@@ -37,6 +39,7 @@ const registrationSchema = z.object({
   attendanceCount: z.string().min(1, "Required"),
   extraNames: z.string().min(1, "Required"),
   email: z.string().email("Invalid email"),
+  socials: z.string().optional(),
 });
 
 export default function RegisterPage() {
@@ -166,10 +169,23 @@ export default function RegisterPage() {
                     {errors.driverBloodGroup && <p className="text-red-500 text-xs">{errors.driverBloodGroup.message}</p>}
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-zinc-800/30 rounded-lg border border-zinc-800">
+                    <div className="space-y-2">
+                      <Label>Vehicle Brand/Name *</Label>
+                      <Input {...register("vehicleName")} placeholder="e.g. Mahindra Thar" className="bg-zinc-800 border-zinc-700 text-white" />
+                      {errors.vehicleName && <p className="text-red-500 text-xs">{errors.vehicleName.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Model/Year *</Label>
+                      <Input {...register("vehicleModel")} placeholder="e.g. 2023 CRDe" className="bg-zinc-800 border-zinc-700 text-white" />
+                      {errors.vehicleModel && <p className="text-red-500 text-xs">{errors.vehicleModel.message}</p>}
+                    </div>
+                  </div>
+
                   <Button 
                     type="button" 
                     onClick={async () => {
-                      const isValid = await trigger(["category", "teamName", "driverName", "driverPhone", "driverBloodGroup"]);
+                      const isValid = await trigger(["category", "teamName", "driverName", "driverPhone", "driverBloodGroup", "vehicleName", "vehicleModel"]);
                       if (isValid) setStep(2);
                     }} 
                     className="w-full h-12 bg-primary hover:bg-primary/80 text-black font-bold mt-4"
@@ -219,6 +235,11 @@ export default function RegisterPage() {
                       <Input {...register("email")} type="email" placeholder="for confirmation" className="bg-zinc-800 border-zinc-700 text-white" />
                       {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                     <Label>Social Handles (Instagram/Twitter)</Label>
+                     <Input {...register("socials")} placeholder="@username" className="bg-zinc-800 border-zinc-700 text-white" />
                   </div>
 
                   <div className="space-y-2 pt-4">

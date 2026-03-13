@@ -30,8 +30,8 @@ export async function initSheets() {
   const regHeaders = [
     'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone',
     'codriver_name', 'codriver_blood_group', 'codriver_phone', 'category', 'car_number',
-    'food_preference', 'medical_issue', 'attendance_count', 'extra_names',
-    'email', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
+    'vehicle_name', 'vehicle_model', 'food_preference', 'medical_issue', 'attendance_count', 'extra_names',
+    'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
   ];
 
   if (!regSheet) {

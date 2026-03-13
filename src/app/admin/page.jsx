@@ -126,9 +126,9 @@ export default function AdminDashboard() {
                              <Badge variant="outline" className="text-[10px] text-zinc-500 border-zinc-700">{reg.category}</Badge>
                           </div>
                           <p className="text-zinc-400 text-sm flex items-center gap-1.5 uppercase tracking-tighter">
-                            <Car className="w-3 h-3" /> {reg.car_model}
+                            <Car className="w-3 h-3" /> {reg.vehicle_name}
                           </p>
-                          <p className="text-[10px] text-zinc-600 font-mono mt-1">{reg.reg_id}</p>
+                          <p className="text-[10px] text-zinc-600 font-mono mt-1 italic uppercase tracking-widest">{reg.vehicle_model}</p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -138,6 +138,11 @@ export default function AdminDashboard() {
                           <p className="text-zinc-500 text-xs flex items-center gap-1 mt-1">
                             <Phone className="w-3 h-3" /> {reg.driver_phone}
                           </p>
+                          {reg.socials && (
+                            <p className="text-primary text-[10px] uppercase font-bold mt-1">
+                              📱 {reg.socials}
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>

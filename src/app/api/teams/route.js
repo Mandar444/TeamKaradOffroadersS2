@@ -11,12 +11,16 @@ export async function GET() {
     const confirmedTeams = rows
       .filter((row) => row.get("status") === "CONFIRMED")
       .map((row) => ({
+        team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
+        driver_blood_group: row.get("driver_blood_group"),
         codriver_name: row.get("codriver_name"),
+        codriver_blood_group: row.get("codriver_blood_group"),
         car_number: row.get("car_number"),
         category: row.get("category"),
-        car_model: row.get("car_model"),
-        modification_type: row.get("modification_type"),
+        vehicle_name: row.get("vehicle_name"),
+        vehicle_model: row.get("vehicle_model"),
+        socials: row.get("socials"),
       }));
 
     // Sort by car number
