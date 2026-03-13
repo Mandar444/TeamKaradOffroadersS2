@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getSheetByName } from "@/lib/google-sheets/client";
+import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 
 export async function GET() {
   try {
+    await initSheets();
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
