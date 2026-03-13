@@ -49,15 +49,42 @@ export default function Home() {
           </section>
 
           {/* Footer */}
-          <footer className="py-12 px-4 border-t border-white/5 bg-black">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-              <div className="text-2xl font-heading text-white">
-                TKO <span className="text-primary">RALLY</span>
+          <footer className="py-16 px-4 border-t border-white/5 bg-black">
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+                <div>
+                  <h4 className="font-heading text-white text-lg mb-4">TKO <span className="text-primary">RALLY</span></h4>
+                  <p className="text-zinc-600 text-sm leading-relaxed">India's most thrilling off-road championship. Born from dust, built for glory.</p>
+                </div>
+                <div>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Navigate</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-600">
+                    <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
+                    <Link href="/events" className="hover:text-white transition-colors">Events</Link>
+                    <Link href="/achievements" className="hover:text-white transition-colors">Achievements</Link>
+                    <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Explore</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-600">
+                    <Link href="/beasts" className="hover:text-white transition-colors">Our Beasts</Link>
+                    <Link href="/team" className="hover:text-white transition-colors">Our Team</Link>
+                    <Link href="/teams" className="hover:text-white transition-colors">Participants</Link>
+                    <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Action</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-600">
+                    <Link href="/register" className="hover:text-primary transition-colors font-bold">Register Now</Link>
+                    <Link href="/admin" className="hover:text-white transition-colors">Admin Login</Link>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-8 text-zinc-500 text-sm">
-                <Link href="/teams" className="hover:text-white">Participants</Link>
-                <Link href="/admin" className="hover:text-white">Admin Login</Link>
-                <span className="text-zinc-700">© 2026 TKO Motorsports</span>
+              <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                <span className="text-zinc-700 text-sm">© 2026 Team Karad Offroaders. All rights reserved.</span>
+                <span className="text-zinc-800 text-xs">Made with 🏁 in Karad, Maharashtra</span>
               </div>
             </div>
           </footer>

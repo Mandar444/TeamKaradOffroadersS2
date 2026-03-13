@@ -28,8 +28,6 @@ const registrationSchema = z.object({
   coDriverBloodGroup: z.string().min(1, "Required"),
   category: z.string().min(1, "Required"),
   carNumber: z.string().min(1, "Pick a car number"),
-  vehicleName: z.string().min(2, "Vehicle name/brand required"),
-  vehicleModel: z.string().min(1, "Model/Year required"),
   ageAgreement: z.literal(true, {
     errorMap: () => ({ message: "You must agree to the age requirement" }),
   }),
@@ -198,18 +196,10 @@ export default function RegisterPage() {
                         </Select>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-3">
-                          <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase ml-1 pr-1">Tactical Call Sign (Team Name) *</Label>
-                          <Input {...register("teamName")} placeholder="CALL SIGN" className="h-14 bg-white/5 border-white/5 rounded-xl text-lg font-medium focus:bg-white/10 transition-all placeholder:opacity-20" />
-                          {errors.teamName && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2">{errors.teamName.message}</p>}
-                        </div>
-
-                        <div className="space-y-3">
-                          <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase ml-1">The Machine (Brand/Engine) *</Label>
-                          <Input {...register("vehicleName")} placeholder="e.g. LAND ROVER DEFENDER" className="h-14 bg-white/5 border-white/5 rounded-xl text-lg font-medium" />
-                          {errors.vehicleName && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2">{errors.vehicleName.message}</p>}
-                        </div>
+                      <div className="space-y-3">
+                        <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase ml-1 pr-1">Tactical Call Sign (Team Name) *</Label>
+                        <Input {...register("teamName")} placeholder="CALL SIGN" className="h-14 bg-white/5 border-white/5 rounded-xl text-lg font-medium focus:bg-white/10 transition-all placeholder:opacity-20" />
+                        {errors.teamName && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2">{errors.teamName.message}</p>}
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-black/50 rounded-[2.5rem] border border-white/5">
@@ -237,17 +227,14 @@ export default function RegisterPage() {
                              </SelectContent>
                            </Select>
                         </div>
-                        <div className="space-y-3 pt-4">
-                           <Label className="text-zinc-700 text-[9px] font-black uppercase tracking-[0.3em]">Vessel Build/Model</Label>
-                           <Input {...register("vehicleModel")} placeholder="e.g. 2024 SPORT" className="h-14 bg-zinc-900 border-white/5 rounded-xl text-lg uppercase" />
-                        </div>
+
                       </div>
 
                       <div className="pt-6">
                         <Button 
                           type="button" 
                           onClick={async () => {
-                            const isValid = await trigger(["category", "teamName", "driverName", "driverPhone", "driverBloodGroup", "vehicleName", "vehicleModel"]);
+                            const isValid = await trigger(["category", "teamName", "driverName", "driverPhone", "driverBloodGroup"]);
                             if (isValid) setStep(2);
                           }} 
                           className="w-full h-16 bg-primary text-black font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,165,0,0.2)]"
