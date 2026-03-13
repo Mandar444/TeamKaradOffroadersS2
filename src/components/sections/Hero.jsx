@@ -12,18 +12,26 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20">
-      {/* Clean Professional Static Background */}
-      <div className="absolute inset-0 z-0 bg-zinc-950">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black opacity-80" />
-        {/* Topographic Texture */}
-        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/50" />
-      </div>
+      {/* Dramatic Visible Background */}
+      <div className="absolute inset-0 z-0 bg-black">
+        {/* Primary glow orbs */}
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/15 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute top-[40%] left-[50%] w-[30%] h-[30%] rounded-full bg-orange-600/8 blur-[100px]" />
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: `linear-gradient(rgba(255,165,0,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,165,0,0.3) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px'
+        }} />
 
-      {/* Grit/Noise Overlay */}
-      <div className="absolute inset-0 z-12 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-15" />
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/80 via-transparent to-zinc-950 z-15" />
+        {/* Radial fade */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,black_70%)]" />
+        
+        {/* Bottom fade to content */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-zinc-950 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent" />
+      </div>
 
       <div className="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <motion.div
