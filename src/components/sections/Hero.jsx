@@ -12,34 +12,12 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20">
-      {/* 4-Video Vertical Grid Background */}
-      <div className="absolute inset-0 z-0 flex overflow-hidden bg-zinc-950">
-        {[
-          "/bgv1.MP4",
-          "/pgv4.MP4",
-          "/bgv3.MP4",
-          "/background%204.MP4"
-        ].map((src, i) => (
-          <div key={i} className="relative flex-1 h-full border-r border-white/5 last:border-r-0 overflow-hidden group">
-             {/* Deep Lavish Fallback */}
-             <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black group-hover:bg-primary/5 transition-colors duration-700" />
-             
-             <video 
-               autoPlay 
-               loop 
-               muted 
-               playsInline 
-               className="absolute inset-0 w-full h-full object-cover scale-110 grayscale-[0.3] brightness-[0.4] transition-opacity duration-1000"
-               onCanPlay={(e) => e.target.style.opacity = 1}
-               style={{ opacity: 0 }}
-             >
-               <source src={src} type="video/mp4" />
-             </video>
-             
-             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 opacity-60" />
-             <div className="absolute inset-y-0 right-0 w-px bg-white/5 shadow-[0_0_15px_rgba(255,255,255,0.05)]" />
-          </div>
-        ))}
+      {/* Clean Professional Static Background */}
+      <div className="absolute inset-0 z-0 bg-zinc-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black opacity-80" />
+        {/* Topographic Texture */}
+        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/50" />
       </div>
 
       {/* Grit/Noise Overlay */}

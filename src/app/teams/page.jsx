@@ -135,111 +135,140 @@ export default function TeamsPage() {
           </div>
         )}
 
-        {/* Lavish Team Details Modal */}
+        {/* Super Professional Lavish Team Details Modal */}
         {selectedTeam && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-in fade-in duration-500">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/98 backdrop-blur-xl animate-in fade-in duration-500">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 40, rotateX: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-              className="w-full max-w-3xl bg-black border border-white/10 rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(255,165,0,0.15)] relative perspective-1000"
+              className="w-full max-w-4xl bg-black border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_0_80px_rgba(255,165,0,0.12)] relative perspective-1000 flex flex-col md:flex-row h-[90vh] md:h-auto max-h-[800px]"
             >
-              {/* Animated Accent Border */}
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse" />
-              
-              <button 
-                onClick={() => setSelectedTeam(null)}
-                className="absolute top-6 right-6 z-50 text-white/30 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all"
-                id="close-modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Vertical Sidebar - Technical Branding */}
+              <div className="w-12 bg-zinc-900 border-r border-white/5 flex items-center justify-center py-8 relative">
+                 <div className="rotate-[-90deg] whitespace-nowrap text-[10px] font-black tracking-[0.8em] text-zinc-700 uppercase origin-center translate-y-20">
+                   OFFICIAL RACING DIV • TKO MOTORSPORTS
+                 </div>
+                 <div className="absolute bottom-6 left-0 w-full flex flex-col items-center gap-2 px-2 opacity-20">
+                    <div className="w-full h-px bg-white/20" />
+                    <div className="w-full h-px bg-white/20" />
+                    <div className="w-full h-px bg-white/20" />
+                 </div>
+              </div>
 
-              <div className="flex flex-col md:flex-row h-full">
-                {/* Left Side: Impact Visual & Category */}
-                <div className="w-full md:w-1/3 bg-zinc-900 border-r border-white/5 p-8 flex flex-col justify-between items-center relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+              {/* Main Content Area */}
+              <div className="flex-1 flex flex-col md:flex-row">
+                {/* Left Section: Visual Impact */}
+                <div className="w-full md:w-[350px] bg-zinc-950 p-12 flex flex-col items-center justify-between border-r border-white/5 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] pointer-events-none" />
                   
-                  <div className="text-center z-10 w-full">
-                    <Badge className="bg-primary/20 text-primary border-primary/30 py-1.5 px-4 rounded-full mb-8 text-[10px] uppercase font-bold tracking-widest leading-none">
-                      {CATEGORIES[selectedTeam.category]?.name || selectedTeam.category}
-                    </Badge>
-                    <div className="relative group">
-                      <div className="absolute -inset-4 bg-primary/20 blur-xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-40 h-40 bg-zinc-950 border-4 border-primary/50 text-white rounded-2xl flex items-center justify-center rotate-3 shadow-2xl relative">
-                        <span className="text-7xl font-heading font-black tracking-tighter">#{selectedTeam.car_number}</span>
+                  <div className="w-full">
+                    <div className="flex justify-between items-start mb-12">
+                       <Badge className="bg-primary/10 text-primary border-primary/20 py-1.5 px-4 rounded-lg text-[9px] uppercase font-black tracking-widest leading-none">
+                         {CATEGORIES[selectedTeam.category]?.name || selectedTeam.category}
+                       </Badge>
+                       <div className="w-8 h-8 rounded-lg border border-white/5 flex items-center justify-center bg-zinc-900/50">
+                          <Trophy className="w-4 h-4 text-zinc-600" />
+                       </div>
+                    </div>
+
+                    <div className="relative group mx-auto w-fit">
+                      <div className="absolute -inset-8 bg-primary/20 blur-[50px] rounded-full opacity-30 group-hover:opacity-60 transition-opacity duration-1000" />
+                      <div className="w-48 h-48 bg-black border-[3px] border-primary/40 text-white rounded-3xl flex items-center justify-center -rotate-2 shadow-2xl relative overflow-hidden">
+                         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                         <span className="text-8xl font-heading font-black tracking-tighter drop-shadow-2xl">#{selectedTeam.car_number}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-12 text-center z-10 w-full">
-                    <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
-                    <p className="text-[10px] text-zinc-600 font-heading uppercase tracking-[0.3em] font-bold">RACE STATUS</p>
-                    <Badge className="mt-2 bg-green-500/10 text-green-500 border-green-500/20 px-6 py-2 uppercase font-heading tracking-widest text-[10px]">
-                      VERIFIED COMPETITOR
-                    </Badge>
+                  <div className="w-full space-y-8 mt-12">
+                    <div className="text-center p-6 rounded-2xl bg-zinc-900/40 border border-white/5">
+                      <p className="text-[10px] text-zinc-600 font-heading uppercase tracking-[0.4em] font-black mb-3 leading-none">Competition Status</p>
+                      <Badge className="bg-green-500/10 text-green-500 border-green-500/20 px-6 py-2 uppercase font-heading tracking-[0.2em] text-[10px] font-bold">
+                        VERIFIED 2026
+                      </Badge>
+                    </div>
+                    {/* Faux Barcode */}
+                    <div className="opacity-20 flex flex-col items-center gap-1 scale-[0.8]">
+                       <div className="flex gap-[2px]">
+                         {[...Array(30)].map((_, i) => (
+                           <div key={i} className="h-8 bg-white" style={{ width: Math.random() > 0.5 ? '2px' : '4px' }} />
+                         ))}
+                       </div>
+                       <p className="text-[8px] font-mono tracking-widest text-white">REF-{selectedTeam.car_number}-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Side: Detailed Info */}
-                <div className="flex-1 p-10 bg-black relative">
-                  {/* Topography Background */}
-                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+                {/* Right Section: Core Data */}
+                <div className="flex-1 p-10 md:p-14 bg-black relative">
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
                   
-                  <div className="mb-10 relative">
-                    <p className="text-primary text-[10px] font-bold uppercase tracking-[0.4em] mb-2 leading-none">Official Entry</p>
-                    <h2 className="text-5xl font-heading text-white tracking-tighter uppercase leading-tight">
-                      {selectedTeam.team_name || "PRO XP CHALLENGER"}
+                  <button 
+                    onClick={() => setSelectedTeam(null)}
+                    className="absolute top-8 right-8 z-50 text-white/30 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-xl transition-all border border-white/5"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+
+                  <div className="mb-14 relative">
+                    <div className="flex items-center gap-3 mb-3">
+                       <div className="h-px w-8 bg-primary/40" />
+                       <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] leading-none">Official Competitor Profile</p>
+                    </div>
+                    <h2 className="text-6xl font-heading text-white tracking-tighter uppercase leading-none break-words max-w-md">
+                      {selectedTeam.team_name || "PRO XP RIDER"}
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-10 relative">
-                    <div className="space-y-8">
-                       {/* Driver Section */}
-                       <div className="flex gap-6 items-start">
-                         <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center shrink-0">
-                           <Trophy className="w-6 h-6 text-primary/60" />
+                  <div className="grid grid-cols-1 gap-12 relative max-w-sm">
+                    {/* Pilot Info Group */}
+                    <div className="space-y-10">
+                       <div className="flex gap-8 items-center">
+                         <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center shrink-0 shadow-lg">
+                           <Users className="w-6 h-6 text-zinc-500" />
                          </div>
-                         <div className="space-y-1">
-                           <p className="text-zinc-500 text-[9px] uppercase font-black tracking-widest">Lead Pilot</p>
-                           <h3 className="text-2xl font-heading text-white uppercase italic">{selectedTeam.driver_name}</h3>
-                           <p className="text-zinc-400 text-xs">Blood Group: <span className="text-primary font-bold">{selectedTeam.driver_blood_group}</span></p>
-                         </div>
-                       </div>
-
-                       {/* Co-Driver Section */}
-                       <div className="flex gap-6 items-start">
-                         <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center shrink-0">
-                           <Users className="w-6 h-6 text-zinc-700" />
-                         </div>
-                         <div className="space-y-1">
-                           <p className="text-zinc-500 text-[9px] uppercase font-black tracking-widest">Navigator</p>
-                           <h3 className="text-2xl font-heading text-zinc-300 uppercase italic">{selectedTeam.codriver_name}</h3>
-                           <p className="text-zinc-500 text-xs font-medium uppercase">Blood: <span className="text-zinc-400">{selectedTeam.codriver_blood_group}</span></p>
+                         <div>
+                           <p className="text-zinc-600 text-[9px] uppercase font-black tracking-[0.3em] mb-1.5">Primary Driver</p>
+                           <h3 className="text-3xl font-heading text-white uppercase italic leading-none">{selectedTeam.driver_name}</h3>
+                           <div className="flex items-center gap-2 mt-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse" />
+                             <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Group: <span className="text-white">{selectedTeam.driver_blood_group}</span></p>
+                           </div>
                          </div>
                        </div>
 
-                       {/* Vehicle Section */}
-                       <div className="flex gap-6 items-start pt-6 border-t border-white/5">
-                         <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
-                           <div className="text-primary font-black text-xl italic leading-none">M</div>
-                         </div>
+                       <div className="flex gap-8 items-center border-l border-white/5 pl-8 ml-7">
                          <div className="space-y-1">
-                           <p className="text-zinc-500 text-[9px] uppercase font-black tracking-widest">The Machine</p>
-                           <h3 className="text-2xl font-heading text-white uppercase leading-none">{selectedTeam.vehicle_name}</h3>
-                           <p className="text-primary/70 text-xs font-heading italic tracking-wider uppercase">{selectedTeam.vehicle_model}</p>
+                           <p className="text-zinc-700 text-[9px] uppercase font-black tracking-[0.3em] mb-1">Co-Pilot / Navigator</p>
+                           <h3 className="text-2xl font-heading text-zinc-400 uppercase italic leading-none">{selectedTeam.codriver_name}</h3>
+                           <p className="text-zinc-700 text-[9px] font-bold uppercase tracking-wider mt-2">Blood: {selectedTeam.codriver_blood_group}</p>
+                         </div>
+                       </div>
+                    </div>
+
+                    {/* Machine Spec */}
+                    <div className="pt-10 border-t border-white/5">
+                       <div className="flex gap-8 items-center">
+                         <div className="w-14 h-14 rounded-2xl bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
+                           <div className="text-primary font-black text-2xl italic leading-none">SP</div>
+                         </div>
+                         <div>
+                           <p className="text-zinc-600 text-[9px] uppercase font-black tracking-[0.3em] mb-1.5">Machine Specification</p>
+                           <h3 className="text-3xl font-heading text-white uppercase leading-none tracking-tighter">{selectedTeam.vehicle_name}</h3>
+                           <p className="text-primary/60 text-xs font-heading italic tracking-widest uppercase mt-2">{selectedTeam.vehicle_model}</p>
                          </div>
                        </div>
                     </div>
                   </div>
 
                   {selectedTeam.socials && (
-                    <div className="mt-12 flex items-center gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-white/5">
-                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                          <span className="text-primary font-bold">@</span>
+                    <div className="mt-14 inline-flex items-center gap-6 bg-zinc-900/30 p-5 rounded-3xl border border-white/5">
+                       <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/10">
+                          <span className="text-primary font-black text-lg italic">@</span>
                        </div>
-                       <div>
-                         <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest leading-none mb-1">Social Pulse</p>
-                         <p className="text-white font-medium tracking-tight text-lg">{selectedTeam.socials}</p>
+                       <div className="pr-6">
+                         <p className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em] leading-none mb-1.5">Pilot Handle</p>
+                         <p className="text-white font-medium tracking-tight text-xl font-heading">{selectedTeam.socials}</p>
                        </div>
                     </div>
                   )}
