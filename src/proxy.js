@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // If the path is /admin and NOT /admin/login
