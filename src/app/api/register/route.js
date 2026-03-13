@@ -60,7 +60,14 @@ export async function POST(request) {
     return NextResponse.json({ success: true, id: regId });
 
   } catch (error) {
-    console.error("Registration error:", error);
-    return NextResponse.json({ error: "Failed to save registration" }, { status: 500 });
+    console.error("FULL REGISTRATION ERROR:", {
+      message: error.message,
+      stack: error.stack,
+      data: error.response?.data
+    });
+    return NextResponse.json({ 
+      error: "Failed to save registration", 
+      details: error.message 
+    }, { status: 500 });
   }
 }
