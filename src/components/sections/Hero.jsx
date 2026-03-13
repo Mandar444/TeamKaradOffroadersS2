@@ -11,7 +11,7 @@ export default function Hero() {
   const [logoError, setLogoError] = useState(false);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20">
       {/* Subtle Atmospheric Background */}
       <div className="absolute inset-0 bg-black z-10 opacity-70" />
       <div 
@@ -33,7 +33,7 @@ export default function Hero() {
           className="flex flex-col items-center"
         >
           {/* Logo - Main Branding */}
-          <div className="mb-8 relative flex justify-center w-full">
+          <div className="mb-4 md:mb-8 relative flex justify-center w-full">
             {!logoError ? (
               <motion.img 
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -41,7 +41,7 @@ export default function Hero() {
                 transition={{ delay: 0.5, type: "spring" }}
                 src="/logo.png" 
                 alt="Team Karad Logo" 
-                className="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
+                className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
                 onError={() => setLogoError(true)}
               />
             ) : (
