@@ -8,6 +8,7 @@ export default function Intro({ onComplete }) {
   const [started, setStarted] = useState(false);
   const [showAnimatedLogo, setShowAnimatedLogo] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isVibrating, setIsVibrating] = useState(false);
   const revSound = useRef(null);
   const popSound = useRef(null);
 
@@ -19,10 +20,21 @@ export default function Intro({ onComplete }) {
 
   const handleStart = () => {
     setStarted(true);
+    setIsVibrating(true);
+
+    // Haptic Vibration for Mobile
+    if ("vibrate" in navigator) {
+      // Complex pattern: short pulses then a long blast as engine fires up
+      navigator.vibrate([100, 30, 100, 30, 200, 50, 1000]);
+    }
+
     if (revSound.current) {
-      revSound.current.volume = 0.5;
+      revSound.current.volume = 0.7;
       revSound.current.play().catch(e => console.log("Audio play blocked"));
     }
+
+    // Stop intense vibration after 2 seconds but keep a subtle hum
+    setTimeout(() => setIsVibrating(false), 2500);
 
     setTimeout(() => {
       setShowAnimatedLogo(true);
@@ -30,11 +42,11 @@ export default function Intro({ onComplete }) {
         popSound.current.volume = 0.8;
         popSound.current.play().catch(e => console.log("Audio play blocked"));
       }
-    }, 1000);
+    }, 1500);
 
     setTimeout(() => {
       onComplete();
-    }, 5500);
+    }, 6000);
   };
 
   return (
@@ -49,8 +61,8 @@ export default function Intro({ onComplete }) {
       </motion.div>
 
       {/* Audio elements */}
-      <audio ref={revSound} src="/sounds/engine-rev.mp3" preload="auto" />
-      <audio ref={popSound} src="/sounds/logo-pop.mp3" preload="auto" />
+      <audio ref={revSound} src="/engine-rev.mp3" preload="auto" />
+      <audio ref={popSound} src="/logo-pop.mp3" preload="auto" />
 
       <AnimatePresence mode="wait">
         {!started ? (
@@ -165,6 +177,16 @@ export default function Intro({ onComplete }) {
                  />
                ))}
             </div>
+
+            {/* Screen Shake Wrapper */}
+            <motion.div 
+               animate={isVibrating ? {
+                 x: [0, -5, 5, -5, 5, 0],
+                 y: [0, 5, -5, 5, -5, 0]
+               } : {}}
+               transition={{ duration: 0.1, repeat: isVibrating ? Infinity : 0 }}
+               className="absolute inset-0 pointer-events-none"
+            />
           </div>
         )}
       </AnimatePresence>
