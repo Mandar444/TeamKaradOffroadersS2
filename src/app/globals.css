@@ -121,6 +121,20 @@ h1, h2, h3, .font-heading {
   letter-spacing: -0.02em;
 }
 
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.bg-mesh-amber {
+  background: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+              radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+              radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+}
+
+.text-glow-amber {
+  text-shadow: 0 0 20px oklch(0.7 0.2 60 / 0.4);
+}
+
 .perspective-1000 {
   perspective: 1000px;
 }
