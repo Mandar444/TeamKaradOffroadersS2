@@ -25,7 +25,11 @@ export default function TeamsPage() {
     fetch("/api/teams")
       .then(res => res.json())
       .then(data => {
-        setTeams(data);
+        setTeams(data.teams || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
         setLoading(false);
       });
   }, []);
