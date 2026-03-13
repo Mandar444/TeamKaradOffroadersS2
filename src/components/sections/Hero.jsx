@@ -54,6 +54,11 @@ export default function Hero() {
             )}
           </div>
 
+          <div className="flex items-center gap-3 mb-6 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl animate-pulse">
+             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] leading-none">Elite Grid Status: Online</p>
+          </div>
+
           <span className="inline-block px-4 py-1.5 mb-8 text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase">
             MAY 29, 30, 31 • THE ULTIMATE OFF-ROAD CHALLENGE
           </span>
