@@ -100,46 +100,64 @@ export default function TeamsPage() {
         </div>
 
         {/* Team Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredTeams.map((team, idx) => (
             <motion.div
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               key={team.car_number}
               onClick={() => setSelectedTeam(team)}
-              className="group cursor-pointer"
+              className="group cursor-pointer perspective-1000"
             >
-              <div className="bg-zinc-950 border border-white/5 rounded-3xl p-6 hover:border-primary/40 transition-all duration-500 relative overflow-hidden group-hover:shadow-[0_0_40px_rgba(255,165,0,0.1)]">
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                  <Trophy className="w-32 h-32 text-white" />
-                </div>
-                
-                <div className="flex justify-between items-start mb-8 relative z-10">
-                  <div className="w-16 h-16 bg-black border-2 border-primary/20 rounded-2xl flex items-center justify-center text-white scale-110 group-hover:border-primary transition-colors">
-                    <span className="text-3xl font-heading font-black">#{team.car_number}</span>
-                  </div>
-                  <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-white/10 text-zinc-500">
-                    {CATEGORIES[team.category]?.name || "COMPETITOR"}
-                  </Badge>
-                </div>
-
-                <div className="space-y-4 relative z-10">
-                  <h3 className="text-3xl font-heading text-white uppercase group-hover:text-primary transition-colors">
-                    {team.team_name || "PRO XP RIDER"}
-                  </h3>
-                  <div className="flex items-center gap-3 text-zinc-500">
-                    <Users className="w-4 h-4" />
-                    <p className="text-sm font-medium uppercase tracking-tight">{team.driver_name}</p>
-                  </div>
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-zinc-600">
-                   <p className="text-[10px] font-black uppercase tracking-widest">View Credentials</p>
-                   <div className="w-8 h-8 rounded-full border border-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
-                      <Search className="w-4 h-4" />
+              <div 
+                style={{ transformStyle: 'preserve-3d' }}
+                className="relative bg-zinc-950 border border-white/10 rounded-[2rem] p-0 overflow-hidden transition-all duration-700 group-hover:scale-[1.02] group-hover:shadow-[0_20px_60px_rgba(255,165,0,0.15)] group-hover:border-primary/40 flex h-64"
+              >
+                {/* Elite Technical Sidebar Motif on Card */}
+                <div className="w-12 bg-zinc-900 border-r border-white/5 flex flex-col items-center justify-between py-6 opacity-40 group-hover:opacity-100 transition-opacity">
+                   <div className="rotate-[-90deg] whitespace-nowrap text-[7px] font-black tracking-[0.4em] text-zinc-600 uppercase">
+                     TK-2026-GRID-ACCESS
                    </div>
+                   <ShieldCheck className="w-4 h-4 text-primary" />
+                </div>
+
+                <div className="flex-1 p-8 relative flex flex-col justify-between">
+                  {/* Mesh Background on Card */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none bg-mesh-amber" />
+                  <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-5 transition-all">
+                    <Trophy className="w-32 h-32 text-white" />
+                  </div>
+                  
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[10px] font-black tracking-[0.4em] text-primary uppercase leading-none">Vessel Class</p>
+                      <p className="text-white text-xs font-bold uppercase tracking-widest opacity-80">{CATEGORIES[team.category]?.name || "COMPETITOR"}</p>
+                    </div>
+                    <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
+                      <span className="text-3xl font-heading font-black tracking-tighter italic">#{team.car_number}</span>
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 space-y-2">
+                    <h3 className="text-3xl font-heading text-white uppercase italic tracking-wide group-hover:text-primary transition-colors leading-none">
+                      {team.team_name || "STORM RIDER"}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
+                      <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{team.driver_name}</p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/5 flex items-center justify-between text-zinc-600 relative z-10">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] group-hover:text-zinc-400">View Grid Pass</p>
+                    <div className="flex gap-1 h-3 opacity-20 group-hover:opacity-50 transition-opacity">
+                       {[...Array(8)].map((_, i) => (
+                          <div key={i} className="w-px bg-white" style={{ height: `${Math.random() * 100}%` }} />
+                       ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
