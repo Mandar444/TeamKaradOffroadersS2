@@ -91,7 +91,7 @@ export default function RegisterPage() {
       if (res.ok) {
         router.push(`/payment/${result.id}`);
       } else {
-        alert(result.error || "Submission failed");
+        alert(`${result.error}: ${result.details || "Unknown error"}`);
       }
     } catch (e) {
       alert("Something went wrong. Try again.");
