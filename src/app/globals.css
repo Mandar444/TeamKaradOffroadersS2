@@ -120,3 +120,13 @@ h1, h2, h3, .font-heading {
   text-transform: uppercase;
   letter-spacing: -0.02em;
 }
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.glass-lavish {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

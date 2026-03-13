@@ -12,18 +12,33 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20">
-      {/* Subtle Atmospheric Background */}
-      <div className="absolute inset-0 bg-black z-10 opacity-70" />
-      <div 
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105 opacity-40"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop')",
-          backgroundBlendMode: "luminosity"
-        }}
-      />
+      {/* 4-Video Vertical Grid Background */}
+      <div className="absolute inset-0 z-0 flex overflow-hidden">
+        {[
+          "/bgv1.MP4",
+          "/pgv4.MP4",
+          "/bgv3.MP4",
+          "/background%204.MP4"
+        ].map((src, i) => (
+          <div key={i} className="relative flex-1 h-full border-r border-white/5 last:border-r-0 overflow-hidden">
+             <video 
+               autoPlay 
+               loop 
+               muted 
+               playsInline 
+               className="absolute inset-0 w-full h-full object-cover scale-110 grayscale-[0.3] brightness-[0.4]"
+             >
+               <source src={src} type="video/mp4" />
+             </video>
+             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 opacity-60" />
+          </div>
+        ))}
+      </div>
+
       {/* Grit/Noise Overlay */}
-      <div className="absolute inset-0 z-12 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black z-15" />
+      <div className="absolute inset-0 z-12 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-15" />
+      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/80 via-transparent to-zinc-950 z-15" />
 
       <div className="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <motion.div
