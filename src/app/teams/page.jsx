@@ -284,7 +284,11 @@ export default function TeamsPage() {
                       <div className="pt-8 border-t border-white/10 flex items-center justify-between">
                          <div className="flex items-center gap-8">
                             <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/50 border border-black group cursor-none">
-                               <QRCodeSVG value={selectedTeam.car_number.toString()} size={80} level="H" />
+                               <QRCodeSVG 
+                                value={`PAYMENT STATUS: APPROVED ✅\n\nTEAM: ${selectedTeam.team_name}\nCAR NO: #${selectedTeam.car_number}\nCATEGORY: ${CATEGORIES[selectedTeam.category]?.name || selectedTeam.category}\n\nDRIVER: ${selectedTeam.driver_name} (${selectedTeam.driver_blood_group})\nNAVIGATOR: ${selectedTeam.codriver_name || "N/A"} (${selectedTeam.codriver_blood_group || "N/A"})\n\nVEHICLE: ${selectedTeam.vehicle_name} (${selectedTeam.vehicle_model})`}
+                                size={110} 
+                                level="H" 
+                               />
                             </div>
                             <div>
                                <p className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Status Check</p>
