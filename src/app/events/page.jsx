@@ -44,7 +44,7 @@ const pastEvents = [
 ];
 
 const upcomingEvent = {
-  name: "TKO RALLY 2026 — SEASON 2",
+  name: "TEAM KARAD OFF-ROAD RALLY 2026 — SEASON 2",
   date: "May 29, 30, 31 — 2026",
   location: "Karad, Satara District, Maharashtra",
   categories: 6,
@@ -117,7 +117,7 @@ export default function EventsPage() {
           <h2 className="text-5xl font-heading text-white uppercase tracking-tighter mb-4">
             PAST <span className="text-primary italic">HIGHLIGHTS</span>
           </h2>
-          <p className="text-zinc-500 text-lg mb-16">Relive the adrenaline from previous TKO chapters.</p>
+          <p className="text-zinc-500 text-lg mb-16">Relive the adrenaline from previous Team Karad Off-Roaders chapters.</p>
 
           <div className="space-y-8">
             {pastEvents.map((event, idx) => (

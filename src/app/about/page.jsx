@@ -7,8 +7,8 @@ import { Target, Heart, Shield, Zap, Users, Trophy, MapPin, Calendar, Activity, 
 
 const milestones = [
   { year: "2018", title: "Ignition", desc: "A group of off-road enthusiasts from Karad came together with a shared vision — to bring world-class motorsport to Western Maharashtra." },
-  { year: "2020", title: "First Ascent", desc: "TKO organized its inaugural off-road rally with 40 participants, setting the standard for competitive off-roading in the region." },
-  { year: "2022", title: "National Radius", desc: "With over 100 participants and coverage from major motorsport outlets, TKO became a nationally recognized off-road force." },
+  { year: "2020", title: "First Ascent", desc: "Team Karad Off-Roaders organized its inaugural off-road rally with 40 participants, setting the standard for competitive off-roading in the region." },
+  { year: "2022", title: "National Radius", desc: "With over 100 participants and coverage from major motorsport outlets, Team Karad Off-Roaders became a nationally recognized off-road force." },
   { year: "2024", title: "Season 1 Apex", desc: "The first full-season championship format was introduced, attracting elite teams from across India." },
   { year: "2025", title: "The Festival Success", desc: "Flagship 'Team Karad Off-Road Festival' establishes itself as a fast-growing platform for automotive brands and drivers." },
 ];
@@ -91,7 +91,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="relative"
           >
-             <div className="absolute -left-10 top-0 text-[15rem] font-black text-white/5 pointer-events-none select-none italic leading-none">TKO</div>
+             <div className="absolute -left-10 top-0 text-[10rem] font-black text-white/5 pointer-events-none select-none italic leading-none">TEAM KARAD</div>
              <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.6em] mb-6">Autonomous Profile</h3>
              <h2 className="text-5xl md:text-7xl font-heading text-white tracking-widest uppercase mb-8 leading-tight">
                CONQUERING <br /> THE <span className="text-primary italic">UNREACHABLE</span>
@@ -101,10 +101,10 @@ export default function AboutPage() {
                   Our team consists of skilled drivers, co-drivers, mechanics, and off-road specialists 
                   who share a deep interest in adventure, vehicle engineering, and extreme terrain driving.
                 </p>
-                <p>
-                  From mud tracks and rocky climbs to riverbeds and lethal obstacle courses, we constantly 
-                  push the limits of both man and machine. TKO stands for technical excellence, teamwork, 
-                  and the relentless pursuit of off-road culture.
+                 <p>
+                   From mud tracks and rocky climbs to riverbeds and lethal obstacle courses, we constantly 
+                   push the limits of both man and machine. Team Karad Off-Roaders stands for technical excellence, teamwork, 
+                   and the relentless pursuit of off-road culture.
                 </p>
              </div>
           </motion.div>
@@ -192,9 +192,9 @@ export default function AboutPage() {
                    <Newspaper className="w-6 h-6" />
                    <h5 className="font-black uppercase tracking-widest text-sm">Media Presence</h5>
                 </div>
-                <p className="text-zinc-400 leading-relaxed font-medium">
+                 <p className="text-zinc-400 leading-relaxed font-medium">
                    Regional newspaper coverage and 200+ off-road vehicles present on-site, 
-                   establishing TKO as a fast-growing stage for automotive brands.
+                   establishing Team Karad Off-Roaders as a fast-growing stage for automotive brands.
                 </p>
              </motion.div>
 

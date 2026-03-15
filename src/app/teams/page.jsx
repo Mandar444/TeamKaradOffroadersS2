@@ -10,8 +10,8 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 
 const CATEGORIES = {
-  "PETROL_MODIFIED": { name: "Pro-Petrol Modified", color: "from-orange-500 to-red-600" },
-  "DIESEL_MODIFIED": { name: "Pro-Diesel Modified", color: "from-blue-500 to-indigo-600" },
+  "PETROL_MODIFIED": { name: "Petrol Modified", color: "from-orange-500 to-red-600" },
+  "DIESEL_MODIFIED": { name: "Diesel Modified", color: "from-blue-500 to-indigo-600" },
   "STOCK": { name: "Stock 4x4", color: "from-emerald-500 to-teal-600" }
 };
 
@@ -276,23 +276,23 @@ export default function TeamsPage() {
                    <div className="grid grid-cols-1 gap-12 relative z-10">
                       {/* Driver Info */}
                       <div className="space-y-6">
-                         <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-4">
                             <div className="h-px flex-1 bg-white/10" />
-                            <p className="text-[9px] font-black text-primary/60 uppercase tracking-[0.5em]">Command Center</p>
+                            <p className="text-[9px] font-black text-primary/60 uppercase tracking-[0.5em]">Crew Information</p>
                             <div className="h-px flex-1 bg-white/10" />
-                         </div>
+                          </div>
                          
-                         <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-1">
-                               <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Lead Driver</p>
-                               <p className="text-3xl font-heading text-white uppercase italic leading-none">{selectedTeam.driver_name}</p>
-                               <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-2">{selectedTeam.driver_blood_group} POSITIVE</p>
-                            </div>
-                            <div className="space-y-1">
-                               <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Navigator</p>
-                               <p className="text-3xl font-heading text-zinc-500 uppercase italic leading-none">{selectedTeam.codriver_name || "---"}</p>
-                            </div>
-                         </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             <div className="space-y-1">
+                                <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Driver</p>
+                                <p className="text-3xl font-heading text-white uppercase italic leading-none">{selectedTeam.driver_name}</p>
+                                <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-2">{selectedTeam.driver_blood_group} POSITIVE</p>
+                             </div>
+                             <div className="space-y-1">
+                                <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Co-Driver</p>
+                                <p className="text-3xl font-heading text-zinc-500 uppercase italic leading-none">{selectedTeam.codriver_name || "---"}</p>
+                             </div>
+                          </div>
                       </div>
 
                       {/* Machine Stats */}

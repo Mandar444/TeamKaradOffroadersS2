@@ -116,7 +116,7 @@ export default function RegisterPage() {
               <div className="relative z-10 space-y-8">
                  {[
                    { id: 1, label: "PROTOCOL", icon: ShieldCheck, status: step >= 1 ? "ACTIVE" : "PENDING" },
-                   { id: 2, label: "NAVIGATOR", icon: Trophy, status: step >= 2 ? "ACTIVE" : "PENDING" },
+                   { id: 2, label: "CO-DRIVER", icon: Trophy, status: step >= 2 ? "ACTIVE" : "PENDING" },
                    { id: 3, label: "BIO-DATA", icon: Gauge, status: step >= 3 ? "ACTIVE" : "PENDING" },
                    { id: 4, label: "GRID PASS", icon: Award, status: step >= 4 ? "ACTIVE" : "PENDING" }
                  ].map((s) => (
@@ -176,7 +176,7 @@ export default function RegisterPage() {
                          <Zap className="w-5 h-5 text-primary" />
                          <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] leading-none">Primary Protocol (01/04)</p>
                       </div>
-                      <CardTitle className="text-5xl font-heading text-white tracking-tighter uppercase leading-none">PILOT & MISSION <span className="text-primary italic">HQ</span></CardTitle>
+                      <CardTitle className="text-5xl font-heading text-white tracking-tighter uppercase leading-none">DRIVER & CO-DRIVER <span className="text-primary italic">HQ</span></CardTitle>
                     </CardHeader>
 
                     <CardContent className="px-10 md:px-16 pb-16 space-y-10">
@@ -204,12 +204,12 @@ export default function RegisterPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 bg-black/50 rounded-[2.5rem] border border-white/5">
                         <div className="space-y-3">
-                          <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Lead Pilot Name</Label>
+                          <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Driver Name</Label>
                           <Input {...register("driverName")} className="h-14 bg-zinc-900 border-white/5 rounded-xl text-lg" />
                           {errors.driverName && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-1">{errors.driverName.message}</p>}
                         </div>
                         <div className="space-y-3">
-                          <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Pilot Comms Link</Label>
+                          <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Driver Comms Link</Label>
                           <Input {...register("driverPhone")} placeholder="10-DIGIT MOBILE" className="h-14 bg-zinc-900 border-white/5 rounded-xl text-lg font-mono tracking-widest" />
                           {errors.driverPhone && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-1">{errors.driverPhone.message}</p>}
                         </div>
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                           }} 
                           className="w-full h-16 bg-primary text-black font-black uppercase tracking-[0.4em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,165,0,0.2)]"
                         >
-                          INITIALIZE CO-PILOT PROTOCOL <ChevronRight className="ml-2 w-5 h-5" />
+                          INITIALIZE CO-DRIVER PROTOCOL <ChevronRight className="ml-2 w-5 h-5" />
                         </Button>
                       </div>
                     </CardContent>
@@ -258,12 +258,12 @@ export default function RegisterPage() {
                    <Card className="bg-zinc-950 border border-white/10 rounded-[3rem] overflow-hidden shadow-[0_0_80px_rgba(255,165,0,0.12)]">
                       <CardHeader className="pt-16 px-12 md:px-20 text-center">
                          <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.8em] mb-4">Secondary Manifest (02/04)</p>
-                         <CardTitle className="text-6xl font-heading text-white uppercase leading-none tracking-tighter">CO-PILOT & <span className="text-primary italic">COMMS</span></CardTitle>
+                         <CardTitle className="text-6xl font-heading text-white uppercase leading-none tracking-tighter">CO-DRIVER & <span className="text-primary italic">COMMS</span></CardTitle>
                       </CardHeader>
                       <CardContent className="px-12 md:px-20 pb-20 space-y-12">
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-12 bg-black/60 rounded-[3rem] border border-white/5">
                             <div className="space-y-3">
-                               <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Navigator Full Identity</Label>
+                               <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Co-Driver Full Identity</Label>
                                <Input {...register("coDriverName")} className="h-14 bg-zinc-900/50 border-white/5 rounded-xl text-lg" />
                                {errors.coDriverName && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2">{errors.coDriverName.message}</p>}
                             </div>
@@ -292,7 +292,7 @@ export default function RegisterPage() {
                          </div>
 
                          <div className="space-y-4 pt-4 border-t border-white/5">
-                            <Label className="text-primary text-[10px] font-black tracking-[0.5em] uppercase px-2 mb-2 block">Social Pulse Handle (Pilot/Team)</Label>
+                            <Label className="text-primary text-[10px] font-black tracking-[0.5em] uppercase px-2 mb-2 block">Social Pulse Handle (Driver/Team)</Label>
                             <div className="relative group">
                                <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
                                   <span className="text-2xl font-bold">@</span>
@@ -346,7 +346,7 @@ export default function RegisterPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center p-12 bg-black/60 rounded-[3rem] border border-white/5 relative">
                                <div className="space-y-4">
-                                  <Label className="text-primary text-[10px] font-black tracking-[0.5em] uppercase leading-none">Ration preference (Fuel for pilots)</Label>
+                                  <Label className="text-primary text-[10px] font-black tracking-[0.5em] uppercase leading-none">Ration preference (Fuel for drivers)</Label>
                                   <Select onValueChange={(v) => setValue("foodPreference", v)} defaultValue="Both Veg">
                                     <SelectTrigger className="h-16 bg-zinc-900 border-white/5 rounded-2xl text-xl font-heading text-white tracking-widest">
                                       <SelectValue />
@@ -367,7 +367,7 @@ export default function RegisterPage() {
 
                          <div className="space-y-6 pt-10 border-t border-white/5">
                             {[
-                              { id: "ageAgreement", label: "PILOT AGE CERTIFICATION: Both driver and co-driver are of legal age (18+) and hold valid class A/B driving licenses.", error: errors.ageAgreement },
+                              { id: "ageAgreement", label: "DRIVER AGE CERTIFICATION: Both driver and co-driver are of legal age (18+) and hold valid class A/B driving licenses.", error: errors.ageAgreement },
                               { id: "categoryAgreement", label: "VESSEL SPECIFICATION AUTHORIZATION: Verified vehicle specifications match the selected class rules.", error: errors.categoryAgreement }
                             ].map((a) => (
                               <div key={a.id}>

@@ -5,18 +5,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
 const galleryItems = [
-  { src: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop", caption: "TKO Rally 2025 — Start Line", category: "Rally" },
-  { src: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2070&auto=format&fit=crop", caption: "Mud Bogging Championship 2024", category: "Mud" },
-  { src: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2070&auto=format&fit=crop", caption: "Night Trail Masters", category: "Night" },
-  { src: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop", caption: "Hill Climb Extreme — Final Stage", category: "Hill" },
-  { src: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop", caption: "The Destroyer — Pre-Race Lineup", category: "Beasts" },
-  { src: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop", caption: "River Crossing Challenge", category: "Rally" },
-  { src: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop", caption: "Stock Category Winner", category: "Beasts" },
-  { src: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop", caption: "Crowd Goes Wild", category: "Rally" },
-  { src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", caption: "Jimny Army", category: "Beasts" },
-  { src: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2070&auto=format&fit=crop", caption: "Trophy Ceremony 2024", category: "Events" },
-  { src: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop", caption: "Sunset at the Track", category: "Rally" },
-  { src: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=2070&auto=format&fit=crop", caption: "Camping Night — Season 1 Finale", category: "Events" },
+  { src: "/gallery/gallery-1.jpg", caption: "Water Splash Challenge — Stage 1", category: "Rally" },
+  { src: "/gallery/gallery-2.jpg", caption: "Deep Mud Navigation", category: "Mud" },
+  { src: "/gallery/gallery-3.jpg", caption: "The Dominator — Willy's Custom", category: "Beasts" },
+  { src: "/gallery/gallery-4.jpg", caption: "Bullet Yadav — Crowd Favorite", category: "Rally" },
+  { src: "/gallery/gallery-5.jpg", caption: "Extreme Dirt Kick", category: "Hill" },
+  { src: "/gallery/gallery-6.jpg", caption: "Simba — Precision Climb", category: "Rally" },
+  { src: "/gallery/gallery-7.jpg", caption: "The Beast in Motion", category: "Rally" },
+  { src: "/gallery/gallery-8.jpg", caption: "Heavy Mud Splash", category: "Mud" },
+  { src: "/gallery/gallery-9.jpg", caption: "Ronin — Extreme Descent", category: "Hill" },
+  { src: "/gallery/gallery-10.jpg", caption: "Custom Off-Rigger Trail", category: "Beasts" },
+  { src: "/gallery/gallery-11.jpg", caption: "Ronin Mud Bath", category: "Mud" },
+  { src: "/gallery/gallery-12.jpg", caption: "Extreme Torque — Willy's", category: "Beasts" },
+  { src: "/gallery/gallery-13.jpg", caption: "Engine Revving Action", category: "Mud" },
+  { src: "/gallery/gallery-14.jpg", caption: "Trackside Support", category: "Rally" },
+  { src: "/gallery/gallery-15.jpg", caption: "Off-Road Grid Masters", category: "Hill" },
+  { src: "/gallery/gallery-16.jpg", caption: "Ronin Climbing Ridge", category: "Hill" },
+  { src: "/gallery/gallery-17.jpg", caption: "Mud Pit Execution", category: "Mud" },
+  { src: "/gallery/gallery-18.jpg", caption: "Water Spray Action", category: "Rally" },
+  // Final 2 Placeholders
+  { src: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop", caption: "Team Karad Off-Roaders Season Finale", category: "Rally" },
+  { src: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2070&auto=format&fit=crop", caption: "Champ Ceremony — Coming Soon", category: "Events" },
 ];
 
 const categories = ["All", "Rally", "Mud", "Night", "Hill", "Beasts", "Events"];
@@ -53,8 +62,8 @@ export default function GalleryPage() {
             </div>
           </motion.div>
 
-          {/* Masonry Grid */}
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+          {/* Stable Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((item, idx) => (
               <motion.div
                 key={idx}
@@ -62,14 +71,13 @@ export default function GalleryPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="break-inside-avoid group cursor-pointer relative overflow-hidden rounded-2xl border border-white/5 hover:border-primary/20 transition-all"
+                className="aspect-[4/5] group cursor-pointer relative overflow-hidden rounded-2xl border border-white/5 hover:border-primary/20 transition-all"
                 onClick={() => setLightbox(idx)}
               >
                 <img
                   src={item.src}
                   alt={item.caption}
-                  className="w-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  style={{ height: idx % 3 === 0 ? 400 : idx % 3 === 1 ? 300 : 350 }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
                   <div className="p-6">

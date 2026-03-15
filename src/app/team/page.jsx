@@ -8,8 +8,8 @@ const teamMembers = [
     name: "Mandar Karad",
     role: "Founder & Chief Organizer",
     title: "THE VISIONARY",
-    bio: "The man behind TKO. With a decade of off-roading experience, Mandar founded Team Karad Offroaders to bring world-class motorsport events to Western Maharashtra.",
-    socials: { instagram: "#", email: "mandar@tko.com" },
+    bio: "The man behind the mission. With a decade of off-roading experience, Mandar founded Team Karad Off-Roaders to bring world-class motorsport events to Western Maharashtra.",
+    socials: { instagram: "#", email: "mandar@teamkaradoffroaders.online" },
     badge: "Founder",
   },
   {
@@ -67,12 +67,12 @@ export default function TeamPage() {
       <section className="px-4 py-20">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The People Behind TKO</p>
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The People Behind the Mission</p>
             <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
               OUR <span className="text-primary italic">CREW</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
-              Every great event is powered by passionate people. Meet the team that makes TKO 
+              Every great event is powered by passionate people. Meet the team that makes Team Karad Off-Roaders 
               the most thrilling off-road championship in India.
             </p>
           </motion.div>

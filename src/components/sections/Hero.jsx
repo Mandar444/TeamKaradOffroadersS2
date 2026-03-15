@@ -57,7 +57,7 @@ export default function Hero() {
                  <h1 className="text-6xl md:text-9xl font-heading text-white tracking-tighter drop-shadow-[0_0_20px_oklch(0.7_0.2_60)]">
                    TEAM <span className="text-primary italic">KARAD</span>
                  </h1>
-                 <p className="text-xl md:text-3xl text-primary font-heading tracking-[0.6em] opacity-80 uppercase font-bold mt-2">OFFROADERS</p>
+                 <p className="text-xl md:text-3xl text-primary font-heading tracking-[0.6em] opacity-80 uppercase font-bold mt-2">OFF-ROADERS</p>
               </div>
             )}
           </div>

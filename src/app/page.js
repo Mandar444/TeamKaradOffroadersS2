@@ -92,7 +92,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                <span className="text-zinc-700 text-sm">© 2026 Team Karad Offroaders. All rights reserved.</span>
+                <span className="text-zinc-700 text-sm">© 2026 Team Karad Off-Roaders. All rights reserved.</span>
                 <span className="text-zinc-800 text-xs">Made with 🏁 in Karad, Maharashtra</span>
               </div>
             </div>

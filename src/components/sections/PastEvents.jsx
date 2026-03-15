@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const events = [
   {
     year: "2025",
-    name: "TKO Festival Season 1",
+    name: "Team Karad Off-Road Festival Season 1",
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
     stats: "35,000+ Spectators • 80+ Drivers"
   },
@@ -31,7 +31,7 @@ export default function PastEvents() {
           <h2 className="text-4xl font-heading text-white mb-2">
             PAST <span className="text-primary italic">MOMENTS</span>
           </h2>
-          <p className="text-zinc-500">Relive the adrenaline from previous TKO chapters.</p>
+          <p className="text-zinc-500">Relive the adrenaline from previous Team Karad Off-Roaders chapters.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

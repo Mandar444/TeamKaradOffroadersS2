@@ -16,8 +16,8 @@ const contactInfo = [
 
 const socials = [
   { icon: Instagram, label: "Instagram", handle: "@teamkaradoffroaders", href: "https://instagram.com/teamkaradoffroaders", color: "from-purple-500 to-pink-500" },
-  { icon: Facebook, label: "Facebook", handle: "Team Karad Offroaders", href: "https://facebook.com/teamkaradoffroaders", color: "from-blue-600 to-blue-400" },
-  { icon: Youtube, label: "YouTube", handle: "TKO Motorsports", href: "https://youtube.com/@tko", color: "from-red-600 to-red-400" },
+  { icon: Facebook, label: "Facebook", handle: "Team Karad Off-Roaders", href: "https://facebook.com/teamkaradoffroaders", color: "from-blue-600 to-blue-400" },
+  { icon: Youtube, label: "YouTube", handle: "Team Karad Off-Roaders TV", href: "https://youtube.com/@teamkaradoffroaders", color: "from-red-600 to-red-400" },
 ];
 
 export default function ContactPage() {

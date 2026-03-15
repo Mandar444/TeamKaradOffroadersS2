@@ -11,7 +11,7 @@ const beasts = [
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
     specs: { engine: "2.5L CRDe Turbo", power: "320 BHP", torque: "650 Nm", tyres: "35\" Maxxis Bighorn" },
     wins: 12,
-    desc: "The undisputed king of TKO. Modified beyond recognition with a custom roll cage, long-travel suspension, and a remapped ECU pushing 320 horses."
+    desc: "The undisputed king of Team Karad Off-Roaders. Modified beyond recognition with a custom roll cage, long-travel suspension, and a remapped ECU pushing 320 horses."
   },
   {
     name: "Mud Phantom",
@@ -20,7 +20,7 @@ const beasts = [
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
     specs: { engine: "1.3L G13BB Turbo", power: "180 BHP", torque: "280 Nm", tyres: "33\" BF Goodrich KM3" },
     wins: 8,
-    desc: "Lightweight, agile, and wickedly fast. This turbocharged Gypsy has demolished every time attack record in TKO history."
+    desc: "Lightweight, agile, and wickedly fast. This turbocharged Gypsy has demolished every time attack record in Team Karad Off-Roaders history."
   },
   {
     name: "Iron Fist",
@@ -71,7 +71,7 @@ export default function BeastsPage() {
               OUR <span className="text-primary italic">BEASTS</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
-              Meet the machines that have conquered every terrain TKO has thrown at them. 
+              Meet the machines that have conquered every terrain Team Karad Off-Roaders has thrown at them. 
               Built for war, tuned for glory.
             </p>
           </motion.div>
