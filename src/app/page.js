@@ -12,12 +12,28 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Instagram } from "lucide-react";
 
 export default function Home() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const skipIntro = sessionStorage.getItem("tko_skip_intro");
+    if (!skipIntro) {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const handleComplete = () => {
+    setShowIntro(false);
+    sessionStorage.setItem("tko_skip_intro", "true");
+  };
+
+  if (!isClient) return null;
 
   return (
     <main className="min-h-screen">
       <AnimatePresence>
-        {showIntro && <Intro onComplete={() => setShowIntro(false)} />}
+        {showIntro && <Intro onComplete={handleComplete} />}
       </AnimatePresence>
 
       <motion.div
