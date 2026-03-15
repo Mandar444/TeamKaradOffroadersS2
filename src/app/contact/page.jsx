@@ -8,10 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 const contactInfo = [
-  { icon: Phone, label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
-  { icon: Mail, label: "Email", value: "info@teamkaradoffroaders.online", href: "mailto:info@teamkaradoffroaders.online" },
-  { icon: MapPin, label: "Location", value: "Karad, Satara District, Maharashtra 415110", href: "#" },
-  { icon: Clock, label: "Office Hours", value: "Mon - Sat: 10AM - 7PM", href: "#" },
+  { icon: Mail, label: "Official Communications", value: "teamkaradoffroaders@gmail.com", href: "mailto:teamkaradoffroaders@gmail.com" },
+  { icon: MapPin, label: "Base Operations", value: "Karad, Maharashtra, India", href: "https://maps.app.goo.gl/UcCbnHEk2i14xePK7" },
+  { icon: Clock, label: "Operational Status", value: "Online 24/7 for Inquiries", href: "#" },
 ];
 
 const socials = [
@@ -22,17 +21,20 @@ const socials = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-28 pb-20">
-      <section className="px-4 py-20">
-        <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+
+      <section className="px-6 py-20 relative z-10">
+        <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Get In Touch</p>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
-              CONTACT <span className="text-primary italic">HQ</span>
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Uplink Station</p>
+            <h1 className="text-6xl md:text-9xl font-heading tracking-tighter uppercase leading-none mb-8 italic">
+              CONTACT <span className="text-primary not-italic">BASE</span>
             </h1>
-            <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
-              Have questions about the rally, registration, or sponsorship opportunities? 
-              We&apos;re here to help. Reach out through any channel below.
+            <p className="text-zinc-400 text-xl md:text-2xl max-w-3xl leading-relaxed font-medium">
+              We would be happy to connect with you for event participation, sponsorship opportunities, collaborations, or any inquiries related to Team Karad Off-Roaders.
             </p>
           </motion.div>
 

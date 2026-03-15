@@ -64,9 +64,13 @@ const upcomingEvent = {
 
 export default function EventsPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-28 pb-20">
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[60vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+
       {/* Upcoming Event Hero */}
-      <section className="px-4 py-20 relative overflow-hidden">
+      <section className="px-6 py-20 relative z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10" />
         <div className="max-w-6xl mx-auto relative z-10">

@@ -62,8 +62,12 @@ const beasts = [
 
 export default function BeastsPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-28 pb-20">
-      <section className="px-4 py-20">
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute bottom-0 left-0 w-full h-[60vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+
+      <section className="px-6 py-20 relative z-10">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The Arsenal</p>

@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Instagram } from "lucide-react";
+import { Instagram, MapPin, Mail } from "lucide-react";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(false);
@@ -71,7 +71,15 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
                 <div>
                   <h4 className="font-heading text-white text-base md:text-lg mb-4">TEAM KARAD <span className="text-primary truncate">OFF-ROADERS</span></h4>
-                  <p className="text-zinc-600 text-xs md:text-sm leading-relaxed">India's most thrilling off-road championship. Born from dust, built for glory.</p>
+                  <p className="text-zinc-600 text-xs md:text-sm leading-relaxed mb-4">India's most thrilling off-road championship. Born from dust, built for glory.</p>
+                  <div className="space-y-2 text-xs text-zinc-500">
+                    <p className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer" onClick={() => window.open('https://maps.app.goo.gl/UcCbnHEk2i14xePK7', '_blank')}>
+                      <MapPin className="w-3 h-3 text-primary" /> Karad, Maharashtra
+                    </p>
+                    <p className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = 'mailto:teamkaradoffroaders@gmail.com'}>
+                      <Mail className="w-3 h-3 text-primary" /> teamkaradoffroaders@gmail.com
+                    </p>
+                  </div>
                 </div>
                 <div>
                   <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Navigate</p>

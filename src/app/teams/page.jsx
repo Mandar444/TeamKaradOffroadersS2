@@ -59,12 +59,10 @@ export default function TeamsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-4 relative overflow-hidden">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-1/2 h-full bg-primary/5 blur-[150px] opacity-20" />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10" />
-      </div>
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-6 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-1/4 left-1/4 w-[50%] h-[50vh] bg-mesh-amber opacity-5 blur-[150px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
