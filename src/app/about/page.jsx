@@ -233,44 +233,78 @@ export default function AboutPage() {
              </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* 4. THE JOURNEY TIMELINE */}
-      <section className="px-6 py-32 overflow-hidden">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-24">
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.6em] mb-4 italic">Evolution Log</h3>
-             <h2 className="text-5xl md:text-7xl font-heading text-white uppercase tracking-tighter">
+      </section>      {/* 4. THE JOURNEY TIMELINE - CINEMATIC VERSION */}
+      <section className="px-6 py-40 overflow-hidden relative">
+        <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto relative">
+          <div className="text-center mb-32">
+             <motion.div
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-4"
+             >
+                <Activity className="w-3 h-3" /> Historical Archive
+             </motion.div>
+             <h2 className="text-6xl md:text-8xl font-heading text-white uppercase tracking-tighter leading-none">
                THE <span className="text-primary italic">PROGRESSION</span>
              </h2>
+             <div className="w-24 h-1 bg-primary/30 mx-auto mt-8 blur-sm animate-pulse" />
           </div>
           
           <div className="relative">
-            {/* Vertical Line */}
-            <div className="absolute left-[31px] md:left-1/2 top-0 bottom-0 w-px bg-zinc-800" />
+            {/* 1. DYNAMIC NEON PATH */}
+            <div className="absolute left-[31px] md:left-1/2 top-0 bottom-0 w-[2px] neon-path opacity-50" />
             
-            <div className="space-y-24">
+            <div className="space-y-32">
               {milestones.map((m, idx) => (
                 <motion.div
                   key={m.year}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8 }}
-                  className={`flex items-center w-full ${idx % 2 === 0 ? 'md:flex-row-reverse' : 'md:flex-row'}`}
+                  className={`flex items-start w-full relative ${idx % 2 === 0 ? 'md:flex-row-reverse' : 'md:flex-row'}`}
                 >
+                  {/* Content area */}
                   <div className="hidden md:block w-1/2" />
                   
-                  {/* Badge */}
-                  <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-black border-2 border-primary/40 rounded-3xl text-primary font-heading font-black text-xl shadow-[0_0_20px_rgba(255,165,0,0.3)] shrink-0">
-                     {m.year}
+                  {/* Central Node */}
+                  <div className="absolute left-[32px] md:left-1/2 -translate-x-1/2 z-20">
+                     <div className="relative">
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 3, repeat: Infinity }}
+                          className="absolute inset-0 bg-primary/40 rounded-full blur-xl"
+                        />
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-black border-[3px] border-primary/60 rounded-[2rem] flex flex-col items-center justify-center relative z-10 timeline-glow overflow-hidden group">
+                           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                           <span className="text-primary font-heading font-black text-xs uppercase tracking-tighter opacity-50">Year</span>
+                           <span className="text-white font-heading font-black text-xl md:text-2xl leading-none">{m.year}</span>
+                        </div>
+                     </div>
                   </div>
 
-                  <div className={`flex-1 pl-8 md:px-12 text-left ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                     <h4 className="text-2xl md:text-3xl font-heading text-white uppercase mb-2 tracking-widest">{m.title}</h4>
-                     <p className="text-zinc-500 text-sm md:text-base leading-relaxed max-w-md mx-auto md:mx-0">
-                        {m.desc}
-                     </p>
+                  {/* Card area */}
+                  <div className={`flex-1 pl-16 md:px-20 text-left ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+                     <motion.div 
+                       whileHover={{ x: idx % 2 === 0 ? -10 : 10 }}
+                       className="p-8 md:p-10 rounded-[2.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl relative group hover:border-primary/30 transition-all duration-500"
+                     >
+                        <div className="absolute -top-4 left-10 md:left-auto md:right-10 px-4 py-1 bg-primary text-black text-[10px] font-black uppercase tracking-widest skew-x-[-20deg] shadow-[0_10px_20px_rgba(255,165,0,0.2)]">
+                           <span className="block skew-x-[20deg]">{m.title}</span>
+                        </div>
+                        <p className="text-zinc-400 text-sm md:text-lg leading-relaxed font-medium">
+                           {m.desc}
+                        </p>
+                        
+                        {/* Decorative corner */}
+                        <div className={`absolute bottom-6 ${idx % 2 === 0 ? 'left-6 items-start' : 'right-6 items-end'} flex flex-col gap-1 opacity-20`}>
+                           <div className="w-12 h-px bg-white" />
+                           <div className="w-6 h-px bg-white" />
+                        </div>
+                     </motion.div>
                   </div>
                 </motion.div>
               ))}
