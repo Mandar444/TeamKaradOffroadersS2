@@ -280,24 +280,24 @@ export default function TeamsPage() {
                          </div>
                       </div>
 
-                      {/* Verification Zone */}
-                      <div className="pt-8 border-t border-white/10 flex items-center justify-between">
-                         <div className="flex items-center gap-8">
-                            <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/50 border border-black group cursor-none">
-                               <QRCodeSVG 
-                                value={`PAYMENT STATUS: APPROVED ✅\n\nTEAM: ${selectedTeam.team_name}\nCAR NO: #${selectedTeam.car_number}\nCATEGORY: ${CATEGORIES[selectedTeam.category]?.name || selectedTeam.category}\n\nDRIVER: ${selectedTeam.driver_name} (${selectedTeam.driver_blood_group})\nNAVIGATOR: ${selectedTeam.codriver_name || "N/A"} (${selectedTeam.codriver_blood_group || "N/A"})\n\nVEHICLE: ${selectedTeam.vehicle_name} (${selectedTeam.vehicle_model})`}
-                                size={110} 
-                                level="H" 
-                               />
-                            </div>
-                            <div>
-                               <p className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Status Check</p>
-                               <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce" />
-                                  <span className="text-white font-heading text-xl uppercase tracking-widest">Active Entry</span>
-                               </div>
+                   {/* Verification QR - Links to Official Page */}
+                   <div className="pt-8 border-t border-white/10 flex items-center justify-between">
+                      <div className="flex items-center gap-8">
+                         <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/50 border border-black group cursor-none">
+                            <QRCodeSVG 
+                               value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${selectedTeam.car_number}`}
+                               size={90} 
+                               level="H" 
+                            />
+                         </div>
+                         <div>
+                            <p className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Marshal Check-in</p>
+                            <div className="flex items-center gap-2">
+                               <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce" />
+                               <span className="text-white font-heading text-xl uppercase tracking-widest">Scan to Verify</span>
                             </div>
                          </div>
+                      </div>
                          {selectedTeam.socials && (
                             <div className="flex flex-col items-end">
                                <p className="text-zinc-700 text-[9px] font-black uppercase tracking-widest mb-1">Connect</p>
