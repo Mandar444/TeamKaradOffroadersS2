@@ -18,8 +18,8 @@ import {
 import Link from "next/link";
 
 const CATEGORIES = {
-  "PETROL_MODIFIED": { name: "Pro-Petrol Modified", color: "from-orange-500 to-red-600" },
-  "DIESEL_MODIFIED": { name: "Pro-Diesel Modified", color: "from-blue-500 to-indigo-600" },
+  "PETROL_MODIFIED": { name: "Petrol Modified", color: "from-orange-500 to-red-600" },
+  "DIESEL_MODIFIED": { name: "Diesel Modified", color: "from-blue-500 to-indigo-600" },
   "STOCK": { name: "Stock 4x4", color: "from-emerald-500 to-teal-600" }
 };
 
@@ -84,17 +84,31 @@ export default function MobileVerifyPage({ params }) {
 
   return (
     <div className="min-h-screen bg-black text-white relative flex flex-col font-sans selection:bg-primary selection:text-black">
-      {/* 1. STATUS HEADER - NO NAVBAR OVERLAP */}
-      {/* 1. MINIMAL STATUS HEADER */}
-      <div className="w-full bg-green-500 py-3 px-5 flex items-center justify-between sticky top-0 z-[100] shadow-lg border-b border-black/10">
-         <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-black" />
-            <h1 className="text-sm font-black text-black uppercase tracking-widest">Payment Approved</h1>
+      {/* 1. DYNAMIC STATUS HEADER */}
+      {team.status === "CONFIRMED" ? (
+         <div className="w-full bg-green-500 py-4 px-5 flex items-center justify-between sticky top-0 z-[100] shadow-lg border-b border-black/10">
+            <div className="flex items-center gap-3">
+               <CheckCircle2 className="w-6 h-6 text-black" />
+               <h1 className="text-sm font-black text-black uppercase tracking-widest">Entry Approved</h1>
+            </div>
+            <div className="bg-black/10 px-4 py-1.5 rounded-xl border border-black/5">
+               <span className="text-black font-black text-sm font-heading italic">#{team.car_number}</span>
+            </div>
          </div>
-         <div className="bg-black/10 px-3 py-1 rounded-lg border border-black/5">
-            <span className="text-black font-black text-sm font-heading italic">#{team.car_number}</span>
+      ) : (
+         <div className="w-full bg-orange-500 py-4 px-5 flex items-center justify-between sticky top-0 z-[100] shadow-lg border-b border-black/10">
+            <div className="flex items-center gap-3 text-black">
+               <ShieldAlert className="w-6 h-6 animate-pulse" />
+               <div className="flex flex-col">
+                  <h1 className="text-sm font-black uppercase tracking-widest leading-none">Pending Verification</h1>
+                  <p className="text-[8px] font-bold uppercase mt-1 opacity-60">Payment Not Authorized</p>
+               </div>
+            </div>
+            <div className="bg-black/10 px-4 py-1.5 rounded-xl border border-black/5 text-black">
+               <span className="font-black text-sm font-heading italic">#{team.car_number}</span>
+            </div>
          </div>
-      </div>
+      )}
 
       {/* 2. MOBILE CONTENT AREA */}
       <div className="flex-1 px-5 py-8 space-y-8 pb-32">
@@ -122,7 +136,7 @@ export default function MobileVerifyPage({ params }) {
                      <User className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Lead Driver</p>
+                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Driver</p>
                      <p className="text-xl font-heading text-white uppercase italic">{team.driver_name}</p>
                   </div>
                </div>
@@ -137,7 +151,7 @@ export default function MobileVerifyPage({ params }) {
                   <Navigation className="w-6 h-6 text-zinc-500" />
                </div>
                <div>
-                  <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Navigator</p>
+                  <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Co-Driver</p>
                   <p className="text-xl font-heading text-zinc-400 uppercase italic leading-none">{team.codriver_name || "---"}</p>
                </div>
             </div>
