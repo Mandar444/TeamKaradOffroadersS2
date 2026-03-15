@@ -85,18 +85,14 @@ export default function MobileVerifyPage({ params }) {
   return (
     <div className="min-h-screen bg-black text-white relative flex flex-col font-sans selection:bg-primary selection:text-black">
       {/* 1. STATUS HEADER - NO NAVBAR OVERLAP */}
-      <div className="w-full bg-green-500 py-6 px-6 flex items-center justify-between sticky top-0 z-[100] shadow-[0_10px_30px_rgba(34,197,94,0.3)] border-b-4 border-black/10">
-         <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 text-black" />
-            </div>
-            <div>
-               <p className="text-black font-black text-[9px] uppercase tracking-widest leading-none opacity-60">Marshal Check-in</p>
-               <h1 className="text-xl md:text-2xl font-heading font-black text-black uppercase leading-none mt-1">Payment Approved</h1>
-            </div>
+      {/* 1. MINIMAL STATUS HEADER */}
+      <div className="w-full bg-green-500 py-3 px-5 flex items-center justify-between sticky top-0 z-[100] shadow-lg border-b border-black/10">
+         <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-black" />
+            <h1 className="text-sm font-black text-black uppercase tracking-widest">Payment Approved</h1>
          </div>
-         <div className="bg-black/5 px-4 py-2 rounded-2xl border border-black/10">
-            <span className="text-black font-black text-lg font-heading italic tracking-tighter">#{team.car_number}</span>
+         <div className="bg-black/10 px-3 py-1 rounded-lg border border-black/5">
+            <span className="text-black font-black text-sm font-heading italic">#{team.car_number}</span>
          </div>
       </div>
 
