@@ -12,6 +12,9 @@ const rajdhani = Rajdhani({
 export const metadata = {
   title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
   description: "Official portal for the Team Karad Off-Roaders Rally 2026. Register now for the biggest off-roading event of the year.",
+  verification: {
+    google: "BEOY-T5wKs-pm0veIoGlT_ca5JSFjN0A6iSzZpuk4KI",
+  },
 };
 
 export default function RootLayout({ children }) {
