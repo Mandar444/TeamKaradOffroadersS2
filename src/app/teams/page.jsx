@@ -177,114 +177,141 @@ export default function TeamsPage() {
           ))}
         </div>
 
-        {/* ELITE ENTRANT PASS - HUMANIZED & READABLE */}
+        {/* THE ULTIMATE "ULTIME" ELITE PASS - WORLD CLASS DESIGN */}
         <AnimatePresence>
           {selectedTeam && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-[15px] overflow-y-auto p-4 md:p-8">
-              {/* Overlay closer */}
-              <div className="absolute inset-0 z-0 bg-black/40" onClick={() => setSelectedTeam(null)} />
+            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md overflow-y-auto p-4 md:p-8">
+              {/* Cinematic Backdrop Closer */}
+              <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/10 via-transparent to-red-500/10" onClick={() => setSelectedTeam(null)} />
               
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="w-full max-w-md bg-zinc-950 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative z-10 flex flex-col"
+                initial={{ opacity: 0, scale: 0.8, rotateX: 20, y: 50 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, rotateX: -20, y: 30 }}
+                transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                className="w-full max-w-4xl bg-zinc-900/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] relative z-10 flex flex-col md:flex-row backdrop-blur-[40px] perspective-1000"
               >
-                {/* 1. Header: Primary ID */}
-                <div className="bg-primary p-8 flex flex-col items-center justify-center relative overflow-hidden text-black border-b-[6px] border-black/10">
-                   <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                {/* Visual Glow Orbs (Inside Card) */}
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/5 blur-[100px] pointer-events-none" />
+                
+                {/* 1. The Visual ID Section (Large Left Side) */}
+                <div className="w-full md:w-[400px] bg-black/40 p-12 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-white/5">
+                   <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')]" />
                    
-                   <div className="w-full flex justify-between items-center relative z-10 mb-6 px-1">
-                      <div className="h-px flex-1 bg-black/20" />
-                      <div className="mx-4 text-center font-black uppercase tracking-[0.3em] text-[10px] opacity-70">Official Entry Pass</div>
-                      <div className="h-px flex-1 bg-black/20" />
+                   <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-8">
+                        <img src="/logo.png" className="w-12 h-12 object-contain" alt="TKO" />
+                        <div>
+                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] leading-none">Global Event</p>
+                           <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mt-1 italic">Season 2026</p>
+                        </div>
+                      </div>
+                      
+                      <div className="relative flex flex-col">
+                        <span className="text-[12px] font-black text-zinc-600 uppercase tracking-[0.6em] mb-2">Competing As</span>
+                        <h2 className="text-5xl md:text-6xl font-heading text-white font-black leading-none break-words uppercase italic tracking-tighter shadow-primary/20 drop-shadow-2xl">
+                           {selectedTeam.team_name || "PRO RIVAL"}
+                        </h2>
+                      </div>
                    </div>
 
-                   <h2 className="text-7xl font-heading font-black tracking-tighter leading-none mb-2 drop-shadow-lg relative z-10">
-                     #{selectedTeam.car_number}
-                   </h2>
-                   <div className="px-4 py-1 bg-black/10 rounded-full">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 relative z-10">Season 2026 • TKO Karad</p>
-                   </div>
-                </div>
-
-                {/* 2. Body: Easy-to-Read Data */}
-                <div className="p-8 md:p-10 space-y-10 relative bg-zinc-950">
-                   
-                   {/* Team Name - BIG & CLEAR */}
-                   <div className="text-center space-y-3">
-                      <p className="text-[11px] text-primary font-black uppercase tracking-[0.4em]">Official Team</p>
-                      <h3 className="text-4xl md:text-5xl font-heading text-white uppercase italic tracking-tight leading-loose">
-                        {selectedTeam.team_name || "PRO RACER"}
-                      </h3>
-                      <Badge className="bg-zinc-800 text-zinc-300 border-white/5 py-1 px-4 text-[10px] font-bold uppercase tracking-widest">
-                        {CATEGORIES[selectedTeam.category]?.name || selectedTeam.category}
+                   <div className="relative z-10 mt-12 md:mt-0">
+                      <div className="flex items-center gap-6">
+                         <div className="relative group">
+                            <div className="absolute -inset-4 bg-primary/20 blur-2xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity" />
+                            <h3 className="text-9xl font-heading text-white font-black leading-none tracking-tighter relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                               #{selectedTeam.car_number}
+                            </h3>
+                         </div>
+                      </div>
+                      <Badge className="mt-8 bg-zinc-800/80 text-zinc-300 border-white/10 py-1.5 px-6 rounded-xl text-[10px] uppercase font-bold tracking-widest">
+                        {CATEGORIES[selectedTeam.category]?.name || "Elite Division"}
                       </Badge>
                    </div>
+                </div>
 
-                   {/* Main Personnel */}
-                   <div className="grid grid-cols-1 gap-6">
-                      <div className="p-6 rounded-[2rem] bg-zinc-900/50 border border-white/5 flex items-center justify-between group hover:border-primary/30 transition-colors">
-                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Lead Driver</p>
-                            <p className="text-2xl font-heading text-white uppercase italic leading-none">{selectedTeam.driver_name}</p>
+                {/* 2. The Data Sheet (Right Side) */}
+                <div className="flex-1 p-12 md:p-16 relative flex flex-col">
+                   {/* Technical Scanlines */}
+                   <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                   
+                   <div className="grid grid-cols-1 gap-12 relative z-10">
+                      {/* Driver Info */}
+                      <div className="space-y-6">
+                         <div className="flex items-center gap-4">
+                            <div className="h-px flex-1 bg-white/10" />
+                            <p className="text-[9px] font-black text-primary/60 uppercase tracking-[0.5em]">Command Center</p>
+                            <div className="h-px flex-1 bg-white/10" />
                          </div>
-                         <div className="text-right">
-                            <p className="text-[10px] font-black text-red-500/50 uppercase tracking-widest mb-1">Blood Group</p>
-                            <p className="text-xl font-heading text-red-500">{selectedTeam.driver_blood_group}</p>
+                         
+                         <div className="grid grid-cols-2 gap-8">
+                            <div className="space-y-1">
+                               <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Lead Driver</p>
+                               <p className="text-3xl font-heading text-white uppercase italic leading-none">{selectedTeam.driver_name}</p>
+                               <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-2">{selectedTeam.driver_blood_group} POSITIVE</p>
+                            </div>
+                            <div className="space-y-1">
+                               <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Navigator</p>
+                               <p className="text-3xl font-heading text-zinc-500 uppercase italic leading-none">{selectedTeam.codriver_name || "---"}</p>
+                            </div>
                          </div>
                       </div>
 
-                      <div className="p-6 rounded-[2rem] border border-white/5 flex items-center justify-between opacity-80">
-                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Co-Driver / Nav</p>
-                            <p className="text-2xl font-heading text-zinc-400 uppercase italic leading-none">{selectedTeam.codriver_name || "NOT ASSIGNED"}</p>
+                      {/* Machine Stats */}
+                      <div className="space-y-6">
+                         <div className="flex items-center gap-4">
+                            <div className="h-px flex-1 bg-white/10" />
+                            <p className="text-[9px] font-black text-primary/60 uppercase tracking-[0.5em]">Technical Spec</p>
+                            <div className="h-px flex-1 bg-white/10" />
                          </div>
-                         <div className="text-right">
-                            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Blood Group</p>
-                            <p className="text-xl font-heading text-zinc-500">{selectedTeam.codriver_blood_group || "--"}</p>
+                         
+                         <div className="flex items-center justify-between bg-white/5 border border-white/5 p-6 rounded-[2.5rem] group hover:bg-white/10 transition-colors">
+                            <div className="flex items-center gap-6">
+                               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                                  <Zap className="w-7 h-7 text-primary" />
+                               </div>
+                               <div>
+                                  <h4 className="text-3xl font-heading text-white uppercase m-0 leading-none">{selectedTeam.vehicle_name}</h4>
+                                  <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest mt-2 italic">{selectedTeam.vehicle_model}</p>
+                               </div>
+                            </div>
+                            <Shield className="w-8 h-8 text-zinc-800 group-hover:text-primary/40 transition-colors" />
                          </div>
                       </div>
-                   </div>
 
-                   {/* The Machine */}
-                   <div className="p-6 rounded-[2rem] bg-gradient-to-r from-primary/5 to-transparent border border-primary/10 flex items-center justify-between">
-                      <div className="flex items-center gap-5">
-                         <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                            <Zap className="w-6 h-6 text-primary" />
+                      {/* Verification Zone */}
+                      <div className="pt-8 border-t border-white/10 flex items-center justify-between">
+                         <div className="flex items-center gap-8">
+                            <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/50 border border-black group cursor-none">
+                               <QRCodeSVG value={selectedTeam.car_number.toString()} size={80} level="H" />
+                            </div>
+                            <div>
+                               <p className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Status Check</p>
+                               <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce" />
+                                  <span className="text-white font-heading text-xl uppercase tracking-widest">Active Entry</span>
+                               </div>
+                            </div>
                          </div>
-                         <div>
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Race Vehicle</p>
-                            <h4 className="text-2xl font-heading text-white uppercase leading-none">{selectedTeam.vehicle_name}</h4>
-                         </div>
+                         {selectedTeam.socials && (
+                            <div className="flex flex-col items-end">
+                               <p className="text-zinc-700 text-[9px] font-black uppercase tracking-widest mb-1">Connect</p>
+                               <p className="text-primary font-heading text-xl italic tracking-tight">{selectedTeam.socials}</p>
+                            </div>
+                         )}
                       </div>
-                      <div className="text-right">
-                         <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Model</p>
-                         <p className="text-sm text-zinc-400 font-bold uppercase italic">{selectedTeam.vehicle_model}</p>
-                      </div>
-                   </div>
-
-                   {/* Verification QR - Simplified & Centered */}
-                   <div className="pt-10 flex flex-col items-center border-t border-white/5">
-                      <div className="p-4 bg-white rounded-[2.5rem] shadow-xl border-[6px] border-zinc-900 mb-6">
-                        <QRCodeSVG 
-                          value={selectedTeam.car_number.toString()}
-                          size={120}
-                          level="H"
-                          fgColor="#000000"
-                        />
-                      </div>
-                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-2">Scan to check-in</p>
-                      <img src="/logo.png" className="w-10 h-10 object-contain grayscale opacity-20" alt="TKO" />
                    </div>
                 </div>
 
-                {/* Close Button */}
+                {/* The "Elite" Close Overlay */}
                 <button 
                   onClick={() => setSelectedTeam(null)}
-                  className="absolute top-6 right-6 z-50 p-3 bg-black/50 hover:bg-black/80 rounded-full text-white/50 hover:text-white transition-all border border-white/10"
+                  className="absolute top-8 right-8 z-[100] group"
                 >
-                  <X className="w-5 h-5" />
+                  <div className="p-4 rounded-full bg-white/5 border border-white/5 hover:bg-red-500/20 hover:border-red-500/40 transition-all">
+                    <X className="w-6 h-6 text-white/40 group-hover:text-white" />
+                  </div>
                 </button>
               </motion.div>
             </div>
