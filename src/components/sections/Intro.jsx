@@ -161,8 +161,8 @@ export default function Intro({ onComplete }) {
 
             {/* Background speed lines */}
             <div className="absolute inset-0 z-0">
-               {[...Array(20)].map((_, i) => (
-                 <motion.div
+                {[12, 45, 78, 23, 56, 89, 34, 67, 91, 15, 38, 62, 85, 27, 50, 73, 10, 42, 65, 88].map((top, i) => (
+                  <motion.div
                     key={i}
                     initial={{ x: -100, opacity: 0 }}
                     animate={{ x: [0, 2000], opacity: [0, 0.2, 0] }}
@@ -173,9 +173,9 @@ export default function Intro({ onComplete }) {
                       ease: "linear"
                     }}
                     className="absolute h-px bg-primary/30"
-                    style={{ top: `${Math.random() * 100}%`, width: `${Math.random() * 200 + 100}px` }}
-                 />
-               ))}
+                    style={{ top: `${top}%`, width: `${(i % 5 + 1) * 100}px` }}
+                  />
+                ))}
             </div>
 
             {/* Screen Shake Wrapper */}

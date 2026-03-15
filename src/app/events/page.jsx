@@ -7,11 +7,11 @@ import Link from "next/link";
 const pastEvents = [
   {
     year: "2025",
-    name: "TKO Season 1 — Grand Finale",
+    name: "Team Karad Off-Road Festival",
     location: "Karad, Maharashtra",
-    date: "Dec 15-17, 2025",
-    participants: "180+ Participants",
-    highlights: ["₹5L Prize Pool", "6 Categories", "Night Trail Challenge"],
+    date: "Annual Flagship Event",
+    participants: "80+ Elite Participants",
+    highlights: ["35,000+ Spectators", "2M+ Social Reach", "7+ States Represented"],
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
   },
   {

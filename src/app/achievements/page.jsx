@@ -30,7 +30,7 @@ export default function AchievementsPage() {
               OUR <span className="text-primary italic">LEGACY</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
-              Every trophy, every record, every milestone tells the story of TKO's relentless pursuit of off-road excellence.
+              Every trophy, every record, every milestone tells the story of TKO&apos;s relentless pursuit of off-road excellence.
             </p>
           </motion.div>
         </div>

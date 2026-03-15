@@ -5,21 +5,21 @@ import { motion } from "framer-motion";
 const events = [
   {
     year: "2025",
-    name: "Hill Climb Extreme",
+    name: "TKO Festival Season 1",
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
-    stats: "150+ Participants"
+    stats: "35,000+ Spectators • 80+ Drivers"
   },
   {
     year: "2024",
-    name: "Mud Bogging Championship",
-    image: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2070&auto=format&fit=crop",
-    stats: "Munnar Valley"
+    name: "Night Trail Masters",
+    image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2070&auto=format&fit=crop",
+    stats: "National 4x4 Circuit"
   },
   {
     year: "2023",
-    name: "Night Trail Masters",
-    image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2070&auto=format&fit=crop",
-    stats: "12 Hours Trail"
+    name: "Mud Bogging Championship",
+    image: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2070&auto=format&fit=crop",
+    stats: "Western Maharashtra"
   }
 ];
 

@@ -21,15 +21,27 @@ export default function TeamsPage() {
   const [category, setCategory] = useState("ALL");
   const [selectedTeam, setSelectedTeam] = useState(null);
 
+  const DEMO_TEAMS = [
+    { car_number: 7, team_name: "Sahyadri Warriors", driver_name: "Mandar Karad", codriver_name: "Akshay Patil", category: "DIESEL_MODIFIED", vehicle_name: "Mahindra Thar", vehicle_model: "CRDe 2024", driver_blood_group: "O+", codriver_blood_group: "A+", socials: "@mandarkarad" },
+    { car_number: 24, team_name: "Thunder Bolts", driver_name: "Rohan Deshmukh", codriver_name: "Vikram Jadhav", category: "PETROL_MODIFIED", vehicle_name: "Maruti Gypsy", vehicle_model: "King 1.3", driver_blood_group: "B+", codriver_blood_group: "AB+", socials: "@thunderracing" },
+    { car_number: 99, team_name: "Mud Raiders", driver_name: "Amit Patil", codriver_name: "Sagar Shinde", category: "STOCK", vehicle_name: "Force Gurkha", vehicle_model: "5-Door 2024", driver_blood_group: "O-", codriver_blood_group: "O+", socials: "@mudraiders" },
+    { car_number: 101, team_name: "Desert Rats", driver_name: "Suresh Gupta", codriver_name: "Sameer Khan", category: "PETROL_MODIFIED", vehicle_name: "Suzuki Jimny", vehicle_model: "Alpha 2024", driver_blood_group: "A+", codriver_blood_group: "B+", socials: "@desertrats4x4" },
+  ];
+
   useEffect(() => {
     fetch("/api/teams")
       .then(res => res.json())
       .then(data => {
-        setTeams(data.teams || []);
+        if (data.teams && data.teams.length > 0) {
+          setTeams(data.teams);
+        } else {
+          setTeams(DEMO_TEAMS);
+        }
         setLoading(false);
       })
       .catch(err => {
         console.error("Fetch error:", err);
+        setTeams(DEMO_TEAMS);
         setLoading(false);
       });
   }, []);
@@ -153,8 +165,8 @@ export default function TeamsPage() {
                   <div className="pt-4 border-t border-white/5 flex items-center justify-between text-zinc-600 relative z-10">
                     <p className="text-[9px] font-black uppercase tracking-[0.3em] group-hover:text-zinc-400">View Grid Pass</p>
                     <div className="flex gap-1 h-3 opacity-20 group-hover:opacity-50 transition-opacity">
-                       {[...Array(8)].map((_, i) => (
-                          <div key={i} className="w-px bg-white" style={{ height: `${Math.random() * 100}%` }} />
+                       {[0.3, 0.5, 0.2, 0.8, 0.4, 0.6, 0.3, 0.7].map((h, i) => (
+                          <div key={i} className="w-px bg-white" style={{ height: `${h * 100}%` }} />
                        ))}
                     </div>
                   </div>
@@ -213,8 +225,8 @@ export default function TeamsPage() {
                         </div>
                      </div>
                      <div className="flex gap-2 h-10 opacity-30">
-                        {[...Array(24)].map((_, i) => (
-                           <div key={i} className="flex-1 bg-white" style={{ height: `${Math.random() * 100}%` }} />
+                        {[0.4, 0.7, 0.2, 0.9, 0.5, 0.8, 0.3, 0.6, 0.4, 0.9, 0.7, 0.2, 0.5, 0.8, 0.3, 0.6, 0.5, 0.8, 0.3, 0.6, 0.4, 0.9, 0.7, 0.2].map((h, i) => (
+                           <div key={i} className="flex-1 bg-white" style={{ height: `${h * 100}%` }} />
                         ))}
                      </div>
                    </div>

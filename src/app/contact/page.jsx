@@ -32,7 +32,7 @@ export default function ContactPage() {
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
               Have questions about the rally, registration, or sponsorship opportunities? 
-              We're here to help. Reach out through any channel below.
+              We&apos;re here to help. Reach out through any channel below.
             </p>
           </motion.div>
 
