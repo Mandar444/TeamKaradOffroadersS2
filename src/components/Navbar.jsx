@@ -47,32 +47,32 @@ export default function Navbar() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-[1600px] mx-auto px-4 md:px-12 flex items-center justify-between h-20">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-10 flex items-center justify-between h-20 gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-4 group shrink-0">
+          <Link href="/" className="flex items-center gap-4 group shrink-0 min-w-max">
             <img
               src="/logo.png"
               alt="TKO"
-              className="w-12 h-12 object-contain rounded-lg group-hover:scale-110 transition-transform"
+              className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg group-hover:scale-110 transition-transform"
               onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <div className="flex flex-col">
-              <span className="text-white font-heading text-base md:text-xl leading-none tracking-widest uppercase whitespace-nowrap">
+            <div className="flex flex-col min-w-max">
+              <span className="text-white font-heading text-base md:text-xl leading-none tracking-widest uppercase whitespace-nowrap block">
                 Team Karad
               </span>
-              <span className="text-primary text-[8px] md:text-[10px] font-black tracking-[0.3em] uppercase leading-none mt-1 whitespace-nowrap">
+              <span className="text-primary text-[8px] md:text-[10px] font-black tracking-[0.3em] uppercase leading-none mt-1 whitespace-nowrap block">
                 Off-Roaders Motorsports
               </span>
             </div>
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden xl:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-0.5 shrink-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                className={`px-3 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap min-w-max ${
                   isActive(link.href)
                     ? "text-primary bg-primary/10"
                     : "text-zinc-500 hover:text-white hover:bg-white/5"
@@ -85,13 +85,13 @@ export default function Navbar() {
               href="https://www.instagram.com/teamkaradoffroaders/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 ml-2 text-zinc-500 hover:text-white transition-colors"
+              className="p-2 ml-1 text-zinc-500 hover:text-white transition-colors shrink-0"
             >
               <Instagram className="w-5 h-5" />
             </a>
             <Link
               href="/register"
-              className="ml-4 px-6 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)]"
+              className="ml-2 px-6 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0"
             >
               Register
             </Link>
