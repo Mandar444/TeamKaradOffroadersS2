@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { Instagram } from "lucide-react";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
@@ -53,8 +54,8 @@ export default function Home() {
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
                 <div>
-                  <h4 className="font-heading text-white text-lg mb-4">TKO <span className="text-primary">RALLY</span></h4>
-                  <p className="text-zinc-600 text-sm leading-relaxed">India's most thrilling off-road championship. Born from dust, built for glory.</p>
+                  <h4 className="font-heading text-white text-base md:text-lg mb-4">TEAM KARAD <span className="text-primary truncate">OFF-ROADERS</span></h4>
+                  <p className="text-zinc-600 text-xs md:text-sm leading-relaxed">India's most thrilling off-road championship. Born from dust, built for glory.</p>
                 </div>
                 <div>
                   <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Navigate</p>
@@ -75,10 +76,18 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Action</p>
-                  <div className="flex flex-col gap-2 text-sm text-zinc-600">
-                    <Link href="/register" className="hover:text-primary transition-colors font-bold">Register Now</Link>
-                    <Link href="/admin" className="hover:text-white transition-colors">Admin Login</Link>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Community</p>
+                  <div className="flex flex-col gap-3">
+                    <a 
+                      href="https://www.instagram.com/teamkaradoffroaders/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-zinc-600 hover:text-pink-500 transition-all group"
+                    >
+                      <Instagram className="w-5 h-5" />
+                      <span className="text-sm">5,000+ Followers</span>
+                    </a>
+                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-widest uppercase">Register Now</Link>
                   </div>
                 </div>
               </div>

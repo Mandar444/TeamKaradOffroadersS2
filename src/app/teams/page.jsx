@@ -73,7 +73,7 @@ export default function TeamsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-6"
           >
-            <Zap className="w-3 h-3" /> TKO Motorsports Official
+            <Zap className="w-3 h-3" /> Team Karad Off-Roaders Official
           </motion.div>
           <h1 className="text-6xl md:text-8xl font-heading text-white tracking-tighter uppercase mb-4 leading-none">
             THE <span className="text-primary italic">LINEUP</span>

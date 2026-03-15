@@ -57,11 +57,11 @@ export default function Navbar() {
               onError={(e) => { e.target.style.display = 'none'; }}
             />
             <div className="flex flex-col">
-              <span className="text-white font-heading text-lg leading-none tracking-widest">
-                TKO
+              <span className="text-white font-heading text-base md:text-lg leading-none tracking-widest uppercase">
+                Team Karad
               </span>
-              <span className="text-primary text-[8px] font-black tracking-[0.4em] uppercase leading-none">
-                Motorsports
+              <span className="text-primary text-[8px] md:text-[9px] font-black tracking-[0.3em] uppercase leading-none mt-1">
+                Off-Roaders Motorsports
               </span>
             </div>
           </Link>

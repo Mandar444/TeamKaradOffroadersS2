@@ -1,7 +1,6 @@
 import { Inter, Rajdhani } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import SmoothScroll from "@/components/SmoothScroll";
+import ClientLayout from "@/components/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const rajdhani = Rajdhani({ 
@@ -11,18 +10,20 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata = {
-  title: "TKO Rally 2026 | Off-Road Championship",
-  description: "Register for the biggest off-roading event of the year. Secure your spot and car number now.",
+  title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
+  description: "Official portal for the Team Karad Off-Roaders Rally 2026. Register now for the biggest off-roading event of the year.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} ${rajdhani.variable} font-sans antialiased rally-grid bg-background text-foreground`}>
-        <SmoothScroll>
-          <Navbar />
+    <html lang="en" className="dark scroll-smooth">
+      <head>
+        <link rel="icon" href="/logo.png" />
+      </head>
+      <body className={`${inter.variable} ${rajdhani.variable} font-sans antialiased rally-grid bg-background text-foreground overflow-x-hidden`}>
+        <ClientLayout>
           {children}
-        </SmoothScroll>
+        </ClientLayout>
       </body>
     </html>
   );
