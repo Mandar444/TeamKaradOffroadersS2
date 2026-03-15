@@ -2,8 +2,19 @@
 
 import { motion } from "framer-motion";
 import { use, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Zap, Trophy, Shield, ChevronRight, CheckCircle2 } from "lucide-react";
+import { 
+  ShieldCheck, 
+  Zap, 
+  Instagram, 
+  ChevronRight, 
+  CheckCircle2, 
+  User, 
+  Navigation, 
+  CarFront, 
+  Heart,
+  ExternalLink,
+  ShieldAlert
+} from "lucide-react";
 import Link from "next/link";
 
 const CATEGORIES = {
@@ -12,44 +23,59 @@ const CATEGORIES = {
   "STOCK": { name: "Stock 4x4", color: "from-emerald-500 to-teal-600" }
 };
 
-export default function VerifyPage({ params }) {
-  const { carNumber } = use(params);
+export default function MobileVerifyPage({ params }) {
+  // Safe param extraction for Next.js 15+
+  const resolvedParams = use(params);
+  const carNumber = resolvedParams?.carNumber;
+  
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!carNumber) {
+      setLoading(false);
+      return;
+    }
+
     fetch("/api/teams")
       .then(res => res.json())
       .then(data => {
-        const found = data.teams.find(t => t.car_number.toString() === carNumber);
+        const found = data.teams?.find(t => t.car_number?.toString() === carNumber);
         if (found) {
           setTeam(found);
+        } else {
+          setError("No record found");
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error(err);
+        setError("Network error");
+        setLoading(false);
+      });
   }, [carNumber]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-          <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px]">Verifying Grid Status...</p>
-        </div>
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-6" />
+        <p className="text-primary font-black uppercase tracking-[0.4em] text-xs">Authenticating Ticket...</p>
       </div>
     );
   }
 
-  if (!team) {
+  if (error || !team) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6 text-center">
-        <div className="max-w-md">
-          <Shield className="w-16 h-16 text-zinc-800 mx-auto mb-6" />
-          <h1 className="text-4xl font-heading text-white uppercase mb-4">Verification Failed</h1>
-          <p className="text-zinc-500 mb-8 font-medium">No confirmed registration found for Car #{carNumber}. Please contact official TKO marshals.</p>
-          <Link href="/" className="inline-flex h-12 items-center justify-center rounded-xl bg-white/5 border border-white/10 px-8 text-sm font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
-            Return to Base
+      <div className="min-h-screen bg-black flex items-center justify-center p-8 text-center bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
+             <ShieldAlert className="w-10 h-10 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-heading text-white uppercase leading-none">Security Alert</h1>
+          <p className="text-zinc-500 font-medium">This QR code does not match any confirmed entry. Please report to the marshal tower.</p>
+          <Link href="/teams" className="block w-full py-4 bg-zinc-900 border border-white/5 rounded-2xl text-white font-black uppercase tracking-widest text-xs">
+            Return to Lineup
           </Link>
         </div>
       </div>
@@ -57,98 +83,124 @@ export default function VerifyPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative flex items-center justify-center p-4 md:p-8 overflow-hidden">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-1/2 h-full bg-primary/5 blur-[150px] opacity-20" />
-        <div className="absolute bottom-0 right-1/4 w-1/2 h-full bg-red-500/5 blur-[150px] opacity-10" />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
+    <div className="min-h-screen bg-black text-white relative flex flex-col font-sans selection:bg-primary selection:text-black">
+      {/* 1. STATUS HEADER (The first thing they see) */}
+      <div className="w-full bg-green-500 py-6 px-6 flex items-center justify-between sticky top-0 z-50 shadow-[0_10px_30px_rgba(34,197,94,0.3)]">
+         <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-8 h-8 text-black" />
+            <div>
+               <p className="text-black font-black text-[10px] uppercase tracking-widest leading-none">Marshal Check-in</p>
+               <h1 className="text-2xl font-heading font-black text-black uppercase leading-none mt-1">Payment Approved</h1>
+            </div>
+         </div>
+         <div className="h-10 w-10 rounded-full border-2 border-black/20 flex items-center justify-center">
+            <span className="text-black font-black text-xs">#{team.car_number}</span>
+         </div>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-2xl bg-zinc-900/40 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)] relative z-10 backdrop-blur-3xl"
-      >
-        {/* 1. TOP SUCCESS BANNER */}
-        <div className="bg-green-500 p-8 flex flex-col items-center justify-center text-black relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-white/30" />
-          <CheckCircle2 className="w-16 h-16 mb-4 drop-shadow-xl" />
-          <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter uppercase leading-none text-center">
-            Payment Approved
-          </h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] mt-3 opacity-60">Identity & Funds Verified ✅</p>
-        </div>
-
-        {/* 2. COMPETITOR DATA */}
-        <div className="p-8 md:p-12 space-y-10">
-          
-          {/* Main ID Block */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-10 border-b border-white/5">
-            <div className="text-center md:text-left">
-               <p className="text-[10px] text-primary font-black uppercase tracking-[0.4em] mb-2">Team Contender</p>
-               <h2 className="text-5xl font-heading text-white uppercase italic leading-none">{team.team_name}</h2>
+      {/* 2. MOBILE CONTENT AREA */}
+      <div className="flex-1 px-5 py-8 space-y-8 pb-32">
+         
+         {/* Team Branding */}
+         <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+         >
+            <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-2">Confirmed Contender</p>
+            <h2 className="text-5xl font-heading text-white uppercase italic tracking-tighter leading-tight drop-shadow-2xl">
+               {team.team_name}
+            </h2>
+            <div className="inline-block mt-4 px-4 py-1.5 bg-zinc-900 border border-white/10 rounded-full text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+               {CATEGORIES[team.category]?.name || "Elite Division"}
             </div>
-            <div className="w-32 h-32 bg-zinc-950 border-2 border-primary/20 rounded-full flex flex-col items-center justify-center shadow-2xl relative group">
-               <div className="absolute inset-0 bg-primary/5 blur-xl rounded-full" />
-               <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Car No.</p>
-               <p className="text-4xl font-heading text-primary font-black italic relative z-10">#{team.car_number}</p>
+         </motion.div>
+
+         {/* Personnel Cards */}
+         <div className="grid grid-cols-1 gap-4">
+            <div className="bg-zinc-900/40 border border-white/5 p-5 rounded-[2rem] backdrop-blur-xl flex items-center justify-between">
+               <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
+                     <User className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Lead Driver</p>
+                     <p className="text-xl font-heading text-white uppercase italic">{team.driver_name}</p>
+                  </div>
+               </div>
+               <div className="text-right">
+                  <Heart className="w-4 h-4 text-red-500 mx-auto mb-1 fill-red-500/20" />
+                  <p className="text-lg font-heading text-red-500">{team.driver_blood_group}</p>
+               </div>
             </div>
-          </div>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-             {/* Drivers */}
-             <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                   <Users className="w-4 h-4 text-primary" />
-                   <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Active Personnel</p>
-                </div>
-                <div className="space-y-4">
-                   <div className="p-5 rounded-2xl bg-white/5 border border-white/5">
-                      <p className="text-[9px] font-black text-zinc-500 uppercase mb-1">Lead Pilot</p>
-                      <p className="text-xl font-heading text-white uppercase italic">{team.driver_name}</p>
-                      <Badge className="mt-2 bg-red-500/10 text-red-500 border-red-500/20 text-[9px] font-black uppercase">GRID CLASS {team.driver_blood_group}</Badge>
-                   </div>
-                   <div className="p-5 rounded-2xl bg-black/40 border border-white/5">
-                      <p className="text-[9px] font-black text-zinc-600 uppercase mb-1">Co-Driver / Nav</p>
-                      <p className="text-xl font-heading text-zinc-400 uppercase italic">{team.codriver_name || "N/A"}</p>
-                   </div>
-                </div>
-             </div>
+            <div className="bg-zinc-900/40 border border-white/5 p-5 rounded-[2rem] backdrop-blur-xl flex items-center gap-4">
+               <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
+                  <Navigation className="w-6 h-6 text-zinc-500" />
+               </div>
+               <div>
+                  <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">Navigator</p>
+                  <p className="text-xl font-heading text-zinc-400 uppercase italic leading-none">{team.codriver_name || "---"}</p>
+               </div>
+            </div>
+         </div>
 
-             {/* Vehicle */}
-             <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                   <Zap className="w-4 h-4 text-primary" />
-                   <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Machine Profile</p>
-                </div>
-                <div className="p-8 rounded-[2rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 h-full flex flex-col justify-center">
-                   <h3 className="text-3xl font-heading text-white uppercase italic">{team.vehicle_name}</h3>
-                   <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest mt-2 block opacity-80">{team.vehicle_model}</p>
-                   <div className="mt-8 pt-6 border-t border-primary/10">
-                      <p className="text-[9px] font-black text-primary/60 uppercase tracking-[0.3em] mb-1">Category</p>
-                      <p className="text-white text-sm font-black uppercase">{CATEGORIES[team.category]?.name || team.category}</p>
-                   </div>
-                </div>
-             </div>
-          </div>
+         {/* Machine Details */}
+         <div className="bg-gradient-to-br from-zinc-900/40 to-black border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+               <CarFront className="w-32 h-32" />
+            </div>
+            <div className="relative z-10">
+               <div className="flex items-center gap-3 mb-4">
+                  <Zap className="w-5 h-5 text-primary" />
+                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Technical Configuration</p>
+               </div>
+               <h3 className="text-3xl font-heading text-white uppercase italic tracking-tight">{team.vehicle_name}</h3>
+               <p className="text-zinc-500 font-bold uppercase tracking-widest text-sm mt-1">{team.vehicle_model}</p>
+            </div>
+         </div>
 
-          {/* Validation Footer */}
-          <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10">
-             <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-green-500" />
-                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Digital Onboarding Authenticated</span>
-             </div>
-             <p className="text-[8px] font-mono text-zinc-700 uppercase tracking-[0.4em]">REF: TKOR-SEC-{team.car_number}-APPROVED</p>
-          </div>
-        </div>
+         {/* IMPORTANT: TKO INSTAGRAM SECTION */}
+         <div className="pt-4">
+            <a 
+               href="https://www.instagram.com/teamkaradoffroaders/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               className="group block bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] rounded-[2.5rem] shadow-[0_20px_40px_rgba(236,72,153,0.2)] active:scale-95 transition-transform"
+            >
+               <div className="bg-black/90 p-6 rounded-[2.4rem] h-full flex items-center justify-between">
+                  <div className="flex items-center gap-5">
+                     <div className="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-[1.5rem] flex items-center justify-center p-0.5">
+                        <div className="bg-black w-full h-full rounded-[1.4rem] flex items-center justify-center">
+                           <Instagram className="w-7 h-7 text-white" />
+                        </div>
+                     </div>
+                     <div>
+                        <div className="flex items-center gap-2">
+                           <p className="text-white font-black text-lg">TKO Official</p>
+                           <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-blue-500/50 shadow-lg">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                           </div>
+                        </div>
+                        <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-0.5">5,000+ Real Off-Roaders</p>
+                     </div>
+                  </div>
+                  <ExternalLink className="w-5 h-5 text-white/30 group-hover:text-white transition-colors" />
+               </div>
+            </a>
+         </div>
+      </div>
 
-        {/* Global Footer Navigation */}
-        <Link href="/" className="w-full flex items-center justify-center p-6 bg-white/5 border-t border-white/10 text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 hover:text-white hover:bg-white/10 transition-all gap-3 overflow-hidden">
-           Return to Official Site <ChevronRight className="w-3 h-3" />
-        </Link>
-      </motion.div>
+      {/* 4. FOOTER CONTROLS */}
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent z-[60]">
+         <Link 
+            href="/teams" 
+            className="w-full h-16 bg-white border border-white rounded-[2rem] flex items-center justify-center gap-3 group active:scale-[0.98] transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)]"
+         >
+            <span className="text-black font-black uppercase tracking-[0.3em] text-[11px]">Back to Lineup</span>
+            <ChevronRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
+         </Link>
+      </div>
     </div>
   );
 }
