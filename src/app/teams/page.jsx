@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Trophy, Users, X, Info, ShieldCheck, Instagram, Zap, Shield } from "lucide-react";
+import { Search, Trophy, Users, X, Info, ShieldCheck, Instagram, Zap, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -176,6 +176,47 @@ export default function TeamsPage() {
             </motion.div>
           ))}
         </div>
+
+        {/* HIGH-IMPACT INSTAGRAM SECTION */}
+        <motion.div 
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           className="mt-32 max-w-4xl mx-auto"
+        >
+          <a 
+            href="https://www.instagram.com/teamkaradoffroaders/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group block relative p-[2px] rounded-[3rem] bg-zinc-900 border border-white/5 overflow-hidden hover:border-primary/20 transition-all active:scale-[0.98]"
+          >
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+            <div className="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/5 to-transparent rotate-12 group-hover:animate-shine" />
+            
+            <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10">
+               <div className="flex items-center gap-8">
+                  <div className="w-24 h-24 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] rounded-[2rem] p-1 shadow-2xl group-hover:rotate-12 transition-transform duration-500">
+                     <div className="bg-black w-full h-full rounded-[1.8rem] flex items-center justify-center">
+                        <Instagram className="w-12 h-12 text-white" />
+                     </div>
+                  </div>
+                  <div>
+                    <h4 className="text-3xl md:text-5xl font-heading text-white uppercase italic tracking-tighter leading-none mb-3">
+                       Join the <span className="text-primary truncate">5,000+</span>
+                    </h4>
+                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px] md:text-xs">
+                       The Biggest Off-Roading Community in Karad
+                    </p>
+                  </div>
+               </div>
+               
+               <div className="flex items-center gap-4 px-8 py-4 bg-primary text-black rounded-2xl font-black uppercase tracking-widest text-xs group-hover:bg-white transition-colors">
+                  Open Instagram <ExternalLink className="w-4 h-4 ml-2" />
+               </div>
+            </div>
+          </a>
+        </motion.div>
 
         {/* THE ULTIMATE "ULTIME" ELITE PASS - WORLD CLASS DESIGN */}
         <AnimatePresence>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, Instagram } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -81,6 +81,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <a
+              href="https://www.instagram.com/teamkaradoffroaders/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 ml-2 text-zinc-500 hover:text-white transition-colors"
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
             <Link
               href="/register"
               className="ml-4 px-6 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)]"
@@ -139,10 +147,19 @@ export default function Navbar() {
               >
                 <Link
                   href="/register"
-                  className="flex items-center justify-center h-16 bg-primary text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-[0_0_40px_rgba(255,165,0,0.2)]"
+                  className="flex items-center justify-center h-16 bg-primary text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.05)] mb-4"
                 >
                   Register Now
                 </Link>
+                <a
+                  href="https://www.instagram.com/teamkaradoffroaders/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-3 h-14 bg-zinc-900 border border-white/5 text-zinc-400 text-xs font-black uppercase tracking-widest rounded-2xl"
+                >
+                  <Instagram className="w-4 h-4 text-pink-500" />
+                  Follow our 5k Community
+                </a>
               </motion.div>
             </div>
           </motion.div>
