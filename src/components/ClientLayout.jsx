@@ -8,15 +8,17 @@ import { Instagram } from "lucide-react";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
+  const isAdminPage = pathname?.startsWith("/admin");
   const isVerifyPage = pathname?.startsWith("/verify");
+  const hideLayout = isAdminPage || isVerifyPage;
 
   return (
     <SmoothScroll>
-      {!isVerifyPage && <Navbar />}
+      {!hideLayout && <Navbar />}
       {children}
       
       {/* Global Floating Socials */}
-      {!isVerifyPage && (
+      {!hideLayout && (
         <motion.a
           href="https://www.instagram.com/teamkaradoffroaders/"
           target="_blank"
