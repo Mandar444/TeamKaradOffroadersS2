@@ -29,27 +29,18 @@ const highlights = [
 
 export default function AboutPage() {
   const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
-  const heroTextY = useTransform(scrollYProgress, [0, 0.3], [0, 150]);
-  const bgShiftY = useTransform(scrollYProgress, [0, 1], [0, -200]);
 
   return (
     <div ref={containerRef} className="min-h-screen bg-black text-white pt-10 pb-20 relative selection:bg-primary selection:text-black overflow-hidden">
       {/* 1. CINEMATIC HERO */}
-      <section className="relative h-[100vh] flex items-center justify-center overflow-hidden">
-        <motion.div style={{ opacity, scale, y: bgShiftY }} className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-mesh-amber opacity-40 blur-[120px]" />
-          <div className="absolute inset-0 bg-noise opacity-20" />
+      <section className="relative h-[90vh] md:h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-mesh-amber opacity-30 blur-[100px]" />
+          <div className="absolute inset-0 bg-noise opacity-10" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black" />
-        </motion.div>
+        </div>
 
-        <motion.div style={{ y: heroTextY }} className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -75,7 +66,7 @@ export default function AboutPage() {
              A passionate community of 4x4 enthusiasts based in Karad, Maharashtra, 
              actively participating in and organizing off-road motorsport events across India.
           </motion.p>
-        </motion.div>
+        </div>
 
         {/* Technical HUD element */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-30">

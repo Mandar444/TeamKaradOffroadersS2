@@ -33,8 +33,8 @@ export default function Intro({ onComplete }) {
       revSound.current.play().catch(e => console.log("Audio play blocked"));
     }
 
-    // Stop intense vibration after 2 seconds but keep a subtle hum
-    setTimeout(() => setIsVibrating(false), 2500);
+    // Stop intense vibration after 1 second but keep a subtle hum
+    setTimeout(() => setIsVibrating(false), 1500);
 
     setTimeout(() => {
       setShowAnimatedLogo(true);
@@ -42,11 +42,11 @@ export default function Intro({ onComplete }) {
         popSound.current.volume = 0.8;
         popSound.current.play().catch(e => console.log("Audio play blocked"));
       }
-    }, 1500);
+    }, 800);
 
     setTimeout(() => {
       onComplete();
-    }, 6000);
+    }, 3500);
   };
 
   return (

@@ -27,7 +27,7 @@ const registrationSchema = z.object({
   coDriverPhone: z.string().regex(/^[0-9]{10}$/, "Valid 10-digit mobile number required"),
   coDriverBloodGroup: z.string().min(1, "Required"),
   category: z.string().min(1, "Required"),
-  carNumber: z.string().min(1, "Pick a car number"),
+  carNumber: z.string().min(1, "Pick a sticker number"),
   ageAgreement: z.literal(true, {
     errorMap: () => ({ message: "You must agree to the age requirement" }),
   }),
@@ -417,7 +417,7 @@ export default function RegisterPage() {
                          </div>
                          <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[1em] mb-4">Final Protocol (04/04)</p>
                          <CardTitle className="text-7xl font-heading text-white uppercase tracking-tighter leading-none mb-4">THE <span className="text-primary italic">GRID PASS</span></CardTitle>
-                         <p className="text-zinc-500 max-w-lg mx-auto text-lg font-medium leading-relaxed">Secure your official car number in the global leaderboard. This number represents your unit for the entire 2026 season.</p>
+                         <p className="text-zinc-500 max-w-lg mx-auto text-lg font-medium leading-relaxed">Secure your official sticker number in the global leaderboard. This number represents your unit for the entire 2026 season.</p>
                       </CardHeader>
 
                       <CardContent className="px-12 md:px-24 pb-24 space-y-12">
@@ -456,7 +456,7 @@ export default function RegisterPage() {
                               )}
                             </Button>
                          </div>
-                         {!selectedNumber && <p className="text-center text-zinc-700 text-[10px] font-black uppercase tracking-[0.4em] italic animate-pulse">Waiting for car number selection...</p>}
+                         {!selectedNumber && <p className="text-center text-zinc-700 text-[10px] font-black uppercase tracking-[0.4em] italic animate-pulse">Waiting for sticker number selection...</p>}
                       </CardContent>
                    </Card>
                 </motion.div>

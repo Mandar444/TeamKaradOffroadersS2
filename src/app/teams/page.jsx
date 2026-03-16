@@ -86,7 +86,7 @@ export default function TeamsPage() {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <Input 
-              placeholder="Search driver or car #..." 
+              placeholder="Search driver or sticker #..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-12 h-14 bg-black/50 border-white/5 focus:border-primary/50 transition-all rounded-xl text-lg"
@@ -120,11 +120,10 @@ export default function TeamsPage() {
               transition={{ delay: idx * 0.05 }}
               key={team.car_number}
               onClick={() => setSelectedTeam(team)}
-              className="group cursor-pointer perspective-1000"
+              className="group cursor-pointer"
             >
               <div 
-                style={{ transformStyle: 'preserve-3d' }}
-                className="relative bg-zinc-950 border border-white/10 rounded-[2rem] p-0 overflow-hidden transition-all duration-700 group-hover:scale-[1.02] group-hover:shadow-[0_20px_60px_rgba(255,165,0,0.15)] group-hover:border-primary/40 flex h-64"
+                className="relative bg-zinc-950 border border-white/10 rounded-[2rem] p-0 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(255,165,0,0.15)] hover:border-primary/40 flex h-64"
               >
                 {/* Elite Technical Sidebar Motif on Card */}
                 <div className="w-12 bg-zinc-900 border-r border-white/5 flex flex-col items-center justify-between py-6 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -147,7 +146,7 @@ export default function TeamsPage() {
                       <p className="text-white text-xs font-bold uppercase tracking-widest opacity-80">{CATEGORIES[team.category]?.name || "COMPETITOR"}</p>
                     </div>
                     <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
-                      <span className="text-3xl font-heading font-black tracking-tighter italic">#{team.car_number}</span>
+                      <span className="text-3xl font-heading font-black tracking-tighter italic">S{team.car_number}</span>
                     </div>
                   </div>
 

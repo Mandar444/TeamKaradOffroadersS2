@@ -45,8 +45,8 @@ const pastEvents = [
 
 const upcomingEvent = {
   name: "TEAM KARAD OFF-ROAD RALLY 2026 — SEASON 2",
-  date: "May 29, 30, 31 — 2026",
-  location: "Karad, Satara District, Maharashtra",
+  date: "29, 30, 31 MAY — 2026",
+  location: "KARAD, MAHARASHTRA",
   categories: 6,
   maxParticipants: "200+",
   prizePool: "TBA",

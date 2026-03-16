@@ -10,20 +10,11 @@ import { Trophy, Users, Calendar, MapPin } from "lucide-react";
 
 export default function Hero() {
   const [logoError, setLogoError] = useState(false);
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"]
-  });
-
-  const logoY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const bgY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[120vh] w-full flex items-center justify-center overflow-hidden py-20 bg-black">
+    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20 bg-black">
       {/* Dramatic Visible Background */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         {/* Primary glow orbs */}
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/15 blur-[150px] animate-pulse" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]" />
@@ -37,13 +28,13 @@ export default function Hero() {
 
         {/* Radial fade */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,black_70%)]" />
-      </motion.div>
+      </div>
 
-      {/* Shared bottom/top fades (fixed) */}
+      {/* Shared bottom/top fades */}
       <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-zinc-950 to-transparent z-10" />
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent z-10" />
 
-      <motion.div style={{ y: logoY, opacity }} className="relative z-20 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -59,7 +50,7 @@ export default function Hero() {
                 transition={{ delay: 0.5, type: "spring" }}
                 src="/logo.png" 
                 alt="Team Karad Logo" 
-                className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
+                className="w-48 h-48 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
                 onError={() => setLogoError(true)}
               />
             ) : (
@@ -77,25 +68,24 @@ export default function Hero() {
              <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] leading-none">Elite Grid Status: Online</p>
           </div>
 
-          <span className="inline-block px-4 py-1.5 mb-8 text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase">
-            MAY 29, 30, 31 • THE ULTIMATE OFF-ROAD CHALLENGE
+          <span className="inline-block px-4 py-1.5 mb-8 text-[10px] md:text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase text-center">
+            MAY 29, 30, 31 • VENUE: KARAD, MAHARASHTRA
           </span>
 
-          <p className="text-lg md:text-2xl text-zinc-300 mb-12 max-w-2xl mx-auto font-sans leading-relaxed">
-            Venue: <span className="text-white font-bold">KARAD</span> <br className="hidden md:block" />
-            Push your limits in the most demanding terrain. Register now to claim your legendary car number.
+          <p className="text-base md:text-2xl text-zinc-300 mb-12 max-w-2xl mx-auto font-sans leading-relaxed">
+            Push your limits in the most demanding terrain. Register now to claim your legendary sticker number.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
             <Link 
               href="/register" 
-              className={cn(buttonVariants({ size: "lg" }), "h-16 px-12 text-xl font-black rounded-none skew-x-[-12deg] neon-glow bg-primary text-black transition-all hover:scale-105 active:scale-95")}
+              className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-8 md:px-12 text-lg md:text-xl font-black rounded-none skew-x-[-12deg] neon-glow bg-primary text-black transition-all hover:scale-105 active:scale-95")}
             >
               <span className="skew-x-[12deg]">REGISTER NOW</span>
             </Link>
             <Link 
               href="/teams" 
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-16 px-12 text-xl font-bold border-zinc-700 hover:bg-white/5 transition-colors")}
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-14 md:h-16 px-8 md:px-12 text-lg md:text-xl font-bold border-zinc-700 hover:bg-white/5 transition-colors")}
             >
               VIEW TEAMS
             </Link>
@@ -106,39 +96,39 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 border-t border-white/10 pt-10"
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 md:mt-20 border-t border-white/10 pt-10"
         >
           <div className="text-center">
-            <Calendar className="w-6 h-6 text-primary mx-auto mb-2" />
-            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1 font-bold">Date</p>
-            <p className="text-white font-heading text-lg text-center leading-tight">MAY 29, 30, 31<br/><span className="text-xs opacity-50">2026</span></p>
+            <Calendar className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
+            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Date</p>
+            <p className="text-white font-heading text-sm md:text-lg text-center leading-tight">MAY 29, 30, 31<br/><span className="text-xs opacity-50">2026</span></p>
           </div>
           <div className="text-center">
-            <MapPin className="w-6 h-6 text-primary mx-auto mb-2" />
-            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1 font-bold">Location</p>
-            <p className="text-white font-heading text-lg">KARAD</p>
+            <MapPin className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
+            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Location</p>
+            <p className="text-white font-heading text-sm md:text-lg">KARAD</p>
           </div>
           <div className="text-center">
-            <Trophy className="w-6 h-6 text-primary mx-auto mb-2" />
-            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1 font-bold">Prize Pool</p>
-            <p className="text-white font-heading text-lg">TBA</p>
+            <Trophy className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
+            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Prize Pool</p>
+            <p className="text-white font-heading text-sm md:text-lg">TBA</p>
           </div>
           <div className="text-center">
-            <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1 font-bold">Entries</p>
-            <p className="text-white font-heading text-lg">200 MAX</p>
+            <Users className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
+            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Entries</p>
+            <p className="text-white font-heading text-sm md:text-lg">200 MAX</p>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* Scroll indicator */}
       <motion.div 
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
+        className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-20"
       >
-        <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
-          <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+        <div className="w-5 h-8 md:w-6 md:h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+          <div className="w-1 md:w-1.5 h-1 md:h-1.5 bg-primary rounded-full" />
         </div>
       </motion.div>
     </section>
