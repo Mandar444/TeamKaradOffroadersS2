@@ -2,18 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Trophy, Users, Calendar, MapPin } from "lucide-react";
 
 export default function Hero() {
   const [logoError, setLogoError] = useState(false);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"]
+  });
+
+  const logoY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-20">
+    <section ref={sectionRef} className="relative min-h-[120vh] w-full flex items-center justify-center overflow-hidden py-20 bg-black">
       {/* Dramatic Visible Background */}
-      <div className="absolute inset-0 z-0 bg-black">
+      <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
         {/* Primary glow orbs */}
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/15 blur-[150px] animate-pulse" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]" />
@@ -27,13 +37,13 @@ export default function Hero() {
 
         {/* Radial fade */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,black_70%)]" />
-        
-        {/* Bottom fade to content */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-zinc-950 to-transparent" />
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent" />
-      </div>
+      </motion.div>
 
-      <div className="relative z-20 text-center px-4 max-w-5xl mx-auto">
+      {/* Shared bottom/top fades (fixed) */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-zinc-950 to-transparent z-10" />
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent z-10" />
+
+      <motion.div style={{ y: logoY, opacity }} className="relative z-20 text-center px-4 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,7 +129,7 @@ export default function Hero() {
             <p className="text-white font-heading text-lg">200 MAX</p>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div 

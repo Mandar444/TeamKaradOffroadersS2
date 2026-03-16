@@ -72,7 +72,7 @@ export default function ContactPage() {
               </form>
             </motion.div>
 
-            {/* Contact Info */}
+            {/* Contact Info & Map */}
             <div className="space-y-8">
               {contactInfo.map((c, idx) => (
                 <motion.a
@@ -82,7 +82,7 @@ export default function ContactPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="flex items-start gap-6 p-8 bg-zinc-950 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group"
+                  className="flex items-start gap-6 p-8 bg-zinc-950/50 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group backdrop-blur-xl"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <c.icon className="w-6 h-6 text-primary" />
@@ -94,8 +94,34 @@ export default function ContactPage() {
                 </motion.a>
               ))}
 
+              {/* Map Integration */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative h-[300px] md:h-[400px] rounded-[3rem] overflow-hidden border border-white/10 group bg-zinc-950"
+              >
+                <div className="absolute inset-0 bg-primary/5 group-hover:opacity-0 transition-opacity z-10 pointer-events-none" />
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m12!1m3!1d3809.824365774845!2d74.1808!3d17.285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc18196e83d8a59%3A0x6333bf897368eb1e!2sKarad%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1710500000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(0.8)' }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                ></iframe>
+                <div className="absolute top-6 left-6 z-20">
+                   <div className="px-4 py-1.5 bg-black/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                      <span className="text-white text-[10px] font-black uppercase tracking-widest">Base Operations Signal</span>
+                   </div>
+                </div>
+              </motion.div>
+
               {/* Social Grid */}
-              <div className="grid grid-cols-3 gap-4 pt-8">
+              <div className="grid grid-cols-3 gap-4 pt-4">
                 {socials.map((s, idx) => (
                   <motion.a
                     key={s.label}
