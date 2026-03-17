@@ -6,12 +6,14 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Zap, Gauge, Trophy, Star, Shield, Car, Settings } from "lucide-react";
 
 const icons = {
-  DIESEL_MODIFIED: Zap,
+  EXTREME: Zap,
+  DIESEL_MODIFIED: Gauge,
   PETROL_MODIFIED: Gauge,
   DIESEL_EXPERT: Trophy,
   PETROL_EXPERT: Star,
   THAR_SUV: Shield,
   JIMNY_SUV: Car,
+  STOCK_NDMS: Settings,
 };
 
 const FallbackIcon = Settings;
@@ -21,8 +23,8 @@ export default function CarCategories() {
     <section className="py-24 px-4 bg-black/50 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading text-white mb-4 tracking-tight">
-            CAR <span className="text-primary italic">CATEGORIES</span>
+          <h2 className="text-3xl md:text-5xl font-heading text-white mb-4 tracking-tight">
+            VEHICLE <span className="text-primary italic">CATEGORIES</span>
           </h2>
           <div className="w-24 h-1 bg-primary mx-auto" />
         </div>

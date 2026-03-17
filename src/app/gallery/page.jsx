@@ -37,16 +37,16 @@ export default function GalleryPage() {
   const filtered = filter === "All" ? galleryItems : galleryItems.filter(i => i.category === filter);
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-[60%] h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
-      <section className="px-6 py-20 relative z-10">
+      <section className="px-6 py-12 md:py-20 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Visual Archive</p>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
               THE <span className="text-primary italic">GALLERY</span>
             </h1>
             <div className="flex flex-wrap gap-2">

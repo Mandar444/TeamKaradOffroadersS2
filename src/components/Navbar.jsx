@@ -8,6 +8,7 @@ import { Menu, X, ChevronRight, Instagram } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "/about", label: "About Us" },
   { href: "/events", label: "Events" },
   { href: "/achievements", label: "Achievements" },
@@ -67,7 +68,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden xl:flex items-center gap-0.5 shrink-1">
+          <div className="hidden lg:flex items-center gap-0.5 shrink-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -91,16 +92,16 @@ export default function Navbar() {
             </a>
             <Link
               href="/register"
-              className="ml-2 px-6 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0"
+              className="ml-2 px-5 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0 flex items-center justify-center"
             >
-              Register
+              REGISTER
             </Link>
           </div>
 
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="xl:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="lg:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -114,7 +115,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[89] bg-black/98 backdrop-blur-2xl pt-24 px-6 pb-10 overflow-y-auto xl:hidden"
+            className="fixed inset-0 z-[89] bg-black/98 backdrop-blur-2xl pt-24 px-6 pb-10 overflow-y-auto lg:hidden"
           >
             <div className="space-y-2">
               {NAV_LINKS.map((link, idx) => (
@@ -143,19 +144,19 @@ export default function Navbar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: NAV_LINKS.length * 0.05 }}
-                className="pt-6"
+                className="pt-6 space-y-4"
               >
                 <Link
                   href="/register"
-                  className="flex items-center justify-center h-16 bg-primary text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.05)] mb-4"
+                  className="flex h-16 w-full items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm"
                 >
-                  Register Now
+                  <span className="whitespace-nowrap">REGISTER NOW</span>
                 </Link>
                 <a
                   href="https://www.instagram.com/teamkaradoffroaders/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3 h-14 bg-zinc-900 border border-white/5 text-zinc-400 text-xs font-black uppercase tracking-widest rounded-2xl"
+                  className="flex items-center justify-center gap-3 h-14 bg-zinc-900 border border-white/5 text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded-2xl"
                 >
                   <Instagram className="w-4 h-4 text-pink-500" />
                   Follow our 5k Community

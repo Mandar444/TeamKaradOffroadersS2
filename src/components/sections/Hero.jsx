@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -50,15 +50,15 @@ export default function Hero() {
                 transition={{ delay: 0.5, type: "spring" }}
                 src="/logo.png" 
                 alt="Team Karad Logo" 
-                className="w-48 h-48 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
+                className="w-32 h-32 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
                 onError={() => setLogoError(true)}
               />
             ) : (
-              <div className="text-center py-4">
-                 <h1 className="text-6xl md:text-9xl font-heading text-white tracking-tighter drop-shadow-[0_0_20px_oklch(0.7_0.2_60)]">
-                   TEAM <span className="text-primary italic">KARAD</span>
-                 </h1>
-                 <p className="text-xl md:text-3xl text-primary font-heading tracking-[0.6em] opacity-80 uppercase font-bold mt-2">OFF-ROADERS</p>
+              <div className="text-center py-4 px-2">
+                  <h1 className="text-[12vw] md:text-9xl font-heading text-white tracking-tighter drop-shadow-[0_0_20px_oklch(0.7_0.2_60)] leading-none">
+                    TEAM <span className="text-primary italic">KARAD</span>
+                  </h1>
+                  <p className="text-xs md:text-3xl text-primary font-heading tracking-[0.2em] md:tracking-[0.6em] opacity-80 uppercase font-bold mt-4">OFF-ROAD EVENT • EST. 2015</p>
               </div>
             )}
           </div>
@@ -68,24 +68,24 @@ export default function Hero() {
              <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] leading-none">Elite Grid Status: Online</p>
           </div>
 
-          <span className="inline-block px-4 py-1.5 mb-8 text-[10px] md:text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase text-center">
-            MAY 29, 30, 31 • VENUE: KARAD, MAHARASHTRA
+          <span className="inline-block px-4 py-1.5 mb-6 text-[10px] md:text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase text-center max-w-[90vw]">
+            31 MAY • VENUE: KARAD, MAHARASHTRA
           </span>
 
-          <p className="text-base md:text-2xl text-zinc-300 mb-12 max-w-2xl mx-auto font-sans leading-relaxed">
-            Push your limits in the most demanding terrain. Register now to claim your legendary sticker number.
+          <p className="text-sm md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
+            Join 160+ professional drivers and co-drivers in our elite Season 1 championship. Register now to claim your legendary sticker number.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
-            <Link 
-              href="/register" 
-              className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-8 md:px-12 text-lg md:text-xl font-black rounded-none skew-x-[-12deg] neon-glow bg-primary text-black transition-all hover:scale-105 active:scale-95")}
-            >
-              <span className="skew-x-[12deg]">REGISTER NOW</span>
-            </Link>
+              <Link 
+                href="/register" 
+                className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
+              >
+                <span className="skew-x-[12deg] whitespace-nowrap">REGISTER FOR SEASON 1</span>
+              </Link>
             <Link 
               href="/teams" 
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-14 md:h-16 px-8 md:px-12 text-lg md:text-xl font-bold border-zinc-700 hover:bg-white/5 transition-colors")}
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold border-zinc-700 hover:bg-white/5 transition-colors w-full sm:w-auto flex items-center justify-center")}
             >
               VIEW TEAMS
             </Link>
@@ -101,7 +101,7 @@ export default function Hero() {
           <div className="text-center">
             <Calendar className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
             <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Date</p>
-            <p className="text-white font-heading text-sm md:text-lg text-center leading-tight">MAY 29, 30, 31<br/><span className="text-xs opacity-50">2026</span></p>
+            <p className="text-white font-heading text-sm md:text-lg text-center leading-tight">31 MAY<br/><span className="text-xs opacity-50">2026</span></p>
           </div>
           <div className="text-center">
             <MapPin className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
@@ -115,8 +115,8 @@ export default function Hero() {
           </div>
           <div className="text-center">
             <Users className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
-            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Entries</p>
-            <p className="text-white font-heading text-sm md:text-lg">200 MAX</p>
+            <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Lineup</p>
+            <p className="text-white font-heading text-sm md:text-lg uppercase">160+ PROFESSIONALS</p>
           </div>
         </motion.div>
       </div>

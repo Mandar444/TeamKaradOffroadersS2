@@ -63,12 +63,12 @@ const roleIcons = {
 
 export default function TeamPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-28 pb-20">
-      <section className="px-4 py-20">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-28 pb-16 md:pb-20">
+      <section className="px-4 py-12 md:py-20">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The People Behind the Mission</p>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
               OUR <span className="text-primary italic">CREW</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">

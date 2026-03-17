@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Trophy, Award, Star, Medal, Target, Flame, Crown, Zap } from "lucide-react";
 
 const achievements = [
-  { icon: Trophy, title: "10+ Rallies Organized", desc: "Successfully organized over 10 professional off-road events since 2018.", stat: "10+", label: "Events" },
+  { icon: Trophy, title: "10+ Rallies Organized", desc: "Successfully organized over 10 professional off-road events since 2015.", stat: "10+", label: "Events" },
   { icon: Award, title: "500+ Total Participants", desc: "Over 500 drivers and co-drivers have competed in TKO events across all seasons.", stat: "500+", label: "Participants" },
   { icon: Star, title: "National Media Coverage", desc: "Featured in major motorsport publications and national news channels.", stat: "50+", label: "Media Features" },
   { icon: Medal, title: "₹15L+ Prize Money Distributed", desc: "Over ₹15 lakhs in prize money awarded to champions across all categories.", stat: "₹15L+", label: "Prize Pool" },
@@ -21,12 +21,12 @@ const records = [
 
 export default function AchievementsPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-28 pb-20">
-      <section className="px-4 py-20">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-28 pb-16 md:pb-20">
+      <section className="px-4 py-12 md:py-20">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Hall of Glory</p>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
               OUR <span className="text-primary italic">LEGACY</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
@@ -37,7 +37,7 @@ export default function AchievementsPage() {
       </section>
 
       {/* Achievement Grid */}
-      <section className="px-4 py-16 bg-zinc-950">
+      <section className="px-4 py-12 md:py-16 bg-zinc-950">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {achievements.map((a, idx) => (
             <motion.div
@@ -66,9 +66,9 @@ export default function AchievementsPage() {
       </section>
 
       {/* Records */}
-      <section className="px-4 py-24">
+      <section className="px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-5xl font-heading text-white uppercase tracking-tighter mb-16 text-center">
+          <h2 className="text-4xl md:text-5xl font-heading text-white uppercase tracking-tighter mb-16 text-center">
             ALL-TIME <span className="text-primary italic">RECORDS</span>
           </h2>
           <div className="space-y-4">
@@ -79,16 +79,16 @@ export default function AchievementsPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="flex items-center gap-8 p-8 bg-zinc-950 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group"
+                className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8 p-6 md:p-8 bg-zinc-950 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group"
               >
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0 group-hover:bg-primary/20">
                   <r.icon className="w-7 h-7 text-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1">{r.title}</p>
-                  <p className="text-white text-2xl font-heading uppercase">{r.value}</p>
+                  <p className="text-white text-xl md:text-2xl font-heading uppercase">{r.value}</p>
                 </div>
-                <p className="text-zinc-600 text-xs font-medium text-right hidden md:block">{r.holder}</p>
+                <p className="text-zinc-600 text-[10px] font-medium text-left md:text-right max-w-[200px] leading-tight">{r.holder}</p>
               </motion.div>
             ))}
           </div>

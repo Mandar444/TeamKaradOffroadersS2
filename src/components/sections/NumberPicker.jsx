@@ -13,7 +13,7 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
     <div className="space-y-4">
       <div className="flex justify-between items-center bg-zinc-900/50 p-4 border border-zinc-800 rounded-lg">
         <div>
-          <h3 className="text-white font-heading text-lg">Select Car Number</h3>
+          <h3 className="text-white font-heading text-lg">Select Sticker Number</h3>
           <p className="text-zinc-500 text-sm italic">Allocated per category</p>
         </div>
         <div className="flex gap-4 text-[10px] uppercase font-bold tracking-widest">

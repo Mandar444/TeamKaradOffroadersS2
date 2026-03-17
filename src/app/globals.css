@@ -103,7 +103,7 @@
 
   body::before {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -115,7 +115,7 @@
 
   body::after {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -169,9 +169,6 @@ h1, h2, h3, .font-heading {
   letter-spacing: -0.02em;
 }
 
-.perspective-2000 {
-  perspective: 2000px;
-}
 
 .bg-mesh-amber {
   background: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
@@ -183,9 +180,6 @@ h1, h2, h3, .font-heading {
   text-shadow: 0 0 20px oklch(0.7 0.2 60 / 0.4);
 }
 
-.perspective-1000 {
-  perspective: 1000px;
-}
 
 .glass-lavish {
   background: rgba(0, 0, 0, 0.7);

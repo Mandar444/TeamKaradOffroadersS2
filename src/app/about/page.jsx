@@ -1,16 +1,16 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import { Target, Heart, Shield, Zap, Users, Trophy, MapPin, Calendar, Activity, ShieldCheck, Globe, Instagram, Newspaper, Share2 } from "lucide-react";
 
 const milestones = [
-  { year: "2018", title: "Ignition", desc: "A group of off-road enthusiasts from Karad came together with a shared vision — to bring world-class motorsport to Western Maharashtra." },
+  { year: "2015", title: "Ignition", desc: "A group of off-road enthusiasts from Karad came together with a shared vision — to bring world-class motorsport to Western Maharashtra." },
   { year: "2020", title: "First Ascent", desc: "Team Karad Off-Roaders organized its inaugural off-road rally with 40 participants, setting the standard for competitive off-roading in the region." },
   { year: "2022", title: "National Radius", desc: "With over 100 participants and coverage from major motorsport outlets, Team Karad Off-Roaders became a nationally recognized off-road force." },
   { year: "2024", title: "Season 1 Apex", desc: "The first full-season championship format was introduced, attracting elite teams from across India." },
-  { year: "2025", title: "The Festival Success", desc: "Flagship 'Team Karad Off-Road Festival' establishes itself as a fast-growing platform for automotive brands and drivers." },
+  { year: "2025", title: "The Event Success", desc: "Flagship 'Team Karad Off-Road Event' establishes itself as a fast-growing platform for automotive brands and drivers." },
 ];
 
 const values = [
@@ -23,7 +23,7 @@ const values = [
 const highlights = [
   { icon: Users, stat: "80+", label: "Elite Participants", sub: "Professional Drivers" },
   { icon: Globe, stat: "7+", label: "Indian States", sub: "National Reach" },
-  { icon: Activity, stat: "35K+", label: "Live Spectators", sub: "3-Day Festival" },
+  { icon: Activity, stat: "35K+", label: "Live Spectators", sub: "3-Day Event" },
   { icon: Share2, stat: "2M+", label: "Social Reach", sub: "Organic Engagement" },
 ];
 
@@ -31,7 +31,7 @@ export default function AboutPage() {
   const containerRef = useRef(null);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-black text-white pt-10 pb-20 relative selection:bg-primary selection:text-black overflow-hidden">
+    <div ref={containerRef} className="min-h-screen bg-black text-white pt-20 pb-20 relative selection:bg-primary selection:text-black overflow-hidden">
       {/* 1. CINEMATIC HERO */}
       <section className="relative h-[90vh] md:h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -53,7 +53,7 @@ export default function AboutPage() {
                TEAM <span className="text-primary not-italic">KARAD</span>
             </h1>
             <h2 className="text-4xl md:text-6xl font-heading text-zinc-500 uppercase tracking-[0.2em] mb-12">
-               OFF-ROADERS <span className="text-white">EST. 2018</span>
+               OFF-ROADERS <span className="text-white">EST. 2015</span>
             </h2>
           </motion.div>
 
@@ -76,7 +76,7 @@ export default function AboutPage() {
       </section>
 
       {/* 2. CORE IDENTITY SECTION */}
-      <section className="px-6 py-32 relative">
+      <section className="px-6 py-16 md:py-32 relative">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -102,14 +102,14 @@ export default function AboutPage() {
              </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 perspective-1000">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              {values.map((v, idx) => (
                <motion.div
                  key={v.title}
-                 initial={{ opacity: 0, rotateX: 20, y: 50 }}
-                 whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+                 initial={{ opacity: 0, y: 30 }}
+                 whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
-                 transition={{ delay: idx * 0.1, duration: 0.8 }}
+                 transition={{ delay: idx * 0.1, duration: 0.5 }}
                  className="p-8 bg-zinc-950/40 border border-white/5 rounded-3xl group hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,165,0,0.1)] relative overflow-hidden backdrop-blur-md"
                >
                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
@@ -127,7 +127,7 @@ export default function AboutPage() {
       </section>
 
       {/* 3. FLAGSHIP SUCCESS HIGHLIGHTS (The Jaw-Dropping Part) */}
-      <section className="py-40 bg-zinc-950 relative overflow-hidden">
+      <section className="py-20 md:py-40 bg-zinc-950 relative overflow-hidden">
         {/* Animated Background Lines */}
         <div className="absolute inset-0 opacity-10">
            {[...Array(5)].map((_, i) => (
@@ -143,12 +143,12 @@ export default function AboutPage() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Archive: Season 2025</h3>
+             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Archive: Season 1</h3>
              <h2 className="text-6xl md:text-9xl font-heading text-white uppercase tracking-tighter leading-none mb-8">
                MEGA <span className="text-primary italic">SUCCESS</span>
              </h2>
              <p className="text-zinc-500 text-xl max-w-3xl mx-auto font-medium">
-               A tremendous success that established the Team Karad Off-Road Festival as 
+               A tremendous success that established the Team Karad Off-Road Event as 
                a world-class platform for motorsport and adventure.
              </p>
           </div>
@@ -186,7 +186,7 @@ export default function AboutPage() {
                    <h5 className="font-black uppercase tracking-widest text-sm">Media Presence</h5>
                 </div>
                  <p className="text-zinc-400 leading-relaxed font-medium">
-                   Regional newspaper coverage and 200+ off-road vehicles present on-site, 
+                   Regional newspaper coverage and 160+ off-road vehicles present on-site, 
                    establishing Team Karad Off-Roaders as a fast-growing stage for automotive brands.
                 </p>
              </motion.div>
@@ -204,7 +204,7 @@ export default function AboutPage() {
                 </div>
                 <p className="text-zinc-400 leading-relaxed font-medium">
                    Drivers from Maharashtra, Goa, Karnataka, Kerala, Gujarat, Delhi, and Rajasthan 
-                   brought strong diversity and competitive fire to the festival.
+                   brought strong diversity and competitive fire to the event.
                 </p>
              </motion.div>
 
@@ -226,8 +226,10 @@ export default function AboutPage() {
              </motion.div>
           </div>
         </div>
-      </section>      {/* 4. THE JOURNEY TIMELINE - CINEMATIC VERSION */}
-      <section className="px-6 py-40 overflow-hidden relative">
+      </section>
+
+      {/* 4. THE JOURNEY TIMELINE - CINEMATIC VERSION */}
+      <section className="px-6 py-20 md:py-40 overflow-hidden relative">
         <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
         
         <div className="max-w-6xl mx-auto relative">
@@ -282,7 +284,6 @@ export default function AboutPage() {
                   {/* Card area */}
                   <div className={`flex-1 pl-16 md:px-20 text-left ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
                      <motion.div 
-                       whileHover={{ x: idx % 2 === 0 ? -10 : 10 }}
                        className="p-8 md:p-10 rounded-[2.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl relative group hover:border-primary/30 transition-all duration-500"
                      >
                         <div className="absolute -top-4 left-10 md:left-auto md:right-10 px-4 py-1 bg-primary text-black text-[10px] font-black uppercase tracking-widest skew-x-[-20deg] shadow-[0_10px_20px_rgba(255,165,0,0.2)]">
@@ -312,7 +313,7 @@ export default function AboutPage() {
            initial={{ opacity: 0, scale: 0.95 }}
            whileInView={{ opacity: 1, scale: 1 }}
            viewport={{ once: true }}
-           className="max-w-6xl mx-auto p-16 md:p-32 rounded-[4rem] bg-mesh-amber border border-primary/20 relative overflow-hidden text-center"
+           className="max-w-6xl mx-auto p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] bg-mesh-amber border border-primary/20 relative overflow-hidden text-center"
          >
             <div className="absolute inset-0 bg-black/60 pointer-events-none" />
             <div className="relative z-10">
@@ -320,13 +321,13 @@ export default function AboutPage() {
                  JOIN THE <br /> <span className="text-primary not-italic">ELITE</span>
                </h2>
                <p className="text-zinc-300 text-xl max-w-xl mx-auto mb-12 font-medium">
-                 Ready to test your limits? Join the 2026 expansion and become part of India&apos;s most thrilling off-road community.
+                 Ready to test your limits? Join the Season 1 expansion and become part of India&apos;s most thrilling off-road community.
                </p>
                <Link
                   href="/register"
-                  className="inline-flex h-16 px-12 items-center bg-primary text-black font-black uppercase tracking-[0.4em] rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95"
+                  className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base"
                >
-                  Deploy Entry 
+                  <span className="whitespace-nowrap">REGISTER NOW</span>
                </Link>
             </div>
          </motion.div>

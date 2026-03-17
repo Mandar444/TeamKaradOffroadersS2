@@ -29,21 +29,21 @@ export default function Home() {
   };
 
   const upcomingEvent = {
-  name: "TEAM KARAD OFF-ROAD RALLY 2026 — SEASON 2",
-  date: "29, 30, 31 MAY — 2026",
+  name: "TEAM KARAD OFF-ROAD EVENT 2026 — SEASON 1",
+  date: "31 MAY — 2026",
   location: "KARAD, MAHARASHTRA",
-  categories: 6,
-  maxParticipants: "200+",
+  categories: 8,
+  maxParticipants: "160",
   prizePool: "TBA",
   features: [
     "3 Full Days of Competition",
-    "6 Vehicle Categories",
-    "Professional Timing System",
+    "Professional Drivers & Co-Drivers",
+    "8 Vehicle Categories",
+    "Professional Technical Trail",
     "Live Streaming & Commentary",
     "Medical Team on Standby",
-    "Camping & Night Events",
     "Awards Ceremony & Trophies",
-    "Food & Entertainment Zone",
+    "Technical Marshalling Support",
   ],
 };
 
@@ -67,19 +67,19 @@ export default function Home() {
           <PastEvents />
 
           {/* Call to Action Section */}
-          <section className="py-24 px-4 bg-primary/5">
+          <section className="py-20 md:py-32 px-6 bg-primary/5">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-6xl font-heading text-white mb-6">
+              <h2 className="text-3xl md:text-6xl font-heading text-white mb-6 uppercase leading-tight">
                 READY TO <span className="text-primary italic">CONQUER?</span>
               </h2>
-              <p className="text-zinc-400 text-base md:text-lg mb-10 max-w-xl mx-auto">
-                Seats are limited to 200 participants across all categories. Register now before your lucky sticker number is taken.
+              <p className="text-zinc-400 text-sm md:text-lg mb-10 max-w-xl mx-auto">
+                Limited seats available for the elite 160. Register now before your lucky sticker number is taken.
               </p>
               <Link 
                 href="/register" 
-                className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-10 md:px-12 text-lg md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center")}
+                className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-12 text-sm md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
-                <span className="skew-x-[12deg]">CLAIM YOUR STICKER NO</span>
+                <span className="skew-x-[12deg] whitespace-nowrap">REGISTER FOR SEASON 1</span>
               </Link>
             </div>
           </section>

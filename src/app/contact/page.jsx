@@ -21,16 +21,16 @@ const socials = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
-      <section className="px-6 py-20 relative z-10">
+      <section className="px-6 py-12 md:py-20 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Uplink Station</p>
-            <h1 className="text-6xl md:text-9xl font-heading tracking-tighter uppercase leading-none mb-8 italic">
+            <h1 className="text-[12vw] md:text-9xl font-heading tracking-tighter uppercase leading-none mb-8 italic">
               CONTACT <span className="text-primary not-italic">BASE</span>
             </h1>
             <p className="text-zinc-400 text-xl md:text-2xl max-w-3xl leading-relaxed font-medium">
@@ -44,7 +44,7 @@ export default function ContactPage() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="p-10 bg-zinc-950 border border-white/5 rounded-[2rem]"
+              className="p-6 md:p-10 bg-zinc-950 border border-white/5 rounded-[2rem]"
             >
               <h3 className="text-2xl font-heading text-white uppercase mb-8">Send a Message</h3>
               <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
@@ -82,14 +82,14 @@ export default function ContactPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="flex items-start gap-6 p-8 bg-zinc-950/50 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group backdrop-blur-xl"
+                  className="flex items-start gap-4 md:gap-6 p-6 md:p-8 bg-zinc-950/50 border border-white/5 rounded-[2rem] hover:border-primary/20 transition-all group backdrop-blur-xl"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <c.icon className="w-6 h-6 text-primary" />
                   </div>
                   <div>
                     <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1">{c.label}</p>
-                    <p className="text-white text-lg font-heading">{c.value}</p>
+                    <p className="text-white text-[15px] md:text-lg font-heading break-all md:break-normal">{c.value}</p>
                   </div>
                 </motion.a>
               ))}

@@ -1,33 +1,43 @@
 export const CATEGORIES = {
   DIESEL_MODIFIED: {
     name: "Diesel Modified",
-    fee: 9000,
-    description: "Extreme diesel performance for ultimate trail conquest.",
+    fee: 9999,
+    description: "High-performance diesel monsters built for ultimate trail conquest.",
   },
   PETROL_MODIFIED: {
     name: "Petrol Modified",
-    fee: 9000,
-    description: "High-revving petrol monsters built for speed and power.",
+    fee: 9999,
+    description: "Turbocharged petrol builds designed for speed and technical precision.",
   },
   DIESEL_EXPERT: {
     name: "Diesel Expert",
-    fee: 7000,
-    description: "Professional level diesel class for seasoned offroaders.",
+    fee: 7999,
+    description: "Professional level diesel class for seasoned off-roaders.",
   },
   PETROL_EXPERT: {
     name: "Petrol Expert",
-    fee: 7000,
-    description: "Expert petrol class for precision trail driving.",
+    fee: 7999,
+    description: "Expert level petrol class focused on technical mastery.",
   },
   THAR_SUV: {
     name: "Thar SUV",
-    fee: 7000,
-    description: "Battle-ready Mahindra Thar class. Stock or modified.",
+    fee: 7999,
+    description: "Battle-ready Mahindra Thar class. Built to dominate.",
   },
   JIMNY_SUV: {
     name: "Jimny SUV",
-    fee: 7000,
-    description: "Agile Suzuki Jimny class for technical trail navigation.",
+    fee: 7999,
+    description: "Suzuki Jimny Specific Category",
+  },
+  STOCK_NDMS: {
+    name: "Stock NDMS",
+    fee: 5999,
+    description: "Standard configuration with NDMS tires",
+  },
+  EXTREME: {
+    name: "Extreme",
+    fee: 14999,
+    description: "On top of the line - Ultimate performance class",
   },
 };
 
@@ -37,4 +47,4 @@ export const PRICING_CONFIG = {
   upiName: "Team Karad Offroaders",
 };
 
-export const MAX_CAR_NUMBER = 200;
+export const MAX_CAR_NUMBER = 160;

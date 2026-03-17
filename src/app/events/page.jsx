@@ -7,10 +7,10 @@ import Link from "next/link";
 const pastEvents = [
   {
     year: "2025",
-    name: "Team Karad Off-Road Festival",
+    name: "Team Karad Off-Road Event",
     location: "Karad, Maharashtra",
     date: "Annual Flagship Event",
-    participants: "80+ Elite Participants",
+    participants: "160+ Elite Participants",
     highlights: ["35,000+ Spectators", "2M+ Social Reach", "7+ States Represented"],
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
   },
@@ -44,19 +44,19 @@ const pastEvents = [
 ];
 
 const upcomingEvent = {
-  name: "TEAM KARAD OFF-ROAD RALLY 2026 — SEASON 2",
-  date: "29, 30, 31 MAY — 2026",
+  name: "TEAM KARAD OFF-ROAD EVENT 2026 — SEASON 1",
+  date: "31 MAY — 2026",
   location: "KARAD, MAHARASHTRA",
-  categories: 6,
-  maxParticipants: "200+",
+  categories: 8,
+  maxParticipants: "160",
   prizePool: "TBA",
   features: [
     "3 Full Days of Competition",
-    "6 Vehicle Categories",
+    "Professional Drivers & Co-Drivers",
+    "8 Vehicle Categories",
     "Professional Timing System",
     "Live Streaming & Commentary",
     "Medical Team on Standby",
-    "Camping & Night Events",
     "Awards Ceremony & Trophies",
     "Food & Entertainment Zone",
   ],
@@ -78,17 +78,17 @@ export default function EventsPage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Registration Open
             </div>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-4">
-              {upcomingEvent.name.split("—")[0]} <span className="text-primary italic">{upcomingEvent.name.split("—")[1]}</span>
+            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-4">
+              {upcomingEvent.name.split("—")[0]} <br className="md:hidden" /> <span className="text-primary italic">{upcomingEvent.name.split("—")[1]}</span>
             </h1>
-            <div className="flex flex-wrap gap-6 mt-8 text-zinc-400">
-              <div className="flex items-center gap-2"><Calendar className="w-5 h-5 text-primary" /> {upcomingEvent.date}</div>
-              <div className="flex items-center gap-2"><MapPin className="w-5 h-5 text-primary" /> {upcomingEvent.location}</div>
-              <div className="flex items-center gap-2"><Users className="w-5 h-5 text-primary" /> {upcomingEvent.maxParticipants} Entries</div>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 mt-8 text-zinc-400">
+              <div className="flex items-center gap-2 text-sm md:text-base"><Calendar className="w-4 h-4 md:w-5 md:h-5 text-primary" /> {upcomingEvent.date}</div>
+              <div className="flex items-center gap-2 text-sm md:text-base"><MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary" /> {upcomingEvent.location}</div>
+              <div className="flex items-center gap-2 text-sm md:text-base"><Users className="w-4 h-4 md:w-5 md:h-5 text-primary" /> {upcomingEvent.maxParticipants} Entries</div>
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-16">
             {upcomingEvent.features.map((f, idx) => (
               <motion.div
                 key={f}
@@ -96,10 +96,10 @@ export default function EventsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="p-5 bg-zinc-950 border border-white/5 rounded-2xl flex items-start gap-3"
+                className="p-4 bg-zinc-950 border border-white/5 rounded-2xl flex items-start gap-3"
               >
-                <Star className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-sm text-zinc-400 font-medium">{f}</p>
+                <Star className="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                <p className="text-[11px] md:text-sm text-zinc-400 font-medium leading-tight">{f}</p>
               </motion.div>
             ))}
           </div>
@@ -107,9 +107,9 @@ export default function EventsPage() {
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mt-12">
             <Link
               href="/register"
-              className="inline-flex items-center h-16 px-12 bg-primary text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_40px_rgba(255,165,0,0.2)]"
+              className="inline-flex items-center justify-center h-14 md:h-16 px-8 md:px-12 bg-primary text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_40px_rgba(255,165,0,0.2)] text-xs md:text-base w-full sm:w-auto"
             >
-              Register Now <ChevronRight className="ml-2 w-5 h-5" />
+              <span className="whitespace-nowrap flex items-center">Register Now <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" /></span>
             </Link>
           </motion.div>
         </div>

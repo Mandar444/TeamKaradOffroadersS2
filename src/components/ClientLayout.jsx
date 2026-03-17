@@ -17,20 +17,24 @@ export default function ClientLayout({ children }) {
       {!hideLayout && <Navbar />}
       {children}
       
-      {/* Global Floating Socials */}
+      {/* Global Floating Register CTA */}
       {!hideLayout && (
-        <motion.a
-          href="https://www.instagram.com/teamkaradoffroaders/"
-          target="_blank"
-          rel="noopener noreferrer"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_rgba(220,39,67,0.4)] md:w-16 md:h-16"
+        <motion.div
+          initial={{ scale: 0, opacity: 0, x: 50 }}
+          animate={{ scale: 1, opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-8 right-8 z-[100] group"
         >
-          <Instagram className="w-7 h-7 md:w-8 md:h-8" />
-        </motion.a>
+          <Link
+             href="/register"
+             className="flex items-center gap-3 bg-primary text-black px-6 py-4 rounded-full font-black uppercase tracking-widest text-xs md:text-sm shadow-[0_10px_40px_rgba(255,165,0,0.4)] hover:shadow-[0_15px_50px_rgba(255,165,0,0.6)] transition-all"
+          >
+             <span className="hidden md:inline">DEPLOY ENTRY</span>
+             <span className="inline md:hidden">REGISTER</span>
+             <Zap className="w-5 h-5 fill-black" />
+          </Link>
+        </motion.div>
       )}
     </SmoothScroll>
   );

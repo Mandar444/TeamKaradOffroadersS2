@@ -62,12 +62,12 @@ const beasts = [
 
 export default function BeastsPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute bottom-0 left-0 w-full h-[60vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
-      <section className="px-6 py-20 relative z-10">
+      <section className="px-6 py-12 md:py-20 relative z-10">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The Arsenal</p>
@@ -87,11 +87,10 @@ export default function BeastsPage() {
           {beasts.map((beast, idx) => (
             <motion.div
               key={beast.name}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="flex flex-col lg:flex-row bg-zinc-950 border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-primary/20 transition-all"
+              className="p-6 md:p-10 flex flex-col lg:flex-row bg-zinc-950 border border-white/5 rounded-[2rem] overflow-hidden group hover:border-primary/20 transition-all"
             >
               {/* Image */}
               <div
@@ -110,7 +109,7 @@ export default function BeastsPage() {
                   </span>
                 </div>
 
-                <h3 className="text-4xl lg:text-5xl font-heading text-white uppercase italic leading-none mb-2">
+                <h3 className="text-3xl lg:text-5xl font-heading text-white uppercase italic leading-none mb-2">
                   {beast.name}
                 </h3>
                 <p className="text-zinc-600 font-heading text-lg uppercase tracking-widest mb-6">{beast.type}</p>
@@ -127,7 +126,7 @@ export default function BeastsPage() {
                     <div key={spec.label} className="p-4 bg-black border border-white/5 rounded-xl">
                       <spec.icon className="w-4 h-4 text-primary mb-2" />
                       <p className="text-zinc-700 text-[9px] font-black uppercase tracking-widest mb-1">{spec.label}</p>
-                      <p className="text-white text-sm font-heading uppercase">{spec.value}</p>
+                      <p className="text-white text-[11px] md:text-sm font-heading uppercase leading-tight">{spec.value}</p>
                     </div>
                   ))}
                 </div>

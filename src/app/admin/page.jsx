@@ -101,12 +101,20 @@ export default function AdminDashboard() {
              </div>
              
              <div className="flex flex-col gap-2">
-                <Button variant="outline" onClick={fetchRegistrations} className="h-10 px-4 bg-zinc-900 border-white/10 hover:bg-zinc-800 transition-all rounded-xl">
-                  <RefreshCw className={loading ? "w-4 h-4 mr-2 animate-spin" : "w-4 h-4 mr-2"} /> REFRESH
+                <Button 
+                  onClick={() => router.push("/admin/leaderboard")}
+                  className="h-10 px-4 bg-primary text-black hover:scale-105 transition-all rounded-xl font-bold text-[10px] tracking-widest shadow-[0_0_20px_rgba(255,165,0,0.2)]"
+                >
+                   <Trophy className="w-4 h-4 mr-2" /> LEADERBOARD CONSOLE
                 </Button>
-                <Button variant="ghost" onClick={logout} className="h-10 px-4 text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
-                  <LogOut className="w-4 h-4 mr-2" /> EXIT
-                </Button>
+                <div className="flex gap-2">
+                   <Button variant="outline" onClick={fetchRegistrations} className="flex-1 h-10 px-4 bg-zinc-900 border-white/10 hover:bg-zinc-800 transition-all rounded-xl text-[10px] tracking-widest">
+                     <RefreshCw className={loading ? "w-4 h-4 mr-2 animate-spin" : "w-4 h-4 mr-2"} /> REFRESH
+                   </Button>
+                   <Button variant="ghost" onClick={logout} className="h-10 px-4 text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                     <LogOut className="w-4 h-4" />
+                   </Button>
+                </div>
              </div>
           </div>
         </div>
