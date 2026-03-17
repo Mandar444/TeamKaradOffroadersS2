@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Gauge, Fuel, Cog, Zap, Shield, Award } from "lucide-react";
+import { Gauge, Fuel, Cog, Zap, Shield, ShieldCheck } from "lucide-react";
 
 const beasts = [
   {
