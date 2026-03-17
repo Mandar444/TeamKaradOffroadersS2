@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await initSheets();

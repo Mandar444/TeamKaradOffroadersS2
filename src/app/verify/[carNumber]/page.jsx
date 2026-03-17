@@ -16,13 +16,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import Link from "next/link";
-
-const CATEGORIES = {
-  "PETROL_MODIFIED": { name: "Petrol Modified", color: "from-orange-500 to-red-600" },
-  "DIESEL_MODIFIED": { name: "Diesel Modified", color: "from-blue-500 to-indigo-600" },
-  "STOCK": { name: "Stock 4x4", color: "from-emerald-500 to-teal-600" }
-};
-
+import { CATEGORIES } from "@/config/pricing";
 export default function MobileVerifyPage({ params }) {
   // Safe param extraction for Next.js 15+
   const resolvedParams = use(params);
