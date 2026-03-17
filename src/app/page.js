@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Hero from "@/components/sections/Hero";
 import CarCategories from "@/components/sections/Categories";
-
+import PastEvents from "@/components/sections/PastEvents";
 import Intro from "@/components/sections/Intro";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -16,11 +16,14 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    const skipIntro = sessionStorage.getItem("tko_skip_intro");
-    if (!skipIntro) {
-      setShowIntro(true);
-    }
+    const timer = setTimeout(() => {
+      setIsClient(true);
+      const skipIntro = sessionStorage.getItem("tko_skip_intro");
+      if (!skipIntro) {
+        setShowIntro(true);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleComplete = () => {
@@ -64,6 +67,7 @@ export default function Home() {
         
         <div className="bg-zinc-950">
           <CarCategories />
+          <PastEvents />
 
           {/* Call to Action Section */}
           <section className="py-20 md:py-32 px-6 bg-primary/5">
@@ -89,7 +93,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
                 <div>
                   <h4 className="font-heading text-white text-base md:text-lg mb-4">TEAM KARAD <span className="text-primary truncate">OFF-ROADERS</span></h4>
-                  <p className="text-zinc-600 text-xs md:text-sm leading-relaxed mb-4">India's most thrilling off-road championship. Born from dust, built for glory.</p>
+                  <p className="text-zinc-600 text-xs md:text-sm leading-relaxed mb-4">India&apos;s most thrilling off-road championship. Born from dust, built for glory.</p>
                   <div className="space-y-2 text-xs text-zinc-500">
                     <p className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer" onClick={() => window.open('https://maps.app.goo.gl/UcCbnHEk2i14xePK7', '_blank')}>
                       <MapPin className="w-3 h-3 text-primary" /> Karad, Maharashtra

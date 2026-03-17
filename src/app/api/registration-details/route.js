@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
+import { CATEGORIES } from "@/config/pricing";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -15,14 +16,18 @@ export async function GET(request) {
 
     if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+    const category = row.get("category");
+    // Dynamically retrieve the latest fee for the category, fallback to saved amount if category not found
+    const currentFee = CATEGORIES[category]?.fee || row.get("amount_paid");
+
     return NextResponse.json({
       id: row.get("reg_id"),
       team_name: row.get("team_name"),
       driver_name: row.get("driver_name"),
       codriver_name: row.get("codriver_name"),
       car_number: row.get("car_number"),
-      category: row.get("category"),
-      amount: row.get("amount_paid"),
+      category: category,
+      amount: currentFee,
       status: row.get("status")
     });
   } catch (error) {

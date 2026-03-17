@@ -34,8 +34,8 @@ export default function MobileVerifyPage({ params }) {
 
   useEffect(() => {
     if (!carNumber) {
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => setLoading(false), 0);
+      return () => clearTimeout(timer);
     }
 
     fetch("/api/teams")
