@@ -44,12 +44,12 @@ export default function SuccessPage() {
                <p className="text-primary text-[10px] font-black uppercase tracking-[0.8em] leading-none">Registration Finalized</p>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-heading text-white tracking-tighter uppercase leading-[0.85] mb-8">
-              PREPARE FOR <span className="text-primary italic"> IMPACT.</span>
+            <h1 className="text-5xl md:text-7xl font-heading text-white tracking-tighter uppercase leading-[0.85] mb-8">
+              PAYMENT <span className="text-primary italic"> UNDER REVIEW.</span>
             </h1>
 
             <p className="text-zinc-500 text-xl max-w-lg font-medium leading-relaxed mb-12">
-              Your entry package has been successfully processed. You are now officially recognized in the competition grid for Karad 2026.
+              Please wait until we verify your payment. Your entry status will be updated to Confirmed once the transaction is validated by our team.
             </p>
 
             {/* Technical Reference ID */}
@@ -69,7 +69,7 @@ export default function SuccessPage() {
                 href="/" 
                 className={cn(buttonVariants({ size: "lg" }), "h-16 px-12 bg-primary text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.05] transition-transform flex items-center justify-center")}
               >
-                RETURN TO HQ
+                BACK TO HOME
               </Link>
               <Link 
                 href="/teams" 
