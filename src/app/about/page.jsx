@@ -6,11 +6,8 @@ import Link from "next/link";
 import { Target, Heart, Shield, Zap, Users, Trophy, MapPin, Calendar, Activity, ShieldCheck, Globe, Instagram, Newspaper, Share2 } from "lucide-react";
 
 const milestones = [
-  { year: "2015", title: "Ignition", desc: "A group of off-road enthusiasts from Karad came together with a shared vision — to bring world-class motorsport to Western Maharashtra." },
-  { year: "2020", title: "First Ascent", desc: "Team Karad Off-Roaders organized its inaugural off-road rally with 40 participants, setting the standard for competitive off-roading in the region." },
-  { year: "2022", title: "National Radius", desc: "With over 100 participants and coverage from major motorsport outlets, Team Karad Off-Roaders became a nationally recognized off-road force." },
-  { year: "2024", title: "Season 1 Apex", desc: "The first full-season championship format was introduced, attracting elite teams from across India." },
-  { year: "2025", title: "The Event Success", desc: "Flagship 'Team Karad Off-Road Event' establishes itself as a fast-growing platform for automotive brands and drivers." },
+  { year: "2015", title: "Ignition", desc: "Team Karad Offroaders was founded by a passionate group of 4x4 enthusiasts with a vision to bring professional off-road motorsport to Western Maharashtra." },
+  { year: "2026", title: "Season 1", desc: "The definitive championship format launched, establishing a high-end platform for elite off-roaders across India to compete in a professional environment." },
 ];
 
 const values = [

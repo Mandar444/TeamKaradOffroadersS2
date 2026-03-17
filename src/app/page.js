@@ -64,7 +64,6 @@ export default function Home() {
         
         <div className="bg-zinc-950">
           <CarCategories />
-          <PastEvents />
 
           {/* Call to Action Section */}
           <section className="py-20 md:py-32 px-6 bg-primary/5">
@@ -104,9 +103,8 @@ export default function Home() {
                   <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Navigate</p>
                   <div className="flex flex-col gap-2 text-sm text-zinc-600">
                     <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
-                    <Link href="/events" className="hover:text-white transition-colors">Events</Link>
-                    <Link href="/achievements" className="hover:text-white transition-colors">Achievements</Link>
                     <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
+                    <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
                   </div>
                 </div>
                 <div>

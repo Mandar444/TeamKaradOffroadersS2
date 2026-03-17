@@ -5,58 +5,76 @@ import { Gauge, Fuel, Cog, Zap, Shield, Award } from "lucide-react";
 
 const beasts = [
   {
-    name: "The Destroyer",
-    type: "Mahindra Thar CRDe",
-    category: "Diesel Modified",
+    name: "Dominator",
+    type: "PROFESSIONAL_BUILD",
+    category: "EXPERT_CATEGORY",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "2.5L CRDe Turbo", power: "320 BHP", torque: "650 Nm", tyres: "35\" Maxxis Bighorn" },
-    wins: 12,
-    desc: "The undisputed king of Team Karad Off-Roaders. Modified beyond recognition with a custom roll cage, long-travel suspension, and a remapped ECU pushing 320 horses."
+    specs: { engine: "Engineered High-Torque", power: "Lockers / Fiddle Brakes", torque: "Extreme Climbing", tyres: "High performance offroad" },
+    wins: "S1_GRID",
+    desc: "Dominator is one of the flagship off-road machines of Team Karad Offroaders, purpose-built to compete in professional off-road competitions. Equipped with front and rear differential lockers, fiddle brakes for precise wheel control, and a powerful engineered engine that provides the torque needed to conquer steep climbs, deep mud, and rocky trails."
   },
   {
-    name: "Mud Phantom",
-    type: "Maruti Gypsy King",
-    category: "Petrol Modified",
+    name: "Dynamite",
+    type: "TECHNICAL_RIVAL",
+    category: "EXPERT_CATEGORY",
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "1.3L G13BB Turbo", power: "180 BHP", torque: "280 Nm", tyres: "33\" BF Goodrich KM3" },
-    wins: 8,
-    desc: "Lightweight, agile, and wickedly fast. This turbocharged Gypsy has demolished every time attack record in Team Karad Off-Roaders history."
+    specs: { engine: "Finely Tuned Offroad", power: "Lockers / Fiddle Brakes", torque: "6-Point Roll Cage", tyres: "Performance Tyres" },
+    wins: "S1_GRID",
+    desc: "Engineered with a focus on agility, traction, and strength, Dynamite has been heavily modified to perform under the toughest off-road conditions. With front and rear differential lockers and a precise fiddle brake setup, the vehicle offers exceptional control, allowing the driver to navigate tight technical sections with accuracy."
   },
   {
-    name: "Iron Fist",
-    type: "Toyota Land Cruiser",
-    category: "Diesel Modified",
+    name: "Jeep 3210",
+    type: "MANOEUVER_EXPERT",
+    category: "EXPERT_CATEGORY",
     image: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "4.2L 1HZ Diesel", power: "280 BHP", torque: "720 Nm", tyres: "37\" Mickey Thompson" },
-    wins: 6,
-    desc: "Built like a tank. This Land Cruiser is an absolute mountain goat — no terrain is too extreme, no gradient too steep."
+    specs: { engine: "Reverse Steering +", power: "Lockers / Fiddle Brakes", torque: "6-Point Roll Cage", tyres: "Technical Spec" },
+    wins: "S1_GRID",
+    desc: "What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles. It is a highly capable machine built for serious off-road competition, producing greater power output through a high-end performance engine."
   },
   {
-    name: "Shadow Runner",
-    type: "Mahindra Thar DI",
-    category: "Stock 4x4",
+    name: "Ashwamedh",
+    type: "POWER_SYMBOL",
+    category: "EXPERT_CATEGORY",
     image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "2.6L DI NA", power: "63 BHP", torque: "180 Nm", tyres: "31\" AT Tyres" },
-    wins: 4,
-    desc: "Proof that stock vehicles can conquer anything. Minimal modifications, maximum heart — a true underdog story."
+    specs: { engine: "Expert Category", power: "Immense Horsepower", torque: "Track Dominance", tyres: "Offroad Beast" },
+    wins: "S1_GRID",
+    desc: "Ashwamedh represents speed, endurance, and commanding performance. At first glance, it may appear like a regular jeep, but once it enters the track, it transforms into a true off-road beast, charging through obstacles with the strength and agility of a powerful horse."
   },
   {
-    name: "Trail Breaker",
-    type: "Force Gurkha",
-    category: "Diesel Modified",
+    name: "Club 33",
+    type: "STRENGTH_REFINED",
+    category: "DIESEL_MODIFIED",
     image: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "2.6L Mercedes OM616", power: "240 BHP", torque: "520 Nm", tyres: "35\" Interco Super Swamper" },
-    wins: 5,
-    desc: "The dark horse. This Gurkha may look stock from the outside, but underneath lies a Mercedes heart with serious off-road capabilities."
+    specs: { engine: "Refined Tuning", power: "Confidence built", torque: "Spirit of Adventure", tyres: "Offroad Action" },
+    wins: "S1_GRID",
+    desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team."
   },
   {
-    name: "Nitro Blaze",
-    type: "Suzuki Jimny",
-    category: "Jimny SUV",
+    name: "Major",
+    type: "STOCK_WARRIOR",
+    category: "STOCK_CATEGORY",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
-    specs: { engine: "1.5L K15B Petrol", power: "105 BHP", torque: "138 Nm", tyres: "29\" AT Tyres" },
-    wins: 3,
-    desc: "Small, nimble, and unstoppable. The Jimny's compact size makes it the perfect weapon for tight, technical trails."
+    specs: { engine: "Original Setup", power: "Complete Stock", torque: "Skill Over Tech", tyres: "Factory Spec" },
+    wins: "S1_GRID",
+    desc: "Major is the stock warrior, proving that true capability lies in simplicity and skill. Maintaining a jeep in complete stock condition and still pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence."
+  },
+  {
+    name: "Conqueror",
+    type: "ARMY_SPEC_RIG",
+    category: "EXPERT_CATEGORY",
+    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    specs: { engine: "Army Rig Upgrade", power: "4-Point Outer Cage", torque: "Military Origins", tyres: "Technical Traction" },
+    wins: "S1_GRID",
+    desc: "Originally an army-spec rig known for its rugged reliability. Extensively transformed into a purpose-built off-road racer, Conqueror features performance upgrades for mud tracks, rocky sections, and steep climbs, with a reinforced 4-point outer roll cage for safety."
+  },
+  {
+    name: "Stallion",
+    type: "TEAM_BACKBONE",
+    category: "SUPPORT_STATION",
+    image: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
+    specs: { engine: "1998 Army Truck", power: "Support Essential", torque: "Logistics Hub", tyres: "Military Grade" },
+    wins: "BACKBONE",
+    desc: "Originally a 1998 Indian Army Stallion ambulance, this rugged military truck has been converted into a full-scale off-road support vehicle. known as the backbone of the team, carrying spare parts, recovery gear, and technical tools needed during competitions."
   },
 ];
 
@@ -104,8 +122,8 @@ export default function BeastsPage() {
                   <span className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl text-primary text-[10px] font-black uppercase tracking-widest">
                     {beast.category}
                   </span>
-                  <span className="flex items-center gap-1.5 text-zinc-500 text-xs font-bold">
-                    <Award className="w-4 h-4 text-primary" /> {beast.wins} Wins
+                  <span className="flex items-center gap-1.5 text-zinc-500 text-xs font-bold uppercase tracking-widest whitespace-nowrap">
+                    <ShieldCheck className="w-4 h-4 text-primary" /> {beast.wins}
                   </span>
                 </div>
 

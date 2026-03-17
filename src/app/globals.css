@@ -167,6 +167,15 @@ h1, h2, h3, .font-heading {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.02em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+button, .button, a {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 

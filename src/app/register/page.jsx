@@ -188,12 +188,12 @@ export default function RegisterPage() {
                   <div className="space-y-4 p-6 md:p-8 bg-zinc-900/40 rounded-2xl md:rounded-[2rem] border border-white/5">
                     <Label className="text-primary text-[10px] font-black tracking-[0.4em] uppercase">Vessel Category Authorization *</Label>
                     <Select onValueChange={(v) => setValue("category", v)} defaultValue="DIESEL_MODIFIED">
-                      <SelectTrigger className="h-14 md:h-16 bg-black/60 border-white/5 rounded-xl md:rounded-2xl text-lg md:text-xl font-heading text-white tracking-widest">
+                      <SelectTrigger className="h-14 md:h-16 bg-black/60 border-white/5 rounded-xl md:rounded-2xl text-xs sm:text-base md:text-xl font-heading text-white tracking-widest overflow-hidden">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-zinc-900 border-white/10 text-white">
                         {Object.entries(CATEGORIES).map(([key, cat]) => (
-                          <SelectItem key={key} value={key} className="h-12 md:h-14 font-heading text-base md:text-lg tracking-widest">{cat.name} (₹{cat.fee.toLocaleString()})</SelectItem>
+                          <SelectItem key={key} value={key} className="h-12 md:h-14 font-heading text-xs sm:text-lg tracking-widest">{cat.name} (₹{cat.fee.toLocaleString()})</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -241,9 +241,10 @@ export default function RegisterPage() {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
                     }} 
-                    className="w-full h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] active:scale-95 transition-all text-xs md:text-base flex items-center justify-center"
+                    className="w-full h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] active:scale-95 transition-all text-[10px] sm:text-xs md:text-base flex items-center justify-center p-2"
                   >
-                    <span>NEXT: CO-DRIVER DETAILS <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" /></span>
+                    <span className="truncate">NEXT: CO-DRIVER DETAILS</span>
+                    <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5 shrink-0" />
                   </Button>
                 </div>
               </motion.div>
@@ -297,7 +298,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest hover:text-white text-xs md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
+                    <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest hover:text-white text-[10px] md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
                     <Button 
                       type="button" 
                       onClick={async () => {
@@ -307,9 +308,10 @@ export default function RegisterPage() {
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }
                       }} 
-                      className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] transition-all text-xs md:text-base flex items-center justify-center"
+                      className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] transition-all text-[10px] md:text-base flex items-center justify-center p-2"
                     >
-                      <span>NEXT: BIO-DATA <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" /></span>
+                      <span className="truncate">NEXT: BIO-DATA</span>
+                      <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5 shrink-0" />
                     </Button>
                   </div>
                 </div>
@@ -383,7 +385,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                    <Button type="button" variant="outline" onClick={() => setStep(2)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest hover:text-white text-xs md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
+                    <Button type="button" variant="outline" onClick={() => setStep(2)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest hover:text-white text-[10px] md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
                     <Button 
                       type="button" 
                       onClick={async () => {
@@ -393,9 +395,10 @@ export default function RegisterPage() {
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }
                       }} 
-                      className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] transition-all text-xs md:text-base flex items-center justify-center"
+                      className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl hover:scale-[1.02] transition-all text-[10px] md:text-base flex items-center justify-center p-2"
                     >
-                      <span>FINAL STEP: GRID PASS <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" /></span>
+                      <span className="truncate">FINAL STEP: GRID PASS</span>
+                      <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5 shrink-0" />
                     </Button>
                   </div>
                 </div>
@@ -437,16 +440,16 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-12">
-                    <Button type="button" variant="outline" onClick={() => setStep(3)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest text-xs md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
+                    <Button type="button" variant="outline" onClick={() => setStep(3)} className="w-full sm:flex-1 h-14 md:h-16 border-white/10 rounded-xl md:rounded-2xl text-zinc-500 font-black uppercase tracking-widest text-[10px] md:text-sm"><ChevronLeft className="mr-2 w-4 h-4 md:w-5 md:h-5" /> BACK</Button>
                     <Button 
                       disabled={!selectedNumber || loading} 
                       type="submit" 
                       className={cn(
-                        "w-full sm:flex-[2.5] h-14 md:h-16 text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl transition-all shadow-[0_0_60px_rgba(255,165,0,0.3)] text-xs md:text-base flex items-center justify-center",
+                        "w-full sm:flex-[2.5] h-14 md:h-16 text-black font-black uppercase tracking-wider rounded-xl md:rounded-2xl transition-all shadow-[0_0_60px_rgba(255,165,0,0.3)] text-[10px] md:text-base flex items-center justify-center p-2",
                         selectedNumber ? "bg-primary" : "bg-zinc-800 text-zinc-600 grayscale opacity-50 cursor-not-allowed"
                       )}
                     >
-                      {loading ? "AUTHORIZING..." : "CONFIRM & PAY"}
+                      <span className="truncate">{loading ? "AUTHORIZING..." : "CONFIRM & PAY"}</span>
                     </Button>
                   </div>
                 </div>
