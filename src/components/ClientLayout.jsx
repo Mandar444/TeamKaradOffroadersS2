@@ -31,8 +31,7 @@ export default function ClientLayout({ children }) {
              href="/register"
              className="flex items-center gap-3 bg-primary text-black px-6 py-4 rounded-full font-black uppercase tracking-widest text-xs md:text-sm shadow-[0_10px_40px_rgba(255,165,0,0.4)] hover:shadow-[0_15px_50px_rgba(255,165,0,0.6)] transition-all"
           >
-             <span className="hidden md:inline">DEPLOY ENTRY</span>
-             <span className="inline md:hidden">REGISTER</span>
+             <span>DEPLOY ENTRY</span>
              <Zap className="w-5 h-5 fill-black" />
           </Link>
         </motion.div>

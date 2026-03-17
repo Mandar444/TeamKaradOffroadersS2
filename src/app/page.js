@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Hero from "@/components/sections/Hero";
 import CarCategories from "@/components/sections/Categories";
-import PastEvents from "@/components/sections/PastEvents";
+
 import Intro from "@/components/sections/Intro";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -78,7 +78,7 @@ export default function Home() {
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-12 text-sm md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
-                <span className="skew-x-[12deg] whitespace-nowrap">REGISTER FOR SEASON 1</span>
+                <span className="skew-x-[12deg] whitespace-nowrap uppercase">DEPLOY ENTRY</span>
               </Link>
             </div>
           </section>
@@ -128,7 +128,7 @@ export default function Home() {
                       <Instagram className="w-5 h-5" />
                       <span className="text-sm">5,000+ Followers</span>
                     </a>
-                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-widest uppercase">Register Now</Link>
+                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-[.3em] uppercase">DEPLOY ENTRY</Link>
                   </div>
                 </div>
               </div>

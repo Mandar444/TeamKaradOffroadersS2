@@ -18,10 +18,10 @@ const values = [
 ];
 
 const highlights = [
-  { icon: Users, stat: "80+", label: "Elite Participants", sub: "Professional Drivers" },
-  { icon: Globe, stat: "7+", label: "Indian States", sub: "National Reach" },
-  { icon: Activity, stat: "35K+", label: "Live Spectators", sub: "3-Day Event" },
-  { icon: Share2, stat: "2M+", label: "Social Reach", sub: "Organic Engagement" },
+  { icon: Users, stat: "160+", label: "Elite Slots", sub: "Season 1 Drivers" },
+  { icon: Globe, stat: "PAN", label: "National Grid", sub: "All India Entry" },
+  { icon: Activity, stat: "8+", label: "Tech Categories", sub: "Vehicle Spec" },
+  { icon: Shield, stat: "100%", label: "TKO Verified", sub: "Official Safety" },
 ];
 
 export default function AboutPage() {
@@ -123,9 +123,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 3. FLAGSHIP SUCCESS HIGHLIGHTS (The Jaw-Dropping Part) */}
+      {/* 3. SEASON 1 READINESS */}
       <section className="py-20 md:py-40 bg-zinc-950 relative overflow-hidden">
-        {/* Animated Background Lines */}
         <div className="absolute inset-0 opacity-10">
            {[...Array(5)].map((_, i) => (
              <motion.div
@@ -140,17 +139,16 @@ export default function AboutPage() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Archive: Season 1</h3>
+             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Current Mission: Season 1</h3>
              <h2 className="text-6xl md:text-9xl font-heading text-white uppercase tracking-tighter leading-none mb-8">
-               MEGA <span className="text-primary italic">SUCCESS</span>
+               READY FOR <span className="text-primary italic">DEPLOYMENT</span>
              </h2>
              <p className="text-zinc-500 text-xl max-w-3xl mx-auto font-medium">
-               A tremendous success that established the Team Karad Off-Road Event as 
-               a world-class platform for motorsport and adventure.
+               A high-fidelity championship platform establishing a world-class venue 
+               for motorsport and adventure in Western Maharashtra.
              </p>
           </div>
 
-          {/* Large Impact Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
              {highlights.map((h, idx) => (
                <motion.div
@@ -168,59 +166,6 @@ export default function AboutPage() {
                  <p className="text-zinc-500 font-medium text-sm">{h.sub}</p>
                </motion.div>
              ))}
-          </div>
-
-          {/* Success Story Blocks */}
-          <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-10">
-             <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               className="p-10 border border-white/5 rounded-3xl bg-black/40 backdrop-blur-md"
-             >
-                <div className="flex items-center gap-4 mb-6 text-primary">
-                   <Newspaper className="w-6 h-6" />
-                   <h5 className="font-black uppercase tracking-widest text-sm">Media Presence</h5>
-                </div>
-                 <p className="text-zinc-400 leading-relaxed font-medium">
-                   Regional newspaper coverage and 160+ off-road vehicles present on-site, 
-                   establishing Team Karad Off-Roaders as a fast-growing stage for automotive brands.
-                </p>
-             </motion.div>
-
-             <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: 0.1 }}
-               className="p-10 border border-white/5 rounded-3xl bg-black/40 backdrop-blur-md hover:scale-105 transition-transform"
-             >
-                <div className="flex items-center gap-4 mb-6 text-primary">
-                   <Users className="w-6 h-6" />
-                   <h5 className="font-black uppercase tracking-widest text-sm">Diversity & Spirit</h5>
-                </div>
-                <p className="text-zinc-400 leading-relaxed font-medium">
-                   Drivers from Maharashtra, Goa, Karnataka, Kerala, Gujarat, Delhi, and Rajasthan 
-                   brought strong diversity and competitive fire to the event.
-                </p>
-             </motion.div>
-
-             <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: 0.2 }}
-               className="p-10 border border-white/5 rounded-3xl bg-black/40 backdrop-blur-md"
-             >
-                <div className="flex items-center gap-4 mb-6 text-primary">
-                   <ShieldCheck className="w-6 h-6" />
-                   <h5 className="font-black uppercase tracking-widest text-sm">Emergency Support</h5>
-                </div>
-                <p className="text-zinc-400 leading-relaxed font-medium">
-                   Our team actively assists during road accidents and floods, using our specialized 
-                   expertise to reach areas where regular vehicles simply cannot.
-                </p>
-             </motion.div>
           </div>
         </div>
       </section>
@@ -322,9 +267,9 @@ export default function AboutPage() {
                </p>
                <Link
                   href="/register"
-                  className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base"
+                  className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base border-none"
                >
-                  <span className="whitespace-nowrap">REGISTER NOW</span>
+                  <span className="whitespace-nowrap">DEPLOY ENTRY</span>
                </Link>
             </div>
          </motion.div>

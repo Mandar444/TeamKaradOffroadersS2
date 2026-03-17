@@ -81,7 +81,7 @@ export default function Hero() {
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
-                <span className="skew-x-[12deg] whitespace-nowrap">REGISTER FOR SEASON 1</span>
+                <span className="skew-x-[12deg] whitespace-nowrap uppercase">DEPLOY ENTRY</span>
               </Link>
             <Link 
               href="/teams" 

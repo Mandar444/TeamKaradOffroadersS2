@@ -90,9 +90,9 @@ export default function Navbar() {
             </a>
             <Link
               href="/register"
-              className="ml-2 px-5 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0 flex items-center justify-center"
+              className="ml-2 px-5 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0 flex items-center justify-center border-none"
             >
-              REGISTER
+              DEPLOY ENTRY
             </Link>
           </div>
 
@@ -146,9 +146,9 @@ export default function Navbar() {
               >
                 <Link
                   href="/register"
-                  className="flex h-16 w-full items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm"
+                  className="flex h-16 w-full items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm border-none"
                 >
-                  <span className="whitespace-nowrap">REGISTER NOW</span>
+                  <span className="whitespace-nowrap uppercase">DEPLOY ENTRY</span>
                 </Link>
                 <a
                   href="https://www.instagram.com/teamkaradoffroaders/"
