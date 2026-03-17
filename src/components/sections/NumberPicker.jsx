@@ -41,7 +41,7 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
                   isSelected 
                     ? "bg-primary text-black border-primary neon-glow z-10 scale-110" 
                     : isTaken
-                      ? "bg-red-950/20 text-red-900 border-red-900/30 cursor-not-allowed grayscale"
+                      ? "bg-red-950 border-red-900 text-red-500 cursor-not-allowed opacity-50"
                       : "bg-zinc-900/30 text-zinc-500 border-zinc-800 hover:border-zinc-500 hover:text-white"
                 )}
               >

@@ -119,8 +119,8 @@ export default function RegisterPage() {
       });
 
       const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.success && data.id) {
+        window.location.href = `/payment/${data.id}`;
       } else {
         alert(data.error || "Registration failed. Please try again.");
       }
