@@ -218,6 +218,18 @@ export default function PaymentPage() {
                   >
                     {loading ? "VERIFYING..." : "FINISH REGISTRATION →"}
                   </Button>
+
+                  <div className="pt-4 text-center">
+                    <p className="text-zinc-600 text-[9px] uppercase font-black tracking-widest mb-3">Upload Issues?</p>
+                    <a 
+                      href={`https://wa.me/917020440073?text=${encodeURIComponent(`Hi TKO, I am facing an issue uploading my screenshot for Reference: ${id}. Here is my proof.`)}`}
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:scale-105 transition-all"
+                    >
+                       <Phone className="w-3.5 h-3.5" /> Submit via WhatsApp Direct
+                    </a>
+                  </div>
                 </form>
               </div>
             </CardContent>

@@ -230,14 +230,23 @@ export default function AdminDashboard() {
                                      <CreditCard className="w-3.5 h-3.5 text-zinc-600" />
                                      <span className="font-mono text-zinc-400 text-xs font-black tracking-widest">{reg.utr_number || "NO UTR"}</span>
                                   </div>
-                                  {reg.screenshot_link && (
+                                  {reg.screenshot_link ? (
                                      <a 
                                        href={reg.screenshot_link} 
                                        target="_blank" 
                                        rel="noreferrer"
-                                       className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#f09433] hover:text-white transition-colors"
+                                       className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-white transition-colors"
                                      >
-                                       View Receipt <LayoutDashboard className="w-3 h-3" />
+                                       View Evidence <LayoutDashboard className="w-3 h-3" />
+                                     </a>
+                                  ) : (
+                                     <a 
+                                       href={`https://wa.me/91${reg.driver_phone}?text=${encodeURIComponent(`Hi ${reg.driver_name}, your TKO Registration (${reg.reg_id}) screenshot was not received. Please send it here for verification.`)}`}
+                                       target="_blank" 
+                                       rel="noreferrer"
+                                       className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition-colors animate-pulse"
+                                     >
+                                       Request via Comms <Phone className="w-3 h-3" />
                                      </a>
                                   )}
                                </div>
