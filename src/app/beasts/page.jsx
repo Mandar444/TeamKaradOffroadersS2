@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Gauge, Fuel, Cog, Zap, ArrowRight, ShieldCheck, Trophy, Info } from "lucide-react";
+import { Gauge, Fuel, Cog, Zap, ArrowRight, ShieldCheck, Trophy, Info, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/utils";

@@ -123,7 +123,7 @@ export default function RegulationsPage() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    {sections[0].content.mandatory.map((item, i) => (
+                    {sections.find(s => s.id === "mandatory")?.content.mandatory.map((item, i) => (
                       <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -149,7 +149,7 @@ export default function RegulationsPage() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    {sections[0].content.recommended.map((item, i) => (
+                    {sections.find(s => s.id === "mandatory")?.content.recommended.map((item, i) => (
                       <motion.div 
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -181,7 +181,7 @@ export default function RegulationsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-zinc-950/40 backdrop-blur-3xl">
-                    {sections[1].specs.map((spec, i) => (
+                    {sections.find(s => s.id === "expert-extreme")?.specs.map((spec, i) => (
                       <tr key={i} className="border-b border-white/5 group hover:bg-white/5 transition-colors">
                         <td className="p-6 font-heading text-primary uppercase text-xs tracking-widest border-r border-white/5 bg-zinc-900/40">{spec.label}</td>
                         <td className="p-6 text-zinc-400 text-xs leading-relaxed border-r border-white/5">{spec.expertD}</td>
@@ -207,7 +207,7 @@ export default function RegulationsPage() {
                        DIESEL <span className="text-zinc-500">STOCK</span>
                     </h3>
                     <div className="space-y-6 relative z-10">
-                       {sections[2].specs.map((s, i) => (
+                       {sections.find(s => s.id === "stock-ndms")?.specs.map((s, i) => (
                          <div key={i} className="flex flex-col gap-2">
                            <p className="text-primary text-[10px] font-black uppercase tracking-widest opacity-60">{s.label}</p>
                            <p className="text-zinc-300 font-medium leading-relaxed">{s.diesel}</p>
@@ -223,7 +223,7 @@ export default function RegulationsPage() {
                        PETROL <span className="text-zinc-500">STOCK</span>
                     </h3>
                     <div className="space-y-6 relative z-10">
-                       {sections[2].specs.map((s, i) => (
+                       {sections.find(s => s.id === "stock-ndms")?.specs.map((s, i) => (
                          <div key={i} className="flex flex-col gap-2">
                            <p className="text-primary text-[10px] font-black uppercase tracking-widest opacity-60">{s.label}</p>
                            <p className="text-zinc-300 font-medium leading-relaxed">{s.petrol}</p>
@@ -246,7 +246,7 @@ export default function RegulationsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-zinc-950/40 backdrop-blur-3xl">
-                    {sections[3].specs.map((spec, i) => (
+                    {sections.find(s => s.id === "suv-class")?.specs.map((spec, i) => (
                       <tr key={i} className="border-b border-white/5 group hover:bg-white/5 transition-colors">
                         <td className="p-6 font-heading text-primary uppercase text-xs tracking-widest border-r border-white/5 bg-zinc-900/40">{spec.label}</td>
                         <td className="p-6 text-zinc-400 text-xs leading-relaxed border-r border-white/5">{spec.stock}</td>
