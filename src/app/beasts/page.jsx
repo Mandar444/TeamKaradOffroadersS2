@@ -10,34 +10,34 @@ const beasts = [
   {
     id: "dominator",
     name: "Dominator",
-    type: "PROFESSIONAL_BUILD",
-    category: "EXPERT_CATEGORY",
-    image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "High-Torque", grip: "Offroad Spec", tech: "Fiddle Brakes" }
+    category: "Extreme Expert",
+    type: "Professional Offroad Build",
+    image: "/images/beasts/dominator/dominator-hero.jpg",
+    stats: { engine: "Engineered", lockers: "Front/Rear", brakes: "Fiddle" }
   },
   {
     id: "dynamite",
     name: "Dynamite",
-    type: "TECHNICAL_RIVAL",
-    category: "EXPERT_CATEGORY",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Finely Tuned", grip: "Extreme Traction", tech: "Lockers" }
+    category: "Amateur Stock",
+    type: "Technical Rival Build",
+    image: "/images/beasts/dynamite/dynamite-hero.jpg",
+    stats: { engine: "Stock Performance", category: "Standard", body: "Modified" }
   },
   {
     id: "jeep-3210",
     name: "Jeep 3210",
-    type: "MANOEUVER_EXPERT",
-    category: "EXPERT_CATEGORY",
-    image: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Performance", grip: "Technical Spec", tech: "Reverse Steer" }
+    category: "Expert Category",
+    type: "Precision Offroad Build",
+    image: "/images/beasts/jeep3210/jeep3210-hero.jpg",
+    stats: { engine: "Precision", lockers: "Front/Rear", tech: "Reliable" }
   },
   {
     id: "ashwamedh",
     name: "Ashwamedh",
-    type: "POWER_SYMBOL",
-    category: "EXPERT_CATEGORY",
-    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Immense HP", grip: "Track Beast", tech: "Reinforced" }
+    category: "Expert Category",
+    type: "Power Symbol Build",
+    image: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
+    stats: { engine: "Immense HP", body: "Reinforced", chassis: "Competition" }
   },
   {
     id: "club-33",
@@ -114,9 +114,8 @@ function BeastCard({ beast, idx }) {
           
           {/* Parallax Image Layer */}
           <motion.div 
-            style={{ x: imgX, y: imgY, scale: 1.15 }}
+            style={{ x: imgX, y: imgY, scale: 1.15, backgroundImage: `url(${beast.image})` }}
             className="absolute inset-0 bg-cover bg-center grayscale-[0.8] group-hover:grayscale-0 transition-all duration-700"
-            style={{ backgroundImage: `url(${beast.image})` }}
           />
           
           {/* Glass Overlay with Vignette */}

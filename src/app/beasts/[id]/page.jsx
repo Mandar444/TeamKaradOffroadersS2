@@ -12,7 +12,7 @@ const beastData = {
     name: "Dominator",
     type: "PROFESSIONAL_BUILD",
     category: "EXPERT_CATEGORY",
-    heroImage: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    heroImage: "/images/beasts/dominator/dominator-hero.jpg",
     desc: "Dominator is one of the flagship off-road machines of Team Karad Offroaders, purpose-built to compete in professional off-road competitions. Equipped with front and rear differential lockers, fiddle brakes for precise wheel control, and a powerful engineered engine that provides the torque needed to conquer steep climbs, deep mud, and rocky trails.",
     specs: [
       { label: "Engine", value: "Engineered High-Torque", icon: Fuel },
@@ -21,59 +21,63 @@ const beastData = {
       { label: "Tactical", value: "High performance offroad", icon: Cog },
     ],
     gallery: [
-      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
+      "/images/beasts/dominator/dominator-1.jpg",
+      "/images/beasts/dominator/dominator-2.jpg",
+      "/images/beasts/dominator/dominator-3.jpg",
+      "/images/beasts/dominator/dominator-4.jpg",
     ]
   },
   dynamite: {
-     name: "Dynamite",
-     type: "TECHNICAL_RIVAL",
-     category: "EXPERT_CATEGORY",
-     heroImage: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
-     desc: "Engineered with a focus on agility, traction, and strength, Dynamite has been heavily modified to perform under the toughest off-road conditions. With front and rear differential lockers and a precise fiddle brake setup, the vehicle offers exceptional control, allowing the driver to navigate tight technical sections with accuracy.",
-     specs: [
-       { label: "Engine", value: "Finely Tuned Offroad", icon: Fuel },
-       { label: "Power", value: "Lockers / Fiddle Brakes", icon: Zap },
-       { label: "Body", value: "6-Point Roll Cage", icon: Gauge },
-       { label: "Tyres", value: "Performance Tyres", icon: Cog },
-     ],
-     gallery: [
-       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
-       "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
-     ]
+    name: "Dynamite",
+    type: "STOCK_CATEGORY_SPEC",
+    category: "AMATEUR_STOCK",
+    heroImage: "/images/beasts/dynamite/dynamite-hero.jpg",
+    desc: "Dynamite is a testament to the skill of the driver and the reliability of stock engineering. Competing in the stock categories, it represents the pure essence of off-roading where technical precision on the trail outweighs pure horsepower.",
+    specs: [
+      { label: "Category", value: "Stock Performance", icon: Gauge },
+      { label: "Control", value: "Precision Steering", icon: Zap },
+      { label: "Reliability", value: "Field-Proven", icon: Fuel },
+      { label: "Handling", value: "Technical Terrain", icon: Cog },
+    ],
+    gallery: [
+      "/images/beasts/dynamite/dynamite-1.jpg",
+      "/images/beasts/dynamite/dynamite-2.jpg",
+      "/images/beasts/dynamite/dynamite-3.jpg",
+    ]
   },
   "jeep-3210": {
      name: "Jeep 3210",
-     type: "MANOEUVER_EXPERT",
+     type: "PRECISION_OFFROAD",
      category: "EXPERT_CATEGORY",
-     heroImage: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
-     desc: "What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles. It is a highly capable machine built for serious off-road competition, producing greater power output through a high-end performance engine.",
+     heroImage: "/images/beasts/jeep3210/jeep3210-hero.jpg",
+     desc: "Jeep 3210 is synonymous with technical precision. Known for its clean, purposeful build and exceptional reliability, this vehicle is a consistent performer in the expert categories, mastering various terrains with ease.",
      specs: [
-       { label: "Drive", value: "Reverse Steering +", icon: Fuel },
-       { label: "Grid", value: "Lockers / Fiddle Brakes", icon: Zap },
-       { label: "Core", value: "6-Point Roll Cage", icon: Gauge },
-       { label: "Spec", value: "Technical Traction", icon: Cog },
+       { label: "Stability", value: "Technical Terrain", icon: Gauge },
+       { label: "Control", value: "Differential Lockers", icon: Zap },
+       { label: "Build", value: "Precision Setup", icon: Cog },
+       { label: "Engine", value: "Performance Ready", icon: Fuel },
      ],
      gallery: [
-       "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
-       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+       "/images/beasts/jeep3210/jeep3210-1.jpg",
+       "/images/beasts/jeep3210/jeep3210-2.jpg",
+       "/images/beasts/jeep3210/jeep3210-3.jpg",
      ]
   },
   ashwamedh: {
      name: "Ashwamedh",
      type: "POWER_SYMBOL",
      category: "EXPERT_CATEGORY",
-     heroImage: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
+     heroImage: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
      desc: "Ashwamedh represents speed, endurance, and commanding performance. At first glance, it may appear like a regular jeep, but once it enters the track, it transforms into a true off-road beast, charging through obstacles with the strength and agility of a powerful horse.",
      specs: [
-       { label: "Mission", value: "Expert Category", icon: Fuel },
-       { label: "Dynamic", value: "Immense Horsepower", icon: Zap },
-       { label: "Aura", value: "Track Dominance", icon: Gauge },
-       { label: "Contact", value: "Offroad Beast", icon: Cog },
+       { label: "Endurance", value: "High Performance", icon: Gauge },
+       { label: "Stability", value: "Reinforced Chassis", icon: Zap },
+       { label: "Build", value: "Competition Ready", icon: Cog },
+       { label: "Drive", value: "Precision Control", icon: Fuel },
      ],
      gallery: [
-       "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
+       "/images/beasts/ashwamedh/ashwamedh-1.jpg",
+       "/images/beasts/ashwamedh/ashwamedh-2.png",
      ]
   },
   "club-33": {

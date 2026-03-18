@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, AlertCircle, CheckCircle2, Info, ChevronRight, Gauge, Settings, ShieldAlert, Zap } from "lucide-react";
+import { Shield, AlertCircle, CheckCircle2, Info, ChevronRight, Gauge, Settings, ShieldAlert, Zap, Banknote, ScrollText, Scale } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const sections = [
@@ -9,6 +9,8 @@ const sections = [
     id: "expert-extreme",
     title: "EXPERT / MODIFIED / EXTREME",
     icon: Zap,
+    fee: "8,000 / 10,000 / 15,000",
+    prizeNote: "One prize per 4 entries, Max 3 prizes per class.",
     categories: ["Diesel Expert", "Petrol Expert", "Diesel Modified", "Petrol Modified", "Extreme"],
     specs: [
       { label: "Engine", expertD: "Up to DI Turbo, M2DI, MDI TC Variants (SZ/CRDe Engine Not Allowed.)", expertP: "Up to 1.3L Stock Engines (Turbo Upgrade Not Allowed)", modifiedD: "Diesel Engines Up to 3L. Turbo & Other Performance Upgrades Allowed.", modifiedP: "Petrol Engines Up to 2.5L. Turbo & Other Performance Upgrades Allowed.", extreme: "Up to 4L Allowed" },
@@ -18,36 +20,11 @@ const sections = [
     ]
   },
   {
-    id: "mandatory",
-    title: "MANDATORY & RECOMMENDED",
-    icon: ShieldAlert,
-    content: {
-      mandatory: [
-        { item: "Helmets", specs: "ISI / FIA / FIM Standard Crash Helmets for both driver and co-driver" },
-        { item: "Name Stickers", specs: "Name and Blood Group Stickers on both drivers and co-drivers' helmet and on vehicle - below windshield OR on fenders" },
-        { item: "First Aid Kit", specs: "Comprehensive First Aid Kit" },
-        { item: "Spare Wheel", specs: "Appropriately sized spare wheel" },
-        { item: "Recovery Points", specs: "OEM recovery points / Bright colored front & rear recovery points" },
-        { item: "Lights & Electricals", specs: "Working lights, indicators, wipers, and horn" },
-        { item: "Recovery Strap", specs: "Minimum 5-Metre-Long Recovery Strap (Recommend Minimum 4000 Kg Rated)" },
-        { item: "Shackles", specs: "2 x D Shackles (Recommended Rated at 3250 Kg or more)" },
-        { item: "Gloves", specs: "Appropriate Driving Gloves" },
-      ],
-      recommended: [
-        { item: "Fire Extinguishers", specs: "One valid 1.8kg or two 0.9kg operable ABC type fire extinguishers mounted within easy reach of the driver and co-driver" },
-        { item: "Glasses", specs: "Eye protection glasses" },
-        { item: "Toolkit", specs: "Appropriate comprehensive tool kit and vital spares" },
-        { item: "Wireless Comms", specs: "Wireless intercoms only for communication between Driver and Co-Driver" },
-        { item: "Aux Lights", specs: "Auxiliary lights / LED bars (Otherwise covered when not on track)" },
-        { item: "Puncture repair kit", specs: "Puncture repair kit with Air Compressor" },
-        { item: "Battery Isolation Switch", specs: "Mechanical Battery Isolation Switch" },
-      ]
-    }
-  },
-  {
     id: "stock-ndms",
-    title: "STOCK NDMS CLASS",
+    title: "STOCK / NDMS CLASS",
     icon: Gauge,
+    fee: "6,000",
+    prizeNote: "One prize per 4 entries, Max 3 prizes per class.",
     categories: ["Diesel Stock", "Petrol Stock"],
     specs: [
       { label: "Engine", diesel: "OEM Engines, Up to DI Turbo, M2DI TC (SZ/CRDe, M2DI Not Allowed)", petrol: "Up to 1.3L Stock Engines (No Turbo Upgrade)" },
@@ -60,12 +37,47 @@ const sections = [
     id: "suv-class",
     title: "SUV CLASS (THAR/JIMNY)",
     icon: Settings,
+    fee: "8,000 / 10,000",
+    prizeNote: "Entries grouped by build level (Stock vs Modified).",
     categories: ["SUV Stock (Thar/Jimny)", "SUV Modified (Thar/Jimny)"],
     specs: [
       { label: "Engine", stock: "OEM ONLY", modified: "OEM ONLY (ECU/ECM Tuning Allowed)" },
       { label: "Tyre Size", stock: "OEM size - AT Tyres Allowed", modified: "35\" MT Tyres Allowed" },
       { label: "Lift", stock: "MAX 1\" over OEM specs allowed", modified: "Allowed" },
       { label: "Doors", stock: "OEM DOORS MANDATORY", modified: "OEM DOORS MANDATORY" }
+    ]
+  },
+  {
+    id: "mandatory",
+    title: "SAFETY & RECOVERY",
+    icon: ShieldAlert,
+    content: {
+      mandatory: [
+        { item: "Helmets", specs: "ISI / FIA / FIM Standard Crash Helmets for both driver and co-driver" },
+        { item: "Name Stickers", specs: "Name and Blood Group Stickers on both drivers and co-drivers' helmet and on vehicle" },
+        { item: "Recovery Points", specs: "OEM recovery points / Bright colored front & rear recovery points" },
+        { item: "Recovery Strap", specs: "Minimum 5-Metre-Long Recovery Strap (Recommend Minimum 4000 Kg Rated)" },
+        { item: "First Aid Kit", specs: "Comprehensive First Aid Kit must be present in vehicle" },
+      ],
+      recommended: [
+        { item: "Fire Extinguishers", specs: "One valid 1.8kg or two 0.9kg operable ABC type mounted within easy reach" },
+        { item: "Toolkit", specs: "Appropriate comprehensive tool kit and vital spares" },
+        { item: "Winch Usage", specs: "Highly Recommended for Expert/Modified - Winching only for self recovery." },
+      ]
+    }
+  },
+  {
+    id: "general-terms",
+    title: "TERMS & INDEMNITY",
+    icon: ScrollText,
+    content: [
+      "The organizers are not responsible for any damage, loss, or injury to participants or vehicles.",
+      "Participation is strictly at the participant's own risk.",
+      "Consumption of alcohol or restricted substances is strictly prohibited on the track.",
+      "Decision of the judges and marshals will be final and binding on all matters.",
+      "No partial or full refunds of the entry fee will be entertained after registration.",
+      "Participants must carry original DL, RC, and Insurance during the event.",
+      "Helmets and seatbelts are mandatory throughout all competition stages for driver and co-driver."
     ]
   }
 ];
@@ -82,10 +94,10 @@ export default function RegulationsPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Official Protocol</p>
             <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
-              TECHNICAL <span className="text-primary italic">REGULATIONS</span>
+              RULEBOOK <span className="text-primary italic">& TERMS</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-3xl leading-relaxed font-medium">
-              Comprehensive technical specifications, categorization rules, and mandatory safety requirements for Season 2 - 2026.
+              Comprehensive technical specifications, registration tiers, and indemnity terms for Season 2.
             </p>
           </motion.div>
         </div>
@@ -98,76 +110,35 @@ export default function RegulationsPage() {
               <TabsList className="bg-zinc-900/50 border border-white/5 p-1 h-auto md:flex-wrap justify-start md:justify-center">
                 {sections.map(section => (
                   <TabsTrigger 
-                    key={section.id} 
+                    key={section.id}
                     value={section.id}
-                    className="data-[state=active]:bg-primary data-[state=active]:text-black px-6 py-3 rounded-xl font-heading text-xs md:text-sm uppercase tracking-widest transition-all"
+                    className="px-6 py-3 rounded-full data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-heading text-[10px] tracking-widest uppercase gap-2"
                   >
-                    <section.icon className="w-4 h-4 mr-2 hidden md:block" />
+                    <section.icon className="w-3 h-3" />
                     {section.title}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
 
-            {/* MANDATORY CONTENT */}
-            <TabsContent value="mandatory">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                      <ShieldAlert className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-heading text-white uppercase italic">Mandatory</h3>
-                      <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Strict compliance required</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    {sections.find(s => s.id === "mandatory")?.content.mandatory.map((item, i) => (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        key={i} 
-                        className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-red-500/30 transition-all shadow-lg"
-                      >
-                        <span className="text-white font-heading text-sm md:text-base uppercase tracking-tight md:w-48 shrink-0 group-hover:text-red-500 transition-colors">{item.item}</span>
-                        <span className="text-zinc-400 text-xs md:text-sm leading-relaxed">{item.specs}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <CheckCircle2 className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-heading text-white uppercase italic">Recommended</h3>
-                      <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Highly advised for safety</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    {sections.find(s => s.id === "mandatory")?.content.recommended.map((item, i) => (
-                      <motion.div 
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        key={i} 
-                        className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-primary/30 transition-all shadow-lg"
-                      >
-                        <span className="text-white font-heading text-sm md:text-base uppercase tracking-tight md:w-48 shrink-0 group-hover:text-primary transition-colors">{item.item}</span>
-                        <span className="text-zinc-400 text-xs md:text-sm leading-relaxed">{item.specs}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
             {/* EXPERT/MODIFIED CONTENT */}
-            <TabsContent value="expert-extreme">
+            <TabsContent value="expert-extreme" className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="p-8 bg-zinc-900/40 rounded-3xl border border-white/5 flex items-center gap-6">
+                    <Banknote className="w-8 h-8 text-primary" />
+                    <div>
+                       <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Entry Component</p>
+                       <p className="text-white font-heading text-xl uppercase italic">FEES: {sections.find(s => s.id === "expert-extreme")?.fee} INR</p>
+                    </div>
+                 </div>
+                 <div className="p-8 bg-zinc-900/40 rounded-3xl border border-white/5 flex items-center gap-6">
+                    <Scale className="w-8 h-8 text-primary" />
+                    <div>
+                       <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Prize Protocol</p>
+                       <p className="text-zinc-400 text-sm">{sections.find(s => s.id === "expert-extreme")?.prizeNote}</p>
+                    </div>
+                 </div>
+              </div>
               <div className="overflow-x-auto rounded-3xl border border-white/5 shadow-2xl">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
@@ -197,7 +168,23 @@ export default function RegulationsPage() {
             </TabsContent>
 
             {/* STOCK NDMS CONTENT */}
-            <TabsContent value="stock-ndms">
+            <TabsContent value="stock-ndms" className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="p-8 bg-zinc-900/40 rounded-3xl border border-white/5 flex items-center gap-6 text-white italic transition-all group hover:bg-zinc-900/60">
+                    <Banknote className="w-8 h-8 text-primary" />
+                    <div>
+                       <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Inclusive Registration</p>
+                       <p className="font-heading text-xl uppercase">FEES: {sections.find(s => s.id === "stock-ndms")?.fee} INR</p>
+                    </div>
+                 </div>
+                 <div className="p-8 bg-zinc-900/40 rounded-3xl border border-white/5 flex items-center gap-6">
+                    <Scale className="w-8 h-8 text-primary" />
+                    <div>
+                       <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Prize Protocol</p>
+                       <p className="text-zinc-400 text-sm">{sections.find(s => s.id === "stock-ndms")?.prizeNote}</p>
+                    </div>
+                 </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="bg-zinc-900/40 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:rotate-12 transition-transform">
@@ -234,8 +221,72 @@ export default function RegulationsPage() {
               </div>
             </TabsContent>
 
+            {/* SAFETY CONTENT */}
+            <TabsContent value="mandatory">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                      <ShieldAlert className="w-6 h-6 text-red-500" />
+                    </div>
+                    <div>
+                       <h3 className="text-2xl font-heading text-white uppercase italic">Mandatory</h3>
+                       <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Strict compliance required</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {sections.find(s => s.id === "mandatory")?.content.mandatory.map((item, i) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        key={i} 
+                        className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-red-500/30 transition-all shadow-lg"
+                      >
+                        <span className="text-white font-heading text-sm md:text-base uppercase tracking-tight md:w-48 shrink-0 group-hover:text-red-500 transition-colors">{item.item}</span>
+                        <span className="text-zinc-400 text-xs md:text-sm leading-relaxed">{item.specs}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                       <h3 className="text-2xl font-heading text-white uppercase italic">Recommended</h3>
+                       <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Highly advised for safety</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {sections.find(s => s.id === "mandatory")?.content.recommended.map((item, i) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        key={i} 
+                        className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-primary/30 transition-all shadow-lg"
+                      >
+                        <span className="text-white font-heading text-sm md:text-base uppercase tracking-tight md:w-48 shrink-0 group-hover:text-primary transition-colors">{item.item}</span>
+                        <span className="text-zinc-400 text-xs md:text-sm leading-relaxed">{item.specs}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
             {/* SUV CONTENT */}
             <TabsContent value="suv-class">
+               <div className="p-8 bg-zinc-900/40 rounded-3xl border border-white/5 flex items-center gap-6 mb-8 max-w-xl">
+                  <Banknote className="w-8 h-8 text-primary" />
+                  <div>
+                     <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">SUV Registration Tier</p>
+                     <p className="text-white font-heading text-xl uppercase italic">FEES: {sections.find(s => s.id === "suv-class")?.fee} INR</p>
+                  </div>
+               </div>
                <div className="overflow-x-auto rounded-3xl border border-white/5 shadow-2xl">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
@@ -258,11 +309,34 @@ export default function RegulationsPage() {
               </div>
             </TabsContent>
 
-          </Tabs>
+            {/* GENERAL TERMS CONTENT */}
+            <TabsContent value="general-terms">
+               <div className="max-w-4xl mx-auto space-y-6">
+                  <div className="text-center mb-12">
+                     <Shield className="w-16 h-16 text-primary mx-auto mb-6" />
+                     <h3 className="text-4xl font-heading text-white uppercase italic">General Indemnity</h3>
+                     <p className="text-zinc-500 text-sm font-black uppercase tracking-[0.3em] mt-2">Legal obligations & Liability</p>
+                  </div>
+                  <div className="bg-zinc-900/40 border border-white/5 p-12 rounded-[3.5rem] relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-10 opacity-5">
+                        <Scale className="w-48 h-48 text-white" />
+                     </div>
+                     <div className="space-y-6 relative z-10">
+                        {sections.find(s => s.id === "general-terms")?.content.map((rule, i) => (
+                           <div key={i} className="flex gap-6 items-start pb-6 border-b border-white/5 last:border-0 last:pb-0">
+                              <span className="text-primary font-heading text-xl">0{i+1}</span>
+                              <p className="text-zinc-300 text-lg leading-relaxed">{rule}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+                  <div className="p-8 bg-black border border-zinc-800 rounded-3xl text-center italic text-zinc-500 text-xs leading-relaxed">
+                     The organizers reserve the right to merge or split categories based on participation volume. All registrations are subject to final technical scrutiny on the day of the event.
+                  </div>
+               </div>
+            </TabsContent>
 
-          <div className="mt-20 p-8 bg-black border border-white/5 rounded-3xl text-center italic text-zinc-600 text-sm">
-             The organizers may merge split a category based on the number of entries received in a particular class to ensure a fair, competitive and rational grouping. Participants will be notified in advance of such changes before the event.
-          </div>
+          </Tabs>
         </div>
       </section>
     </div>

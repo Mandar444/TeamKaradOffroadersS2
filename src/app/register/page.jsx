@@ -207,6 +207,28 @@ export default function RegisterPage() {
                     </Select>
                   </div>
                   
+                  {/* Category Blueprint Preview */}
+                  <AnimatePresence mode="wait">
+                    <motion.div 
+                      key={selectedCategory}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-6 bg-zinc-900/40 border border-white/5 rounded-3xl"
+                    >
+                      <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <Gauge className="w-3 h-3" /> Technical highlights
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                         {CATEGORIES[selectedCategory]?.technicalTerms?.map((term, i) => (
+                           <div key={i} className="flex items-center gap-3 text-white text-[10px] md:text-xs font-medium uppercase tracking-tighter">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                              {term}
+                           </div>
+                         ))}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                  
                   {counts[selectedCategory] >= limit && (
                     <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl text-orange-500 text-xs">
                       Note: Selected category is currenty full. New entries will be placed on the <b className="font-bold">Elite Waitlist</b>.
@@ -248,31 +270,37 @@ export default function RegisterPage() {
 
                 <div className="space-y-6">
                   <div className="p-6 bg-zinc-900/50 rounded-[1.5rem] border border-white/5 h-48 overflow-y-auto custom-scrollbar text-zinc-400 text-sm md:text-base space-y-4">
-                     <p>By participating in the Team Karad Off-Road Event Season 2, you explicitly agree to the following terms:</p>
+                     <p className="text-primary font-heading uppercase text-xs">Category Rules: {CATEGORIES[selectedCategory]?.name}</p>
+                     <ul className="list-disc pl-5 space-y-2 text-white font-medium italic mb-6">
+                        {CATEGORIES[selectedCategory]?.technicalTerms?.map((term, i) => (
+                           <li key={i}>{term}</li>
+                        ))}
+                     </ul>
+
+                     <p className="pt-4 border-t border-white/5 font-heading text-xs uppercase text-zinc-500">General Participation Rules:</p>
                      <ul className="list-disc pl-5 space-y-2">
-                       <li>Motorsport is inherently dangerous. Team Karad Off-Roaders, organizers, sponsors, and landowners are not responsible for any personal injury, death, or damage to property.</li>
+                       <li>Motorsport is inherently dangerous. Team Karad Off-Roaders are not responsible for any personal injury, death, or damage to property.</li>
                        <li>All drivers and co-drivers must be 18 years of age or older and possess a valid driving license.</li>
-                       <li>Vehicles MUST comply with the safety and technical regulations specified for the chosen category. Non-compliant vehicles will be disqualified without refund.</li>
-                       <li>Consumption of alcohol or illicit substances before or during the event is strictly prohibited and will result in immediate disqualification.</li>
-                       <li>The organizers reserve the right to modify the track, schedule, or rules at any point for safety reasons.</li>
-                       <li>Respect for nature is mandatory. Littering or damaging local flora/fauna will not be tolerated.</li>
+                       <li>Vehicles MUST comply with the safety and technical regulations specified for the chosen category.</li>
+                       <li>Consumption of alcohol or illicit substances is strictly prohibited.</li>
+                       <li>The organizers reserve the right to modify the track or schedule for safety reasons.</li>
                      </ul>
                   </div>
 
                   <div className="space-y-4 pt-4 border-t border-white/5">
                     {[
-                      { id: "categoryAgreement", label: "I HAVE READ AND AGREE TO THE CATEGORY TECHNICAL RULES & GENERAL TERMS", error: errors.categoryAgreement },
+                      { id: "categoryAgreement", label: `I AGREE TO ${CATEGORIES[selectedCategory]?.name.toUpperCase()} TECHNICAL RULES & GENERAL TERMS`, error: errors.categoryAgreement },
                       { id: "ageAgreement", label: "DRIVER AGE CERTIFICATION (18+ and hold valid license)", error: errors.ageAgreement }
                     ].map((a) => (
-                      <div key={a.id} className="flex items-start gap-3">
+                      <div key={a.id} className="flex items-start gap-3 p-4 bg-zinc-900/20 border border-white/5 rounded-2xl hover:bg-zinc-900/40 transition-colors">
                         <Checkbox 
                           id={a.id} 
                           checked={watch(a.id)}
                           onCheckedChange={(checked) => setValue(a.id, checked, { shouldValidate: true })}
-                          className="mt-1"
+                          className="mt-1 border-primary data-[state=checked]:bg-primary data-[state=checked]:text-black"
                         />
                         <div className="flex-1">
-                          <Label htmlFor={a.id} className="text-[10px] md:text-xs font-medium leading-tight text-white uppercase tracking-widest">{a.label} *</Label>
+                          <Label htmlFor={a.id} className="text-[10px] md:text-xs font-medium leading-tight text-white uppercase tracking-widest cursor-pointer">{a.label} *</Label>
                           {a.error && <p className="text-red-500 text-[9px] font-black uppercase mt-1">{a.error.message}</p>}
                         </div>
                       </div>
