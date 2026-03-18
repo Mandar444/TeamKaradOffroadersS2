@@ -105,7 +105,7 @@ export default function RegisterPage() {
         ]);
         const numData = await numRes.json();
         const countData = await countRes.json();
-        setTakenNumbers(numData.numbers || []);
+        setTakenNumbers(numData.booked || []);
         setCounts(countData.counts || {});
         setLimit(countData.limit || 160);
       } catch (err) {
