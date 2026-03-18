@@ -10,50 +10,58 @@ const beasts = [
   {
     id: "dominator",
     name: "Dominator",
-    category: "Extreme Expert",
-    type: "Professional Offroad Build",
+    category: "MODIFIED",
+    type: "MODIFICATION_LEVEL: MODIFIED",
     image: "/images/beasts/dominator/dominator-hero.jpg",
     stats: { engine: "Engineered", lockers: "Front/Rear", brakes: "Fiddle" }
   },
   {
     id: "dynamite",
     name: "Dynamite",
-    category: "Amateur Stock",
-    type: "Technical Rival Build",
+    category: "MODIFIED",
+    type: "MODIFICATION_LEVEL: MODIFIED",
     image: "/images/beasts/dynamite/dynamite-hero.jpg",
     stats: { engine: "Stock Performance", category: "Standard", body: "Modified" }
   },
   {
     id: "jeep-3210",
     name: "Jeep 3210",
-    category: "Expert Category",
-    type: "Precision Offroad Build",
+    category: "MODIFIED / PRO-MODIFIED",
+    type: "MODIFIED & PRO-MODIFIED",
     image: "/images/beasts/jeep3210/jeep3210-hero.jpg",
-    stats: { engine: "Precision", lockers: "Front/Rear", tech: "Reliable" }
+    stats: { engine: "Performance", lockers: "Front/Rear", steer: "Reverse" }
   },
   {
     id: "ashwamedh",
     name: "Ashwamedh",
-    category: "Expert Category",
-    type: "Power Symbol Build",
+    category: "EXPERT",
+    type: "MODIFICATION_LEVEL: EXPERT",
     image: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
-    stats: { engine: "Immense HP", body: "Reinforced", chassis: "Competition" }
+    stats: { engine: "High Power", body: "Reinforced", chassis: "Expert" }
   },
   {
     id: "club-33",
-    name: "Club 33",
-    type: "STRENGTH_REFINED",
-    category: "DIESEL_MODIFIED",
+    name: "Club 33 Thunderstorm",
+    category: "EXPERT",
+    type: "MODIFICATION_LEVEL: EXPERT",
     image: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Refined", grip: "All Terrain", tech: "Precision" }
+    stats: { power: "Refined", grip: "All Terrain", tech: "Expert" }
   },
   {
     id: "major",
     name: "Major",
-    type: "STOCK_WARRIOR",
-    category: "STOCK_CATEGORY",
+    category: "EXPERT",
+    type: "MODIFICATION_LEVEL: EXPERT",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "OEM Stock", grip: "Original", tech: "Skill-Based" }
+    stats: { power: "Expert Level", grip: "Original", tech: "Skill-Based" }
+  },
+  {
+    id: "conqueror",
+    name: "Conqueror",
+    category: "EXPERT",
+    type: "MODIFICATION_LEVEL: EXPERT",
+    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    stats: { power: "High Performance", grip: "Staked", tech: "Season 2" }
   }
 ];
 

@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 const beastData = {
   dominator: {
     name: "Dominator",
-    type: "PROFESSIONAL_BUILD",
-    category: "EXPERT_CATEGORY",
+    type: "MODIFICATION_LEVEL: MODIFIED",
+    category: "MODIFIED",
     heroImage: "/images/beasts/dominator/dominator-hero.jpg",
     desc: "Dominator is one of the flagship off-road machines of Team Karad Offroaders, purpose-built to compete in professional off-road competitions. Equipped with front and rear differential lockers, fiddle brakes for precise wheel control, and a powerful engineered engine that provides the torque needed to conquer steep climbs, deep mud, and rocky trails.",
     specs: [
@@ -29,8 +29,8 @@ const beastData = {
   },
   dynamite: {
     name: "Dynamite",
-    type: "STOCK_CATEGORY_SPEC",
-    category: "AMATEUR_STOCK",
+    type: "MODIFICATION_LEVEL: MODIFIED",
+    category: "MODIFIED",
     heroImage: "/images/beasts/dynamite/dynamite-hero.jpg",
     desc: "Dynamite is a testament to the skill of the driver and the reliability of stock engineering. Competing in the stock categories, it represents the pure essence of off-roading where technical precision on the trail outweighs pure horsepower.",
     specs: [
@@ -47,15 +47,15 @@ const beastData = {
   },
   "jeep-3210": {
      name: "Jeep 3210",
-     type: "PRECISION_OFFROAD",
-     category: "EXPERT_CATEGORY",
+     type: "MODIFIED & PRO-MODIFIED",
+     category: "MODIFIED / PRO-MODIFIED",
      heroImage: "/images/beasts/jeep3210/jeep3210-hero.jpg",
-     desc: "Jeep 3210 is synonymous with technical precision. Known for its clean, purposeful build and exceptional reliability, this vehicle is a consistent performer in the expert categories, mastering various terrains with ease.",
+     desc: "3210 is another formidable off-road machine from Team Karad Offroaders, engineered to perform in the most demanding off-road racing environments. Built with extensive professional modifications, this jeep is designed to deliver exceptional power, control, and reliability while tackling extreme terrains and technical obstacles. What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles.",
      specs: [
-       { label: "Stability", value: "Technical Terrain", icon: Gauge },
-       { label: "Control", value: "Differential Lockers", icon: Zap },
-       { label: "Build", value: "Precision Setup", icon: Cog },
-       { label: "Engine", value: "Performance Ready", icon: Fuel },
+       { label: "Maneuver", value: "REVERSE STEERING", icon: Activity },
+       { label: "Control", value: "FIDDLE BRAKES / LOCKERS", icon: Zap },
+       { label: "Stability", value: "High Articulation Shocks", icon: Gauge },
+       { label: "Safety", value: "6-Point Roll Cage", icon: ShieldCheck },
      ],
      gallery: [
        "/images/beasts/jeep3210/jeep3210-1.jpg",
@@ -65,8 +65,8 @@ const beastData = {
   },
   ashwamedh: {
      name: "Ashwamedh",
-     type: "POWER_SYMBOL",
-     category: "EXPERT_CATEGORY",
+     type: "MODIFICATION_LEVEL: EXPERT",
+     category: "EXPERT",
      heroImage: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
      desc: "Ashwamedh represents speed, endurance, and commanding performance. At first glance, it may appear like a regular jeep, but once it enters the track, it transforms into a true off-road beast, charging through obstacles with the strength and agility of a powerful horse.",
      specs: [
@@ -81,11 +81,11 @@ const beastData = {
      ]
   },
   "club-33": {
-     name: "Club 33",
-     type: "STRENGTH_REFINED",
-     category: "DIESEL_MODIFIED",
+     name: "Club 33 Thunderstorm",
+     type: "MODIFICATION_LEVEL: EXPERT",
+     category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-     desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
+     desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 Thunderstorm moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
      specs: [
        { label: "Build", value: "Refined Tuning", icon: Fuel },
        { label: "Spirit", value: "Confidence built", icon: Zap },
@@ -98,18 +98,34 @@ const beastData = {
   },
   major: {
      name: "Major",
-     type: "STOCK_WARRIOR",
-     category: "STOCK_CATEGORY",
+     type: "MODIFICATION_LEVEL: EXPERT",
+     category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
-     desc: "Major is the stock warrior, proving that true capability lies in simplicity and skill. Maintaining a jeep in complete stock condition and still pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence.",
+     desc: "Major is the expert level warrior, proving that true capability lies in simplicity and skill. Pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence.",
      specs: [
-       { label: "OEM", value: "Original Setup", icon: Fuel },
-       { label: "Core", value: "Complete Stock", icon: Zap },
-       { label: "Tactic", value: "Skill Over Tech", icon: Gauge },
-       { label: "Rim", value: "Factory Spec", icon: Cog },
+       { label: "OEM", value: "Expert Tuning", icon: Fuel },
+       { label: "Core", value: "Reinforced Structure", icon: Zap },
+       { label: "Tactic", value: "Mastery Over Terrain", icon: Gauge },
+       { label: "Rim", value: "Expert Performance", icon: Cog },
      ],
      gallery: [
        "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+     ]
+  },
+  conqueror: {
+     name: "Conqueror",
+     type: "MODIFICATION_LEVEL: EXPERT",
+     category: "EXPERT",
+     heroImage: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+     desc: "The newest addition to the expert category fleet. Conqueror lives up to its name by dominating technically demanding obstacles where power and precision must work in perfect harmony. Designed for the Season 2 championship, it features advanced technical enhancements for the most rugged conditions.",
+     specs: [
+       { label: "Drive", value: "Advanced 4WD", icon: Zap },
+       { label: "Stability", value: "Competition Spec", icon: Gauge },
+       { label: "Build", value: "New Generation", icon: Cog },
+       { label: "Spirit", value: "Built to Rule", icon: Fuel },
+     ],
+     gallery: [
+        "https://images.unsplash.com/photo-1605281317010-fe5ffe798156?q=80&w=2000&auto=format&fit=crop"
      ]
   }
 };
@@ -208,7 +224,7 @@ export default function BeastDetailPage() {
                     <div className="flex justify-between items-center py-4 border-b border-white/5">
                        <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Build Status</span>
                        <span className="text-emerald-400 font-black text-[10px] tracking-widest uppercase flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4" /> RACE READY
+                          <ShieldCheck className="w-4 h-4" /> READY TO COMPETITION
                        </span>
                     </div>
                     <div className="flex justify-between items-center py-4 border-b border-white/5">
