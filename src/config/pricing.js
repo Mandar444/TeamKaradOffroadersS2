@@ -1,7 +1,8 @@
 export const CATEGORIES = {
   EXTREME: {
-    name: "Extreme",
-    fee: 15000,
+    name: "Extreme (Late: ₹17,999)",
+    fee: 14999,
+    lateFee: 17999,
     description: "On top of the line - Ultimate performance class",
     technicalTerms: [
       "Ultimate performance engine upgrades authorized (Up to 4L)",
@@ -11,8 +12,9 @@ export const CATEGORIES = {
     ]
   },
   DIESEL_MODIFIED: {
-    name: "Diesel Modified",
-    fee: 10000,
+    name: "Diesel Modified (Late: ₹12,999)",
+    fee: 9999,
+    lateFee: 12999,
     description: "High-performance diesel monsters built for ultimate trail conquest.",
     technicalTerms: [
       "Diesel engines up to 3.0L authorized",
@@ -22,8 +24,9 @@ export const CATEGORIES = {
     ]
   },
   PETROL_MODIFIED: {
-    name: "Petrol Modified",
-    fee: 10000,
+    name: "Petrol Modified (Late: ₹12,999)",
+    fee: 9999,
+    lateFee: 12999,
     description: "Turbocharged petrol builds designed for speed and technical precision.",
     technicalTerms: [
       "Petrol engines up to 2.5L authorized",
@@ -33,8 +36,9 @@ export const CATEGORIES = {
     ]
   },
   DIESEL_EXPERT: {
-    name: "Diesel Expert",
-    fee: 8000,
+    name: "Diesel Expert (Late: ₹9,999)",
+    fee: 7999,
+    lateFee: 9999,
     description: "Professional level diesel class for seasoned off-roaders.",
     technicalTerms: [
       "Engines: Up to DI Turbo, M2DI TC (SZ/CRDe not allowed)",
@@ -44,8 +48,9 @@ export const CATEGORIES = {
     ]
   },
   PETROL_EXPERT: {
-    name: "Petrol Expert",
-    fee: 8000,
+    name: "Petrol Expert (Late: ₹9,999)",
+    fee: 7999,
+    lateFee: 9999,
     description: "Expert level petrol class focused on technical mastery.",
     technicalTerms: [
       "Up to 1.3L Stock Petrol Engine authorized",
@@ -55,8 +60,9 @@ export const CATEGORIES = {
     ]
   },
   THAR_SUV: {
-    name: "Thar SUV",
-    fee: 8000,
+    name: "Thar SUV (Late: ₹9,999)",
+    fee: 7999,
+    lateFee: 9999,
     description: "Battle-ready Mahindra Thar class. Built to dominate.",
     technicalTerms: [
       "Stock class requires ALL OEM components",
@@ -66,8 +72,9 @@ export const CATEGORIES = {
     ]
   },
   SUV_MODIFIED: {
-    name: "SUV Modified",
-    fee: 10000,
+    name: "SUV Modified (Late: ₹11,999)",
+    fee: 9999,
+    lateFee: 11999,
     description: "Modified SUV class for heavy-duty challengers.",
     technicalTerms: [
        "35\" MT Tyres authorized",
@@ -77,8 +84,9 @@ export const CATEGORIES = {
     ]
   },
   JIMNY_SUV: {
-    name: "Jimny SUV",
-    fee: 8000,
+    name: "Jimny SUV (Late: ₹9,999)",
+    fee: 7999,
+    lateFee: 9999,
     description: "Suzuki Jimny Specific Category",
     technicalTerms: [
        "Modified subclass allows performance upgrades",
@@ -88,8 +96,9 @@ export const CATEGORIES = {
     ]
   },
   STOCK_NDMS: {
-    name: "Stock NDMS",
-    fee: 6000,
+    name: "Stock NDMS (Late: ₹7,999)",
+    fee: 5999,
+    lateFee: 7999,
     description: "Standard configuration with NDMS tires",
     technicalTerms: [
        "OEM Stock Engines only (SZ/CRDe/M2DI not allowed for Diesel)",
