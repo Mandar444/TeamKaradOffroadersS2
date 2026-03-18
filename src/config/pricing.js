@@ -1,4 +1,9 @@
 export const CATEGORIES = {
+  EXTREME: {
+    name: "Extreme",
+    fee: 14999,
+    description: "On top of the line - Ultimate performance class",
+  },
   DIESEL_MODIFIED: {
     name: "Diesel Modified",
     fee: 9999,
@@ -38,11 +43,6 @@ export const CATEGORIES = {
     name: "Stock NDMS",
     fee: 5999,
     description: "Standard configuration with NDMS tires",
-  },
-  EXTREME: {
-    name: "Extreme",
-    fee: 14999,
-    description: "On top of the line - Ultimate performance class",
   },
 };
 

@@ -6,6 +6,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const sections = [
   {
+    id: "expert-extreme",
+    title: "EXPERT / MODIFIED / EXTREME",
+    icon: Zap,
+    categories: ["Diesel Expert", "Petrol Expert", "Diesel Modified", "Petrol Modified", "Extreme"],
+    specs: [
+      { label: "Engine", expertD: "Up to DI Turbo, M2DI, MDI TC Variants (SZ/CRDe Engine Not Allowed.)", expertP: "Up to 1.3L Stock Engines (Turbo Upgrade Not Allowed)", modifiedD: "Diesel Engines Up to 3L. Turbo & Other Performance Upgrades Allowed.", modifiedP: "Petrol Engines Up to 2.5L. Turbo & Other Performance Upgrades Allowed.", extreme: "Up to 4L Allowed" },
+      { label: "Tyre Size", expertD: "Max 32\" properly inflated", expertP: "Max 32\" properly inflated", modifiedD: "Max 34\" properly inflated", modifiedP: "Max 34\" properly inflated", extreme: "Max 38\"" },
+      { label: "Roll Cage", expertD: "Min Four Point Mandatory", expertP: "Min Four Point Mandatory", modifiedD: "Min Six Point Mandatory", modifiedP: "Min Six Point Mandatory", extreme: "Min Six Point Mandatory" },
+      { label: "Differentials", expertD: "Open/Closed Knuckle for SWB 81\", LWB 91\"+", expertP: "OEM Gypsy / OEM Differentials", modifiedD: "Non-OEM Swap Allowed (No Portals)", modifiedP: "Non-OEM Swap Allowed (No Portals)", extreme: "Swap Allowed / Portals Allowed" }
+    ]
+  },
+  {
     id: "mandatory",
     title: "MANDATORY & RECOMMENDED",
     icon: ShieldAlert,
@@ -31,18 +43,6 @@ const sections = [
         { item: "Battery Isolation Switch", specs: "Mechanical Battery Isolation Switch" },
       ]
     }
-  },
-  {
-    id: "expert-extreme",
-    title: "EXPERT / MODIFIED / EXTREME",
-    icon: Zap,
-    categories: ["Diesel Expert", "Petrol Expert", "Diesel Modified", "Petrol Modified", "Extreme"],
-    specs: [
-      { label: "Engine", expertD: "Up to DI Turbo, M2DI, MDI TC Variants (SZ/CRDe Engine Not Allowed.)", expertP: "Up to 1.3L Stock Engines (Turbo Upgrade Not Allowed)", modifiedD: "Diesel Engines Up to 3L. Turbo & Other Performance Upgrades Allowed.", modifiedP: "Petrol Engines Up to 2.5L. Turbo & Other Performance Upgrades Allowed.", extreme: "Up to 4L Allowed" },
-      { label: "Tyre Size", expertD: "Max 32\" properly inflated", expertP: "Max 32\" properly inflated", modifiedD: "Max 34\" properly inflated", modifiedP: "Max 34\" properly inflated", extreme: "Max 38\"" },
-      { label: "Roll Cage", expertD: "Min Four Point Mandatory", expertP: "Min Four Point Mandatory", modifiedD: "Min Six Point Mandatory", modifiedP: "Min Six Point Mandatory", extreme: "Min Six Point Mandatory" },
-      { label: "Differentials", expertD: "Open/Closed Knuckle for SWB 81\", LWB 91\"+", expertP: "OEM Gypsy / OEM Differentials", modifiedD: "Non-OEM Swap Allowed (No Portals)", modifiedP: "Non-OEM Swap Allowed (No Portals)", extreme: "Swap Allowed / Portals Allowed" }
-    ]
   },
   {
     id: "stock-ndms",
@@ -93,7 +93,7 @@ export default function RegulationsPage() {
 
       <section className="px-4 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <Tabs defaultValue="mandatory" className="space-y-12">
+          <Tabs defaultValue="expert-extreme" className="space-y-12">
             <div className="flex justify-start md:justify-center overflow-x-auto pb-4 no-scrollbar">
               <TabsList className="bg-zinc-900/50 border border-white/5 p-1 h-auto md:flex-wrap justify-start md:justify-center">
                 {sections.map(section => (
