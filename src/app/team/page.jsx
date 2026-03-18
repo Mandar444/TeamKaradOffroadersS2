@@ -1,128 +1,87 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Instagram, Linkedin, Mail, Phone, Shield, Star, Award, Users } from "lucide-react";
-
-const teamMembers = [
-  {
-    name: "Mandar Karad",
-    role: "Founder & Chief Organizer",
-    title: "THE VISIONARY",
-    bio: "The man behind the mission. With a decade of off-roading experience, Mandar founded Team Karad Off-Roaders to bring world-class motorsport events to Western Maharashtra.",
-    socials: { instagram: "#", email: "mandar@teamkaradoffroaders.online" },
-    badge: "Founder",
-  },
-  {
-    name: "Akshay Patil",
-    role: "Technical Director",
-    title: "THE ENGINEER",
-    bio: "Responsible for all vehicle inspections, safety protocols, and track design. Akshay ensures every course is both challenging and safe.",
-    socials: { instagram: "#", email: "akshay@tko.com" },
-    badge: "Core Team",
-  },
-  {
-    name: "Rohan Deshmukh",
-    role: "Operations Head",
-    title: "THE COMMANDER",
-    bio: "Logistics mastermind who coordinates everything from venue setup to participant management. Nothing runs without Rohan's seal of approval.",
-    socials: { instagram: "#", email: "rohan@tko.com" },
-    badge: "Core Team",
-  },
-  {
-    name: "Priya Sharma",
-    role: "Marketing & PR",
-    title: "THE VOICE",
-    bio: "Handles all social media, sponsorships, and media relations. Priya has been instrumental in making TKO a nationally recognized brand.",
-    socials: { instagram: "#", email: "priya@tko.com" },
-    badge: "Core Team",
-  },
-  {
-    name: "Vikram Jadhav",
-    role: "Chief Marshal",
-    title: "THE GUARDIAN",
-    bio: "Head of safety and marshalling operations. Vikram's team ensures every participant competes within the rules and returns home safe.",
-    socials: { instagram: "#", email: "vikram@tko.com" },
-    badge: "Safety",
-  },
-  {
-    name: "Sneha Kulkarni",
-    role: "Registration & Support",
-    title: "THE ANCHOR",
-    bio: "First point of contact for all participants. Sneha handles registrations, queries, and ensures every competitor has a seamless experience.",
-    socials: { instagram: "#", email: "sneha@tko.com" },
-    badge: "Support",
-  },
-];
-
-const roleIcons = {
-  Founder: Star,
-  "Core Team": Award,
-  Safety: Shield,
-  Support: Users,
-};
+import { Zap, Trophy, Shield, Users, ChevronRight, LayoutGrid, Award, Star } from "lucide-react";
+import Link from "next/link";
 
 export default function TeamPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-24 md:pt-28 pb-16 md:pb-20">
-      <section className="px-4 py-12 md:py-20">
-        <div className="max-w-6xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">The People Behind the Mission</p>
-            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-6 relative overflow-hidden flex items-center justify-center">
+      {/* Background Decor */}
+      <div className="absolute top-1/4 left-1/4 w-[50%] h-[50vh] bg-primary/5 blur-[150px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto relative z-10 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="space-y-12"
+        >
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-zinc-900/50 border border-white/10 backdrop-blur-md">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-primary text-[10px] font-black uppercase tracking-[0.4em]">Crew Briefing In Progress</span>
+          </div>
+
+          {/* Main Hero Header */}
+          <div className="space-y-6">
+            <h1 className="text-7xl md:text-9xl font-heading text-white tracking-tighter uppercase leading-none">
               OUR <span className="text-primary italic">CREW</span>
+              <br />
+              <span className="text-zinc-800">COMING SOON</span>
             </h1>
-            <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed">
-              Every great event is powered by passionate people. Meet the team that makes Team Karad Off-Roaders 
-              the most thrilling off-road championship in India.
+            <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed italic">
+              We are currently finalizing the official Season 2 tactical team lineup. The visionaries, engineers, and guardians behind the mission will be revealed shortly.
             </p>
-          </motion.div>
-        </div>
-      </section>
+          </div>
 
-      <section className="px-4 pb-20">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teamMembers.map((member, idx) => {
-            const BadgeIcon = roleIcons[member.badge] || Users;
-            return (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.08 }}
-                className="bg-zinc-950 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/20 transition-all group"
-              >
-                {/* Avatar placeholder */}
-                <div className="h-48 bg-gradient-to-br from-primary/10 via-zinc-900 to-zinc-950 flex items-center justify-center relative">
-                  <div className="w-24 h-24 rounded-full bg-zinc-800 border-2 border-white/10 flex items-center justify-center text-4xl font-heading font-black text-primary group-hover:border-primary/40 transition-colors">
-                    {member.name.split(" ").map(n => n[0]).join("")}
-                  </div>
-                  <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1 bg-black/50 backdrop-blur-md rounded-lg border border-white/5">
-                    <BadgeIcon className="w-3 h-3 text-primary" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{member.badge}</span>
-                  </div>
-                </div>
+          {/* Feature Grid - Explaining why it's empty */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
+            {[
+              { icon: Star, title: "FOUNDERS", desc: "Strategic Vision" },
+              { icon: Award, title: "CORE TEAM", desc: "Operational Excellence" },
+              { icon: Shield, title: "GUARDIANS", desc: "Safety & Marshalling" }
+            ].map((feature, i) => (
+              <div key={i} className="p-8 bg-zinc-900/30 border border-white/5 rounded-3xl backdrop-blur-sm group hover:border-primary/20 transition-all">
+                <feature.icon className="w-8 h-8 text-zinc-700 group-hover:text-primary transition-colors mx-auto mb-4" />
+                <h3 className="text-white font-heading text-sm uppercase italic tracking-widest">{feature.title}</h3>
+                <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mt-2">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
 
-                <div className="p-8">
-                  <p className="text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-2">{member.title}</p>
-                  <h3 className="text-2xl font-heading text-white uppercase italic mb-1">{member.name}</h3>
-                  <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest mb-6">{member.role}</p>
-                  <p className="text-zinc-500 text-sm leading-relaxed mb-8">{member.bio}</p>
+          {/* Call to Action */}
+          <div className="pt-12 flex flex-col md:flex-row items-center justify-center gap-6">
+            <Link href="/" className="group relative">
+               <div className="absolute inset-0 bg-primary blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+               <div className="relative px-10 py-5 bg-primary text-black font-black uppercase tracking-widest text-xs rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all">
+                  Return To Base <ChevronRight className="w-4 h-4" />
+               </div>
+            </Link>
+            <Link href="/about" className="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 transition-all">
+               The Mission
+            </Link>
+          </div>
 
-                  <div className="flex gap-3 pt-4 border-t border-white/5">
-                    <a href={member.socials.instagram} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 text-zinc-500 hover:text-primary transition-all">
-                      <Instagram className="w-4 h-4" />
-                    </a>
-                    <a href={`mailto:${member.socials.email}`} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 text-zinc-500 hover:text-primary transition-all">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
+          {/* Footer Note */}
+          <div className="pt-20 opacity-20 select-none">
+             <div className="flex items-center justify-center gap-8 md:gap-16">
+                <span className="text-[10px] font-black uppercase tracking-[1em]">TEAM</span>
+                <Zap className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-[1em]">KARAD</span>
+                <Trophy className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-[1em]">OFFROADERS</span>
+             </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Aesthetic Accents */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+         <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent" />
+      </div>
     </div>
   );
 }
