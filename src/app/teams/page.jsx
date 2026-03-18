@@ -1,136 +1,86 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CATEGORIES } from "@/config/pricing";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, Trophy, Filter } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Zap, Trophy, Shield, Users, ChevronRight, LayoutGrid } from "lucide-react";
+import Link from "next/link";
 
 export default function TeamsPage() {
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("ALL");
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    async function fetchTeams() {
-      try {
-        const res = await fetch("/api/teams");
-        const data = await res.json();
-        setTeams(data.teams || []);
-      } catch (e) {
-        console.error("Failed to fetch teams");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchTeams();
-  }, []);
-
-  const filteredTeams = teams.filter(team => {
-    const matchesCategory = filter === "ALL" || team.category === filter;
-    const matchesSearch = (team.driver_name || "").toLowerCase().includes(search.toLowerCase()) || 
-                          (team.codriver_name || "").toLowerCase().includes(search.toLowerCase()) ||
-                          (team.car_number || "").includes(search);
-    return matchesCategory && matchesSearch;
-  });
-
   return (
-    <div className="min-h-screen bg-zinc-950 pt-24 pb-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
-          <div>
-            <h1 className="text-5xl font-heading text-white mb-2 uppercase">
-              REGISTERED <span className="text-primary italic">TEAMS</span>
+    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-6 relative overflow-hidden flex items-center justify-center">
+      {/* Background Decor */}
+      <div className="absolute top-1/4 left-1/4 w-[50%] h-[50vh] bg-primary/5 blur-[150px] pointer-events-none" />
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto relative z-10 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="space-y-12"
+        >
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-zinc-900/50 border border-white/10 backdrop-blur-md">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-primary text-[10px] font-black uppercase tracking-[0.4em]">Grid Formation In Progress</span>
+          </div>
+
+          {/* Main Hero Header */}
+          <div className="space-y-6">
+            <h1 className="text-7xl md:text-9xl font-heading text-white tracking-tighter uppercase leading-none">
+              THE <span className="text-primary italic">GRID</span>
+              <br />
+              <span className="text-zinc-800">COMING SOON</span>
             </h1>
-            <p className="text-zinc-500 uppercase text-xs font-black tracking-widest">Official entry list for TKO Rally 2026</p>
+            <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed italic">
+              The elite Season 2 lineup is currently being processed by race control. Registered teams will appear here once technical verification is complete.
+            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <Input 
-                placeholder="Search driver or car #..." 
-                className="pl-10 bg-zinc-900 border-zinc-800 text-white"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger className="w-full sm:w-48 bg-zinc-900 border-zinc-800 text-white">
-                <Filter className="w-4 h-4 mr-2 text-zinc-500" />
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
-                <SelectItem value="ALL">All Categories</SelectItem>
-                {Object.entries(CATEGORIES).map(([key, cat]) => (
-                  <SelectItem key={key} value={key}>{cat.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Feature Grid - Explaining why it's empty */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
+            {[
+              { icon: Shield, title: "VERIFYING", desc: "Technical Scrutiny" },
+              { icon: Users, title: "160+ TEAMS", desc: "Global Competitors" },
+              { icon: Trophy, title: "STAKED", desc: "Sticker Numbers" }
+            ].map((feature, i) => (
+              <div key={i} className="p-8 bg-zinc-900/30 border border-white/5 rounded-3xl backdrop-blur-sm group hover:border-primary/20 transition-all">
+                <feature.icon className="w-8 h-8 text-zinc-700 group-hover:text-primary transition-colors mx-auto mb-4" />
+                <h3 className="text-white font-heading text-sm uppercase italic tracking-widest">{feature.title}</h3>
+                <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mt-2">{feature.desc}</p>
+              </div>
+            ))}
           </div>
-        </div>
 
-        {loading ? (
-          <div className="py-20 text-center">
-            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-zinc-500 font-heading tracking-widest uppercase">Syncing with race control...</p>
+          {/* Call to Action */}
+          <div className="pt-12 flex flex-col md:flex-row items-center justify-center gap-6">
+            <Link href="/register" className="group relative">
+               <div className="absolute inset-0 bg-primary blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+               <div className="relative px-10 py-5 bg-primary text-black font-black uppercase tracking-widest text-xs rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all">
+                  Register Your Team <ChevronRight className="w-4 h-4" />
+               </div>
+            </Link>
+            <Link href="/" className="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 transition-all">
+               Return To Base
+            </Link>
           </div>
-        ) : filteredTeams.length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
-            <Trophy className="w-12 h-12 text-zinc-800 mx-auto mb-4" />
-            <p className="text-zinc-500 text-lg uppercase font-heading">No teams found matching your criteria</p>
+
+          {/* Footer Note */}
+          <div className="pt-20 opacity-20 select-none">
+             <div className="flex items-center justify-center gap-8 md:gap-16">
+                <span className="text-[10px] font-black uppercase tracking-[1em]">OFFICIAL</span>
+                <Zap className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-[1em]">ACCESS</span>
+                <Trophy className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-[1em]">GRANTED</span>
+             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            <Card className="bg-zinc-900 border-zinc-800 overflow-hidden rounded-[2rem]">
-              <Table>
-                <TableHeader className="bg-zinc-800/50">
-                  <TableRow className="border-zinc-800 hover:bg-transparent h-16">
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase pl-8"># NO</TableHead>
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase">DRIVER</TableHead>
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase">CO-DRIVER</TableHead>
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase">VEHICLE</TableHead>
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase">CATEGORY</TableHead>
-                    <TableHead className="text-zinc-400 font-heading text-[10px] tracking-widest uppercase text-right pr-8">STATUS</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTeams.map((team, idx) => (
-                    <TableRow key={idx} className="border-zinc-800 hover:bg-white/5 transition-colors h-20">
-                      <TableCell className="font-heading text-3xl text-primary font-bold pl-8">
-                        #{team.car_number}
-                      </TableCell>
-                      <TableCell className="text-white font-black uppercase text-sm tracking-tight">
-                        {team.driver_name}
-                      </TableCell>
-                      <TableCell className="text-zinc-400 uppercase text-xs font-bold">
-                        {team.codriver_name}
-                      </TableCell>
-                      <TableCell className="text-zinc-300 italic font-sans text-xs uppercase font-medium">
-                        {team.car_model || team.vehicle_name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[9px] border-zinc-700 text-zinc-400 uppercase bg-zinc-800/50 font-black tracking-widest">
-                          {CATEGORIES[team.category]?.name || team.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right pr-8">
-                        <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 px-4 py-1.5 uppercase font-black text-[9px] tracking-widest">
-                          CONFIRMED
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </div>
-        )}
+        </motion.div>
+      </div>
+
+      {/* Aesthetic Accents */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+         <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-white/5 to-transparent" />
       </div>
     </div>
   );
