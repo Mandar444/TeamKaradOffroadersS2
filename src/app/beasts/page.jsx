@@ -8,6 +8,14 @@ import { cn } from "@/lib/utils";
 
 const beasts = [
   {
+    id: "stallion",
+    name: "Stallion",
+    category: "EXPERT",
+    type: "MODIFICATION_LEVEL: EXPERT",
+    image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    stats: { engine: "Expert Powertrain", lockers: "Pro-Locker", suspension: "Long Travel" }
+  },
+  {
     id: "dominator",
     name: "Dominator",
     category: "MODIFIED",

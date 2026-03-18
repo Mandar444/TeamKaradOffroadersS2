@@ -8,6 +8,22 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const beastData = {
+  stallion: {
+    name: "Stallion",
+    type: "MODIFICATION_LEVEL: EXPERT",
+    category: "EXPERT",
+    heroImage: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    desc: "Stallion is the ultimate power build in our Season 2 expert division. Engineered for raw strength and technical agility, it combines a high-torque powertrain with a custom suspension setup designed to maintain traction where others fail. A true force of nature on the grid.",
+    specs: [
+      { label: "Stability", value: "Expert Articulation", icon: Gauge },
+      { label: "Control", value: "Pro Diff Lockers", icon: Zap },
+      { label: "Build", value: "Season 2 Vanguard", icon: Cog },
+      { label: "Engine", value: "Technical Mastery", icon: Fuel },
+    ],
+    gallery: [
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    ]
+  },
   dominator: {
     name: "Dominator",
     type: "MODIFICATION_LEVEL: MODIFIED",
