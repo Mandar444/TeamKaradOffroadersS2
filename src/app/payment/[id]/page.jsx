@@ -109,17 +109,23 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 bg-zinc-950">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-10">
+        <div className="flex justify-between items-start mb-10">
           <div className="text-left">
-            <h1 className="text-2xl md:text-4xl font-heading text-white">COMPLETE <span className="text-primary italic">PAYMENT</span></h1>
-            <p className="text-zinc-500 mt-1">ID: <span className="text-primary font-mono">{id}</span></p>
+            <div className="flex items-center gap-2 mb-2">
+               <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+               <span className="text-amber-500 text-[10px] font-black uppercase tracking-widest leading-none">Waitlist Status: Action Required</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-heading text-white tracking-tighter uppercase leading-none">
+              COMPLETE <span className="text-primary italic font-heading">PAYMENT</span>
+            </h1>
+            <p className="text-zinc-500 mt-2 text-xs md:text-sm font-medium">Registration Reference: <span className="text-primary font-mono">{id}</span></p>
           </div>
           <Button 
             variant="ghost" 
             onClick={() => router.push("/")}
-            className="text-zinc-500 hover:text-white flex items-center gap-2 font-black uppercase tracking-widest text-[10px]"
+            className="text-zinc-500 hover:text-white flex items-center gap-2 font-black uppercase tracking-widest text-[10px] border border-white/5 px-4"
           >
-            CANCEL & HOME
+            QUIT & HOME
           </Button>
         </div>
 

@@ -7,7 +7,8 @@ import { Target, Heart, Shield, Zap, Users, Trophy, MapPin, Calendar, Activity, 
 
 const milestones = [
   { year: "2015", title: "Ignition", desc: "Founded by 4x4 enthusiasts to bring professional motorsport to Maharashtra." },
-  { year: "2026", title: "Season 2", desc: "The definitive championship format launched for elite off-roaders." },
+  { year: "2025", title: "Season 1", desc: "Our massive debut event at Karad, attracting 35,000+ spectators and 160+ drivers." },
+  { year: "2026", title: "Season 2", desc: "The definitive expansion of the championship format for elite national entries." },
 ];
 
 const values = [

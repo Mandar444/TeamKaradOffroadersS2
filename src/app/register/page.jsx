@@ -124,7 +124,7 @@ export default function RegisterPage() {
 
       const data = await response.json();
       if (data.success && data.id) {
-        window.location.href = `/payment/${data.id}`;
+        router.push(`/payment/${data.id}`);
       } else {
         alert(data.error || "Registration failed. Please try again.");
       }
@@ -154,7 +154,7 @@ export default function RegisterPage() {
              </div>
              <div className="text-right">
                 <span className="text-zinc-600 text-[10px] font-black uppercase tracking-widest block mb-1">Progress</span>
-                <span className="text-white font-heading text-2xl md:text-3xl italic">{step}/5</span>
+                <span className="text-white font-heading text-2xl md:text-3xl">{step < 10 ? `0${step}` : step} <span className="text-zinc-700 text-xs md:text-base font-sans">/ 05</span></span>
              </div>
           </div>
           
