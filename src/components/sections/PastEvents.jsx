@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 const events = [
   {
-    year: "2025",
-    name: "Team Karad Off-Road Event Season 1",
+    year: "2026",
+    name: "Team Karad Off-Road Event Season 2",
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
-    stats: "35,000+ Spectators • 160+ Experts"
+    stats: "35,000+ Spectators • 160+ Elite Entries"
   }
 ];
 
@@ -16,13 +16,13 @@ export default function PastEvents() {
     <section className="py-24 px-4 bg-zinc-950">
       <div className="max-w-7xl mx-auto">
         <div className="mb-16">
-          <h2 className="text-4xl font-heading text-white mb-2">
-            PAST <span className="text-primary italic">MOMENTS</span>
+          <h2 className="text-4xl font-heading text-white mb-2 uppercase italic tracking-tighter leading-none">
+            RACE <span className="text-primary italic">CHRONICLES</span>
           </h2>
-          <p className="text-zinc-500">Relive the adrenaline from previous Team Karad Off-Roaders chapters.</p>
+          <p className="text-zinc-500 font-medium tracking-wide">The adrenaline-fueled saga of Team Karad Off-Roaders.</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 gap-12 max-w-4xl mx-auto">
           {events.map((event, idx) => (
             <motion.div
               key={idx}
@@ -30,18 +30,20 @@ export default function PastEvents() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.2 }}
-              className="group relative h-[400px] overflow-hidden rounded-2xl border border-zinc-800"
+              className="group relative h-[450px] overflow-hidden rounded-[2.5rem] border border-white/5 shadow-2xl"
             >
               <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                 style={{ backgroundImage: `url(${event.image})` }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
               
-              <div className="absolute bottom-0 left-0 p-8 w-full">
-                <span className="text-primary font-heading tracking-widest text-sm mb-2 block">{event.year}</span>
-                <h3 className="text-2xl font-heading text-white mb-1">{event.name}</h3>
-                <p className="text-zinc-400 text-sm italic">{event.stats}</p>
+              <div className="absolute bottom-0 left-0 p-10 w-full">
+                <div className="bg-primary/95 text-black font-black text-[10px] tracking-[0.4em] px-4 py-1.5 rounded-full w-fit mb-6 uppercase">
+                   {event.year} MISSION
+                </div>
+                <h3 className="text-4xl font-heading text-white mb-3 italic uppercase tracking-tighter leading-none">{event.name}</h3>
+                <p className="text-zinc-400 text-sm font-medium tracking-widest uppercase opacity-80">{event.stats}</p>
               </div>
             </motion.div>
           ))}
