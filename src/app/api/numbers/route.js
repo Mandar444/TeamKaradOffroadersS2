@@ -31,9 +31,9 @@ export async function GET(request) {
       })
       .map((row) => String(row.get("car_number")));
 
-    return NextResponse.json({ booked: bookedNumbers });
+    return NextResponse.json({ numbers: bookedNumbers });
   } catch (error) {
     console.error("Fetch booked numbers error:", error);
-    return NextResponse.json({ booked: [] }); // Fallback to empty if sheet not ready
+    return NextResponse.json({ numbers: [] }); // Fallback to empty if sheet not ready
   }
 }
