@@ -107,6 +107,17 @@ export const CATEGORIES = {
        "Stock Suspension only"
     ]
   },
+  LADIES: {
+    name: "Ladies Category (FREE ENTRY)",
+    fee: 0,
+    lateFee: 0,
+    description: "Exclusive category for female off-roaders — Complete Fee Waiver",
+    technicalTerms: [
+       "Female driver mandatory",
+       "Vehicle must comply with safety standards",
+       "Entry is completely sponsored and free for both early and late registration"
+    ]
+  },
 };
 
 export const PRICING_CONFIG = {
