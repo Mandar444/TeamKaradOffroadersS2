@@ -69,8 +69,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Links */}
-          <div className="hidden lg:flex items-center gap-0.5 shrink-1">
+          {/* Desktop Links (Visible only on XL screens to prevent iPad overlap) */}
+          <div className="hidden xl:flex items-center gap-0.5 shrink-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -100,10 +100,10 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Toggle */}
+          {/* Mobile Toggle (Visible on all screens below XL) */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="xl:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
