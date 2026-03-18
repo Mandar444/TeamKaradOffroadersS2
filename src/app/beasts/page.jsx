@@ -64,8 +64,12 @@ function BeastCard({ beast, idx }) {
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
+  
+  // Parallax for the image inside the card
+  const imgX = useTransform(mouseXSpring, [-0.5, 0.5], ["-2%", "2%"]);
+  const imgY = useTransform(mouseYSpring, [-0.5, 0.5], ["-2%", "2%"]);
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -90,58 +94,76 @@ function BeastCard({ beast, idx }) {
   };
 
   return (
-    <Link href={`/beasts/${beast.id}`} className="group relative">
-      <motion.div
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ 
-          rotateX, 
-          rotateY, 
-          transformStyle: "preserve-3d",
-          "--mouse-x": `${mousePos.x}px`,
-          "--mouse-y": `${mousePos.y}px`
-        }}
-        className="relative h-[450px] w-full rounded-[2.5rem] bg-zinc-900 border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-primary/20"
-      >
-        {/* Reflection / Glow Overlay */}
-        <div className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,165,0,0.15),transparent_80%)]" />
-        
-        {/* Base Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
-          style={{ backgroundImage: `url(${beast.image})` }}
-        />
-        
-        {/* Overlay Darken */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+    <div className="relative group perspective-1000">
+      {/* 1. Main Card */}
+      <Link href={`/beasts/${beast.id}`} className="block">
+        <motion.div
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{ 
+            rotateX, 
+            rotateY, 
+            transformStyle: "preserve-3d",
+            "--mouse-x": `${mousePos.x}px`,
+            "--mouse-y": `${mousePos.y}px`
+          }}
+          className="relative h-[500px] w-full rounded-[3rem] bg-zinc-950 border border-white/5 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)] transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-[0_40px_100px_rgba(255,165,0,0.15)]"
+        >
+          {/* Spotlight Glow Overlay */}
+          <div className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,165,0,0.2),transparent_60%)]" />
+          
+          {/* Parallax Image Layer */}
+          <motion.div 
+            style={{ x: imgX, y: imgY, scale: 1.15 }}
+            className="absolute inset-0 bg-cover bg-center grayscale-[0.8] group-hover:grayscale-0 transition-all duration-700"
+            style={{ backgroundImage: `url(${beast.image})` }}
+          />
+          
+          {/* Glass Overlay with Vignette */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
 
-        {/* Info */}
-        <div className="absolute bottom-0 left-0 p-8 w-full z-20" style={{ transform: "translateZ(50px)" }}>
-           <div className="flex items-center gap-3 mb-4">
-              <span className="bg-primary/95 text-black text-[9px] font-black tracking-widest px-3 py-1 rounded-full uppercase">
-                 {beast.category}
-              </span>
-           </div>
-           <h3 className="text-4xl font-heading text-white uppercase italic tracking-tighter leading-none mb-2">{beast.name}</h3>
-           <p className="text-zinc-400 text-[10px] font-black tracking-[0.4em] uppercase mb-6 opacity-80">{beast.type}</p>
-           
-           <div className="flex gap-4 pt-6 border-t border-white/10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-               {Object.entries(beast.stats).map(([k, v]) => (
-                 <div key={k} className="text-left">
-                    <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest">{k}</p>
-                    <p className="text-white text-[10px] font-heading uppercase">{v}</p>
-                 </div>
-               ))}
-           </div>
-        </div>
+          {/* Card Content (Floating with Z-index) */}
+          <div className="absolute bottom-0 left-0 p-10 w-full z-40 transform translate-z-[80px]" style={{ transform: "translateZ(80px)" }}>
+             <div className="flex items-center gap-3 mb-6">
+                <span className="bg-primary/95 text-black text-[10px] font-black tracking-[0.2em] px-4 py-1.5 rounded-full uppercase shadow-glow">
+                   {beast.category}
+                </span>
+             </div>
+             <h3 className="text-5xl font-heading text-white uppercase italic tracking-tighter leading-none mb-4 drop-shadow-2xl">
+                {beast.name}
+             </h3>
+             <p className="text-zinc-500 text-[11px] font-black tracking-[0.6em] uppercase mb-8 ml-1">
+                {beast.type}
+             </p>
+             
+             <div className="flex gap-8 pt-8 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-6 group-hover:translate-y-0 duration-500 ease-out">
+                 {Object.entries(beast.stats).map(([k, v]) => (
+                   <div key={k} className="text-left space-y-1">
+                      <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{k}</p>
+                      <p className="text-white text-[11px] font-heading uppercase group-hover:text-primary transition-colors">{v}</p>
+                   </div>
+                 ))}
+             </div>
+          </div>
 
-        {/* Reflection Effect at the bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      </motion.div>
-      
-      {/* Decorative Shadow/Glow underneath the card */}
-      <div className="absolute -inset-2 bg-primary/10 blur-2xl rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
-    </Link>
+          {/* Mechanical Detail Border (Inner) */}
+          <div className="absolute inset-4 border border-white/5 rounded-[2.2rem] pointer-events-none z-10 group-hover:border-primary/10 transition-colors" />
+        </motion.div>
+      </Link>
+
+      {/* 2. Reflective Floor (Realistic Bottom Reflection) */}
+      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[90%] h-40 pointer-events-none z-[-1] opacity-30 group-hover:opacity-40 transition-opacity duration-700">
+          <div 
+            className="w-full h-full bg-cover bg-bottom scale-y-[-1] grayscale blur-md mask-linear-gradient"
+            style={{ 
+              backgroundImage: `url(${beast.image})`,
+              maskImage: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' 
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+      </div>
+    </div>
   );
 }
 
