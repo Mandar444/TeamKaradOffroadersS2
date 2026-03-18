@@ -17,6 +17,13 @@ const drive = google.drive({ version: 'v3', auth });
 
 export async function uploadToDrive(file, fileName) {
   try {
+    console.log(`[DRIVE] Initializing upload for: ${fileName}`);
+    console.log(`[DRIVE] Using Folder ID: ${DRIVE_FOLDER_ID || 'ROOT (NONE PROVIDED)'}`);
+    
+    if (!GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+      throw new Error("Missing Google Drive Credentials in environment.");
+    }
+
     const fileMetadata = {
       name: fileName,
       parents: DRIVE_FOLDER_ID ? [DRIVE_FOLDER_ID] : [],
@@ -33,18 +40,29 @@ export async function uploadToDrive(file, fileName) {
       fields: 'id, webViewLink, webContentLink',
     });
 
-    // Make the file publicly viewable (optional, depends on security needs)
-    await drive.permissions.create({
-        fileId: response.data.id,
-        requestBody: {
-            role: 'reader',
-            type: 'anyone',
-        }
-    });
+    console.log(`[DRIVE] Upload Successful. File ID: ${response.data.id}`);
+
+    // Try to make the file public, but don't fail the whole process if it errors
+    try {
+      await drive.permissions.create({
+          fileId: response.data.id,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          }
+      });
+      console.log(`[DRIVE] Permissions updated for: ${response.data.id}`);
+    } catch (permError) {
+      console.warn(`[DRIVE] Warning: Could not set public permissions (this may be normal for some restricted folders):`, permError.message);
+    }
 
     return response.data.webViewLink;
   } catch (error) {
-    console.error('Drive upload error:', error);
+    console.error('[DRIVE] CRITICAL UPLOAD ERROR:', {
+      message: error.message,
+      folderId: DRIVE_FOLDER_ID,
+      stack: error.stack
+    });
     throw error;
   }
 }
