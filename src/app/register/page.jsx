@@ -461,7 +461,7 @@ export default function RegisterPage() {
                        {errors.medicalIssue && <p className="text-red-500 text-[9px] font-black uppercase mt-1">{errors.medicalIssue.message}</p>}
                     </div>
                     <div className="space-y-3">
-                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Companion Log</Label>
+                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Additional Crew Members</Label>
                        <Textarea {...register("extraNames")} placeholder="Additional Crew names (If any)" className="h-28 bg-white/5 border-white/5 rounded-xl resize-none p-4" />
                     </div>
                   </div>
