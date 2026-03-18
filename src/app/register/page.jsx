@@ -430,7 +430,7 @@ export default function RegisterPage() {
                       }} 
                       className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl hover:scale-[1.02] transition-all text-[10px] md:text-base flex items-center justify-center p-2"
                     >
-                      <span className="truncate">NEXT: BIO-TECH</span>
+                      <span className="truncate">NEXT: TEAM MATES</span>
                       <ChevronRight className="ml-2 w-4 h-4 shrink-0" />
                     </Button>
                   </div>
@@ -438,7 +438,7 @@ export default function RegisterPage() {
               </motion.div>
             )}
 
-            {/* STEP 4: BIO-TECH & LOGISTICS */}
+            {/* STEP 4: EXTRA TEAM MATES */}
             {step === 4 && (
               <motion.div 
                 key="step4"
@@ -449,9 +449,9 @@ export default function RegisterPage() {
               >
                 <div className="flex items-center gap-4 mb-8">
                    <Gauge className="w-5 h-5 text-primary" />
-                   <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] leading-none">Logistics (04/05)</p>
+                   <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] leading-none">Extra Mates (04/05)</p>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-heading text-white uppercase leading-none tracking-tighter mb-10">BIO-TECH & <span className="text-primary italic">LOGISTICS</span></h2>
+                <h2 className="text-3xl md:text-4xl font-heading text-white uppercase leading-none tracking-tighter mb-10">EXTRA TEAM <span className="text-primary italic">MATES</span></h2>
 
                 <div className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
