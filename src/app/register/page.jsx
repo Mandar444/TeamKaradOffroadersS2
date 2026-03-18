@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
       const data = await response.json();
       if (data.success && data.id) {
-        router.push(`/payment/${data.id}`);
+        router.push(`/form-submitted/${data.id}`);
       } else {
         alert(data.error || "Registration failed. Please try again.");
       }
