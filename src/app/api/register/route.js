@@ -14,12 +14,21 @@ export async function POST(request) {
     const regSheet = await getSheetByName("Registrations");
     const bookedSheet = await getSheetByName("Booked Numbers");
 
-    // 1. Check if number is already taken
+    // 1. Check if number is actually taken (BOOKED or HELD within 15 mins)
     const existingRows = await bookedSheet.getRows();
-    const isTaken = existingRows.some(row => 
-      row.get("category") === data.category && 
-      String(row.get("car_number")) === String(data.carNumber)
-    );
+    const now = new Date();
+    const isTaken = existingRows.some(row => {
+      const isSameNum = row.get("category") === data.category && String(row.get("car_number")) === String(data.carNumber);
+      if (!isSameNum) return false;
+
+      const status = row.get("status");
+      if (status === "BOOKED") return true;
+      if (status === "HELD") {
+        const expiresAt = new Date(row.get("expires_at"));
+        return expiresAt > now;
+      }
+      return false;
+    });
 
     if (isTaken) {
       return NextResponse.json({ error: "Car number already taken in this category" }, { status: 400 });

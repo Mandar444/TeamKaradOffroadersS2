@@ -9,8 +9,9 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
-    // Return ALL registrations for QR indexing
-    const allTeams = rows
+    // Return only CONFIRMED registrations for public Grid Lineup
+    const confirmedTeams = rows
+      .filter((row) => (row.get("status") || "").trim() === "CONFIRMED")
       .map((row) => ({
         team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
@@ -22,13 +23,13 @@ export async function GET() {
         vehicle_name: row.get("vehicle_name"),
         vehicle_model: row.get("vehicle_model"),
         socials: row.get("socials"),
-        status: row.get("status") || "PENDING",
+        status: row.get("status") || "CONFIRMED",
       }));
 
     // Sort by car number
-    allTeams.sort((a, b) => parseInt(a.car_number) - parseInt(b.car_number));
+    confirmedTeams.sort((a, b) => parseInt(a.car_number) - parseInt(b.car_number));
 
-    return NextResponse.json({ teams: allTeams });
+    return NextResponse.json({ teams: confirmedTeams });
   } catch (error) {
     console.error("Teams fetch error:", error);
     return NextResponse.json({ teams: [] });
