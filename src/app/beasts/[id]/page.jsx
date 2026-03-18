@@ -48,9 +48,9 @@ const beastData = {
     type: "MODIFICATION_LEVEL: MODIFIED",
     category: "MODIFIED",
     heroImage: "/images/beasts/dynamite/dynamite-hero.jpg",
-    desc: "Dynamite is a testament to the skill of the driver and the reliability of stock engineering. Competing in the stock categories, it represents the pure essence of off-roading where technical precision on the trail outweighs pure horsepower.",
+    desc: "Dynamite is a testament to the skill of the driver combined with precision technical modifications. Competing in the Modified division, it represents the perfect balance of raw power and trail control, engineered to tackle obstacles that stop standard vehicles in their tracks.",
     specs: [
-      { label: "Category", value: "Stock Performance", icon: Gauge },
+      { label: "Category", value: "Modified Performance", icon: Gauge },
       { label: "Control", value: "Precision Steering", icon: Zap },
       { label: "Reliability", value: "Field-Proven", icon: Fuel },
       { label: "Handling", value: "Technical Terrain", icon: Cog },
