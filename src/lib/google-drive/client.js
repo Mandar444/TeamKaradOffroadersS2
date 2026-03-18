@@ -10,7 +10,7 @@ const DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID; // Optional folder I
 const auth = new JWT({
   email: GOOGLE_CLIENT_EMAIL,
   key: GOOGLE_PRIVATE_KEY,
-  scopes: ['https://www.googleapis.com/auth/drive.file'],
+  scopes: ['https://www.googleapis.com/auth/drive'],
 });
 
 const drive = google.drive({ version: 'v3', auth });
