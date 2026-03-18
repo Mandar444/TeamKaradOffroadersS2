@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -68,6 +69,7 @@ const formSchema = z.object({
 });
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [takenNumbers, setTakenNumbers] = useState([]);
@@ -430,7 +432,7 @@ export default function RegisterPage() {
                       }} 
                       className="w-full sm:flex-[2] h-14 md:h-16 bg-primary text-black font-black uppercase tracking-wider rounded-xl hover:scale-[1.02] transition-all text-[10px] md:text-base flex items-center justify-center p-2"
                     >
-                      <span className="truncate">NEXT: BIO-TECH</span>
+                      <span className="truncate">NEXT: TEAM MATES</span>
                       <ChevronRight className="ml-2 w-4 h-4 shrink-0" />
                     </Button>
                   </div>
@@ -438,7 +440,7 @@ export default function RegisterPage() {
               </motion.div>
             )}
 
-            {/* STEP 4: BIO-TECH & LOGISTICS */}
+            {/* STEP 4: EXTRA TEAM MATES */}
             {step === 4 && (
               <motion.div 
                 key="step4"
@@ -449,9 +451,9 @@ export default function RegisterPage() {
               >
                 <div className="flex items-center gap-4 mb-8">
                    <Gauge className="w-5 h-5 text-primary" />
-                   <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] leading-none">Logistics (04/05)</p>
+                   <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] leading-none">Extra Mates (04/05)</p>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-heading text-white uppercase leading-none tracking-tighter mb-10">BIO-TECH & <span className="text-primary italic">LOGISTICS</span></h2>
+                <h2 className="text-3xl md:text-4xl font-heading text-white uppercase leading-none tracking-tighter mb-10">EXTRA TEAM <span className="text-primary italic">MATES</span></h2>
 
                 <div className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -461,14 +463,14 @@ export default function RegisterPage() {
                        {errors.medicalIssue && <p className="text-red-500 text-[9px] font-black uppercase mt-1">{errors.medicalIssue.message}</p>}
                     </div>
                     <div className="space-y-3">
-                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Companion Log</Label>
+                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Additional Crew Members</Label>
                        <Textarea {...register("extraNames")} placeholder="Additional Crew names (If any)" className="h-28 bg-white/5 border-white/5 rounded-xl resize-none p-4" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-8 p-6 md:p-10 bg-black/50 rounded-2xl md:rounded-[2.5rem] border border-white/5">
                     <div className="space-y-4">
-                      <Label className="text-zinc-600 text-[10px] font-black tracking-[0.5em] uppercase">Total Entrants (including driver/co-driver)</Label>
+                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.5em] uppercase">Crew Count (including driver/co-driver)</Label>
                       <Input {...register("attendanceCount")} type="number" className="h-14 bg-zinc-900 border-white/5 rounded-xl text-3xl font-heading text-primary text-center" />
                       {errors.attendanceCount && <p className="text-red-500 text-[9px] font-black uppercase mt-1">{errors.attendanceCount.message}</p>}
                     </div>

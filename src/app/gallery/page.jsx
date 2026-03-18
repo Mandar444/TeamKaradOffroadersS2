@@ -28,13 +28,8 @@ const galleryItems = [
   { src: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2070&auto=format&fit=crop", caption: "Champ Ceremony — Coming Soon", category: "Events" },
 ];
 
-const categories = ["All", "Rally", "Mud", "Night", "Hill", "Beasts", "Events"];
-
 export default function GalleryPage() {
-  const [filter, setFilter] = useState("All");
   const [lightbox, setLightbox] = useState(null);
-
-  const filtered = filter === "All" ? galleryItems : galleryItems.filter(i => i.category === filter);
 
   return (
     <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">
@@ -49,26 +44,11 @@ export default function GalleryPage() {
             <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
               THE <span className="text-primary italic">GALLERY</span>
             </h1>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilter(cat)}
-                  className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                    filter === cat
-                      ? "bg-primary text-black border-primary"
-                      : "bg-white/5 text-zinc-500 border-white/5 hover:bg-white/10"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
           </motion.div>
 
           {/* Stable Grid Layout */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((item, idx) => (
+            {galleryItems.map((item, idx) => (
               <motion.div
                 key={idx}
                 layout
@@ -113,13 +93,13 @@ export default function GalleryPage() {
             </button>
             <button
               className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/5 rounded-xl hover:bg-white/10 text-white"
-              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev > 0 ? prev - 1 : filtered.length - 1)); }}
+              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev > 0 ? prev - 1 : galleryItems.length - 1)); }}
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/5 rounded-xl hover:bg-white/10 text-white"
-              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev < filtered.length - 1 ? prev + 1 : 0)); }}
+              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev < galleryItems.length - 1 ? prev + 1 : 0)); }}
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -127,14 +107,14 @@ export default function GalleryPage() {
               key={lightbox}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              src={filtered[lightbox]?.src}
-              alt={filtered[lightbox]?.caption}
+              src={galleryItems[lightbox]?.src}
+              alt={galleryItems[lightbox]?.caption}
               className="max-w-[90vw] max-h-[80vh] object-contain rounded-2xl"
               onClick={(e) => e.stopPropagation()}
             />
             <div className="absolute bottom-8 text-center">
-              <p className="text-white font-heading text-xl uppercase">{filtered[lightbox]?.caption}</p>
-              <p className="text-zinc-500 text-xs mt-1">{lightbox + 1} / {filtered.length}</p>
+              <p className="text-white font-heading text-xl uppercase">{galleryItems[lightbox]?.caption}</p>
+              <p className="text-zinc-500 text-xs mt-1">{lightbox + 1} / {galleryItems.length}</p>
             </div>
           </motion.div>
         )}
@@ -142,3 +122,4 @@ export default function GalleryPage() {
     </div>
   );
 }
+

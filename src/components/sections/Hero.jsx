@@ -90,6 +90,18 @@ export default function Hero() {
               VIEW TEAMS
             </Link>
           </div>
+
+          <div className="mt-10 space-y-2 pointer-events-none">
+             <p className="text-white font-black text-xs md:text-lg tracking-[0.2em] uppercase drop-shadow-glow">
+                EARLY ENTRY: 19 MARCH — 15 MAY
+             </p>
+             <p className="text-primary font-black text-xs md:text-lg tracking-[0.2em] uppercase drop-shadow-glow">
+                LATE ENTRY: 16 MAY — 22 MAY
+             </p>
+             <p className="text-zinc-500 font-bold text-[10px] md:text-sm tracking-[0.4em] uppercase mt-4">
+                FINAL DEADLINE: 22 MAY 2026
+             </p>
+          </div>
         </motion.div>
 
         <motion.div 
