@@ -1,0 +1,275 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
+import { Gauge, Fuel, Cog, Zap, ShieldCheck, Trophy, Info, ChevronLeft, LayoutGrid, Camera, Settings, Activity } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const beastData = {
+  dominator: {
+    name: "Dominator",
+    type: "PROFESSIONAL_BUILD",
+    category: "EXPERT_CATEGORY",
+    heroImage: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    desc: "Dominator is one of the flagship off-road machines of Team Karad Offroaders, purpose-built to compete in professional off-road competitions. Equipped with front and rear differential lockers, fiddle brakes for precise wheel control, and a powerful engineered engine that provides the torque needed to conquer steep climbs, deep mud, and rocky trails.",
+    specs: [
+      { label: "Engine", value: "Engineered High-Torque", icon: Fuel },
+      { label: "Performance", value: "Lockers / Fiddle Brakes", icon: Zap },
+      { label: "Stability", value: "Extreme Climbing", icon: Gauge },
+      { label: "Tactical", value: "High performance offroad", icon: Cog },
+    ],
+    gallery: [
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
+    ]
+  },
+  dynamite: {
+     name: "Dynamite",
+     type: "TECHNICAL_RIVAL",
+     category: "EXPERT_CATEGORY",
+     heroImage: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2070&auto=format&fit=crop",
+     desc: "Engineered with a focus on agility, traction, and strength, Dynamite has been heavily modified to perform under the toughest off-road conditions. With front and rear differential lockers and a precise fiddle brake setup, the vehicle offers exceptional control, allowing the driver to navigate tight technical sections with accuracy.",
+     specs: [
+       { label: "Engine", value: "Finely Tuned Offroad", icon: Fuel },
+       { label: "Power", value: "Lockers / Fiddle Brakes", icon: Zap },
+       { label: "Body", value: "6-Point Roll Cage", icon: Gauge },
+       { label: "Tyres", value: "Performance Tyres", icon: Cog },
+     ],
+     gallery: [
+       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+       "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
+     ]
+  },
+  "jeep-3210": {
+     name: "Jeep 3210",
+     type: "MANOEUVER_EXPERT",
+     category: "EXPERT_CATEGORY",
+     heroImage: "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop",
+     desc: "What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles. It is a highly capable machine built for serious off-road competition, producing greater power output through a high-end performance engine.",
+     specs: [
+       { label: "Drive", value: "Reverse Steering +", icon: Fuel },
+       { label: "Grid", value: "Lockers / Fiddle Brakes", icon: Zap },
+       { label: "Core", value: "6-Point Roll Cage", icon: Gauge },
+       { label: "Spec", value: "Technical Traction", icon: Cog },
+     ],
+     gallery: [
+       "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
+       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+     ]
+  },
+  ashwamedh: {
+     name: "Ashwamedh",
+     type: "POWER_SYMBOL",
+     category: "EXPERT_CATEGORY",
+     heroImage: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
+     desc: "Ashwamedh represents speed, endurance, and commanding performance. At first glance, it may appear like a regular jeep, but once it enters the track, it transforms into a true off-road beast, charging through obstacles with the strength and agility of a powerful horse.",
+     specs: [
+       { label: "Mission", value: "Expert Category", icon: Fuel },
+       { label: "Dynamic", value: "Immense Horsepower", icon: Zap },
+       { label: "Aura", value: "Track Dominance", icon: Gauge },
+       { label: "Contact", value: "Offroad Beast", icon: Cog },
+     ],
+     gallery: [
+       "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
+     ]
+  },
+  "club-33": {
+     name: "Club 33",
+     type: "STRENGTH_REFINED",
+     category: "DIESEL_MODIFIED",
+     heroImage: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
+     desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
+     specs: [
+       { label: "Build", value: "Refined Tuning", icon: Fuel },
+       { label: "Spirit", value: "Confidence built", icon: Zap },
+       { label: "Trail", value: "Spirit of Adventure", icon: Gauge },
+       { label: "Grip", value: "Offroad Action", icon: Cog },
+     ],
+     gallery: [
+       "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
+     ]
+  },
+  major: {
+     name: "Major",
+     type: "STOCK_WARRIOR",
+     category: "STOCK_CATEGORY",
+     heroImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
+     desc: "Major is the stock warrior, proving that true capability lies in simplicity and skill. Maintaining a jeep in complete stock condition and still pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence.",
+     specs: [
+       { label: "OEM", value: "Original Setup", icon: Fuel },
+       { label: "Core", value: "Complete Stock", icon: Zap },
+       { label: "Tactic", value: "Skill Over Tech", icon: Gauge },
+       { label: "Rim", value: "Factory Spec", icon: Cog },
+     ],
+     gallery: [
+       "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+     ]
+  }
+};
+
+export default function BeastDetailPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const beast = beastData[id];
+
+  if (!beast) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+         <p className="text-zinc-500 font-heading">Beast Not Found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white relative selection:bg-primary selection:text-black">
+      {/* 1. HERO SECTION */}
+      <section className="relative h-[70vh] md:h-[90vh] flex items-end">
+        <div 
+          className="absolute inset-0 bg-cover bg-center grayscale-[0.3]"
+          style={{ backgroundImage: `url(${beast.heroImage})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        
+        <div className="max-w-7xl mx-auto px-6 pb-16 relative z-10 w-full">
+           <Link href="/beasts" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors uppercase font-black tracking-widest text-[10px] mb-8 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/5">
+              <ChevronLeft className="w-4 h-4" /> BACK TO ARSENAL
+           </Link>
+           
+           <motion.div
+             initial={{ opacity: 0, x: -30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ duration: 0.8 }}
+           >
+              <div className="flex items-center gap-3 mb-6">
+                 <div className="h-px w-10 bg-primary" />
+                 <span className="text-primary text-[10px] font-black tracking-[0.6em] uppercase leading-none">{beast.category}</span>
+              </div>
+              <h1 className="text-6xl md:text-[10vw] font-heading text-white uppercase italic tracking-tighter leading-none mb-4">{beast.name}</h1>
+              <p className="text-zinc-500 text-sm md:text-2xl font-heading uppercase tracking-[0.2em]">{beast.type}</p>
+           </motion.div>
+        </div>
+      </section>
+
+      {/* 2. SPECS & MISSION PROFILE */}
+      <section className="py-24 px-6 relative">
+         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
+            {/* Mission Intel */}
+            <div className="lg:col-span-7 space-y-12">
+               <div>
+                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.6em] mb-4 flex items-center gap-2">
+                     <Info className="w-4 h-4 text-primary" /> Tactical Briefing
+                  </h3>
+                  <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-medium">
+                     {beast.desc}
+                  </p>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {beast.specs.map((spec, idx) => (
+                    <motion.div 
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="p-8 bg-zinc-900/40 border border-white/5 rounded-3xl group hover:border-primary/30 transition-all duration-500"
+                    >
+                       <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                          <spec.icon className="w-6 h-6 text-primary shadow-glow" />
+                       </div>
+                       <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mb-2">{spec.label}</p>
+                       <p className="text-white font-heading text-lg md:text-xl uppercase">{spec.value}</p>
+                    </motion.div>
+                  ))}
+               </div>
+            </div>
+
+            {/* Quick Stats sidebar */}
+            <div className="lg:col-span-5">
+               <div className="sticky top-32 p-10 bg-zinc-900 border border-white/5 rounded-[3rem] shadow-2xl space-y-10">
+                  <div className="flex items-center gap-4">
+                     <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-[0_0_30px_rgba(255,165,0,0.3)]">
+                        <Trophy className="w-6 h-6 text-black" />
+                     </div>
+                     <div>
+                        <h4 className="text-white font-heading text-xl uppercase italic">Grid Record</h4>
+                        <p className="text-primary text-[10px] font-black tracking-widest uppercase opacity-80">Season 1 Veteran</p>
+                     </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center py-4 border-b border-white/5">
+                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Build Status</span>
+                       <span className="text-emerald-400 font-black text-[10px] tracking-widest uppercase flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4" /> RACE READY
+                       </span>
+                    </div>
+                    <div className="flex justify-between items-center py-4 border-b border-white/5">
+                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Transmission</span>
+                       <span className="text-white font-heading text-sm uppercase">Manual 4WD</span>
+                    </div>
+                    <div className="flex justify-between items-center py-4 border-b border-white/5">
+                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Modification Level</span>
+                       <span className="text-white font-heading text-sm uppercase italic">EXTREME</span>
+                    </div>
+                  </div>
+
+                  <Button className="w-full h-16 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-primary transition-all rounded-2xl">
+                    <Activity className="w-4 h-4 mr-2" /> Request Technical Specs
+                  </Button>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* 3. GALLERY SECTION */}
+      <section className="py-24 px-6 bg-zinc-950">
+         <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-16 px-4">
+               <div>
+                  <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.8em] mb-4 leading-none">Intelligence</h3>
+                  <h2 className="text-4xl md:text-6xl font-heading text-white uppercase italic tracking-tighter leading-none">
+                     IMAGE <span className="text-primary italic"> ARCHIVE</span>
+                  </h2>
+               </div>
+               <Camera className="w-12 h-12 text-zinc-900 hidden md:block" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {beast.gallery.map((img, idx) => (
+                 <motion.div
+                   key={idx}
+                   whileHover={{ scale: 1.02, rotate: idx % 2 === 0 ? 1 : -1 }}
+                   className="relative h-[400px] rounded-[2.5rem] overflow-hidden border border-white/10 group shadow-2xl"
+                 >
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${img})` }} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                 </motion.div>
+               ))}
+               
+               {/* Placeholder cards for empty gallery slots */}
+               {[...Array(Math.max(0, 3 - beast.gallery.length))].map((_, i) => (
+                 <div key={i} className="h-[400px] rounded-[2.5rem] border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-zinc-800">
+                    <Camera className="w-12 h-12 mb-4" />
+                    <p className="text-[10px] font-black uppercase tracking-widest">Upcoming Media...</p>
+                 </div>
+               ))}
+            </div>
+         </div>
+      </section>
+
+      {/* 4. CTA FOOTER */}
+      <section className="py-20 px-6">
+         <div className="max-w-4xl mx-auto p-12 bg-primary/5 border border-primary/10 rounded-[3rem] text-center">
+             <h2 className="text-4xl font-heading text-white uppercase italic mb-8">BUILD YOUR OWN <span className="text-primary"> LEGEND?</span></h2>
+             <Link href="/register" className="inline-flex h-16 px-12 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-all text-sm">
+                JOIN SEASON 2 GRID
+             </Link>
+         </div>
+      </section>
+    </div>
+  );
+}

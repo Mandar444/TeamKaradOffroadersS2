@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/about", label: "About Us" },
+  { href: "/regulations", label: "Regulations" },
   { href: "/beasts", label: "Our Beasts" },
   { href: "/gallery", label: "Gallery" },
   { href: "/team", label: "Our Team" },
