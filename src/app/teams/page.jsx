@@ -14,6 +14,7 @@ const CATEGORIES = {
   "DIESEL_EXPERT": { name: "Diesel Expert", color: "from-cyan-500 to-blue-600" },
   "PETROL_EXPERT": { name: "Petrol Expert", color: "from-yellow-500 to-orange-600" },
   "THAR_SUV": { name: "Thar SUV", color: "from-red-600 to-black" },
+  "SUV_MODIFIED": { name: "SUV Modified", color: "from-red-500 to-pink-700" },
   "JIMNY_SUV": { name: "Jimny SUV", color: "from-green-500 to-green-700" },
   "STOCK_NDMS": { name: "Stock NDMS", color: "from-emerald-500 to-teal-600" },
   "EXTREME": { name: "Extreme 4x4", color: "from-purple-600 to-red-600" }
@@ -52,6 +53,9 @@ export default function TeamsPage() {
   }, []);
 
   const filteredTeams = teams.filter(team => {
+    // Only show confirmed teams
+    if (team.status !== "CONFIRMED") return false;
+
     const matchesSearch = 
       team.team_name?.toLowerCase().includes(search.toLowerCase()) ||
       team.driver_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -80,7 +84,7 @@ export default function TeamsPage() {
             THE <span className="text-primary italic">LINEUP</span>
           </h1>
           <p className="text-sm md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-            Join 160+ professional drivers and co-drivers in our elite Season 1 championship. Register now to claim your legendary sticker number.
+            Join 160+ professional drivers and co-drivers in our elite <span className="text-primary">Season 2</span> championship. Register now to claim your legendary sticker number.
           </p>
         </div>
 
@@ -142,9 +146,9 @@ export default function TeamsPage() {
                       <p className="text-[10px] font-black tracking-[0.4em] text-primary uppercase leading-none">Vessel Class</p>
                       <p className="text-white text-xs font-bold uppercase tracking-widest opacity-80">{CATEGORIES[team.category]?.name || "COMPETITOR"}</p>
                     </div>
-                    <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
-                      <span className="text-3xl font-heading font-black tracking-tighter italic">S{team.car_number}</span>
-                    </div>
+                        <div className="w-20 h-20 bg-zinc-950 border-2 border-zinc-900 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl group-hover:border-red-500/30 transition-all duration-500">
+                          <span className="text-4xl font-heading font-black italic text-red-500 group-hover:scale-110 transition-transform">#{team.car_number}</span>
+                        </div>
                   </div>
 
                   <div className="relative z-10 space-y-2">
@@ -224,8 +228,8 @@ export default function TeamsPage() {
                       <div className="flex items-center gap-3 mb-8">
                         <img src="/logo.png" className="w-10 h-10 object-contain" alt="TKO" />
                         <div>
-                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] leading-none">Global Event</p>
-                           <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest mt-1 italic leading-none">Season 1 Edition</p>
+                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.6em] leading-none">Global Event</p>
+                           <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest mt-1 italic leading-none">Season 2 Edition</p>
                         </div>
                       </div>
                       <div className="relative flex flex-col py-2">
@@ -236,7 +240,7 @@ export default function TeamsPage() {
                       </div>
                    </div>
                     <div className="relative z-10 mt-10">
-                       <h3 className="text-8xl lg:text-[10rem] font-heading text-white font-black leading-none tracking-tighter relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                       <h3 className="text-8xl lg:text-[10rem] font-heading text-red-500 font-black leading-none tracking-tighter relative z-10 drop-shadow-[0_10px_20px_rgba(239,68,68,0.3)]">
                           #{selectedTeam.car_number}
                        </h3>
                        <Badge className="mt-6 bg-zinc-800/80 text-zinc-300 border-white/10 py-1.5 px-4 rounded-xl text-[10px] uppercase font-bold tracking-widest">

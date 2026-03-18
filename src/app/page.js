@@ -32,8 +32,8 @@ export default function Home() {
   };
 
   const upcomingEvent = {
-  name: "TEAM KARAD OFF-ROAD EVENT 2026 — SEASON 1",
-  date: "31 MAY — 2026",
+  name: "TEAM KARAD OFF-ROAD EVENT 2026 — SEASON 2",
+  date: "29/30/31st May 2026",
   location: "KARAD, MAHARASHTRA",
   categories: 8,
   maxParticipants: "160",
@@ -41,7 +41,7 @@ export default function Home() {
   features: [
     "3 Full Days of Competition",
     "Professional Drivers & Co-Drivers",
-    "8 Vehicle Categories",
+    "Vehicle Categories",
     "Professional Technical Trail",
     "Live Streaming & Commentary",
     "Medical Team on Standby",
@@ -76,13 +76,13 @@ export default function Home() {
                 READY TO <span className="text-primary italic">CONQUER?</span>
               </h2>
               <p className="text-zinc-400 text-sm md:text-lg mb-10 max-w-xl mx-auto">
-                Limited seats available for the elite 160. Register now before your lucky sticker number is taken.
+                Limited seats available for the elite 160 entries. Register now before your lucky sticker number is taken.
               </p>
               <Link 
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-12 text-sm md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
-                <span className="skew-x-[12deg] whitespace-nowrap uppercase">DEPLOY ENTRY</span>
+                <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
               </Link>
             </div>
           </section>
@@ -132,7 +132,7 @@ export default function Home() {
                       <Instagram className="w-5 h-5" />
                       <span className="text-sm">5,000+ Followers</span>
                     </a>
-                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-[.3em] uppercase">DEPLOY ENTRY</Link>
+                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-[.3em] uppercase">REGISTER NOW</Link>
                   </div>
                 </div>
               </div>

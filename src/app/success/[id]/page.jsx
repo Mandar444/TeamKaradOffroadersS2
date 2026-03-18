@@ -45,11 +45,14 @@ export default function SuccessPage() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-heading text-white tracking-tighter uppercase leading-[0.85] mb-8">
-              PAYMENT <span className="text-primary italic"> UNDER REVIEW.</span>
+              WAITLIST <span className="text-primary italic"> CONFIRMED.</span>
             </h1>
 
-            <p className="text-zinc-500 text-xl max-w-lg font-medium leading-relaxed mb-12">
-              Please wait until we verify your payment. Your entry status will be updated to Confirmed once the transaction is validated by our team.
+            <p className="text-zinc-500 text-xl max-w-lg font-medium leading-relaxed mb-6">
+              You are now on the waitlist. Please stay on standby while our team verifies your payment.
+            </p>
+            <p className="text-zinc-600 text-sm mb-12">
+               Once verified, your status will change from <b className="text-amber-500">PENDING</b> to <b className="text-green-500">CONFIRMED</b> on the global lineup.
             </p>
 
             {/* Technical Reference ID */}

@@ -24,6 +24,11 @@ export const CATEGORIES = {
     fee: 7999,
     description: "Battle-ready Mahindra Thar class. Built to dominate.",
   },
+  SUV_MODIFIED: {
+    name: "SUV Modified",
+    fee: 7999,
+    description: "Modified SUV class for heavy-duty challengers.",
+  },
   JIMNY_SUV: {
     name: "Jimny SUV",
     fee: 7999,

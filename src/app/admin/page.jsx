@@ -34,6 +34,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchRegistrations();
+    // Auto refresh every 30 seconds
+    const interval = setInterval(fetchRegistrations, 30000);
+    return () => clearInterval(interval);
   }, [fetchRegistrations]);
 
   const handleAction = async (regId, action) => {
@@ -168,7 +171,7 @@ export default function AdminDashboard() {
                           <TableHead className="py-6 px-8 text-zinc-600 text-[10px] font-black uppercase tracking-widest">Team Identity</TableHead>
                           <TableHead className="py-6 px-8 text-zinc-600 text-[10px] font-black uppercase tracking-widest">Crew / Comms</TableHead>
                           <TableHead className="py-6 px-8 text-zinc-600 text-[10px] font-black uppercase tracking-widest">Payment Flow</TableHead>
-                          <TableHead className="py-6 px-8 text-zinc-600 text-[10px} font-black uppercase tracking-widest text-right">Race Control</TableHead>
+                          <TableHead className="py-6 px-8 text-zinc-600 text-[10px] font-black uppercase tracking-widest text-right">Race Control</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -176,8 +179,8 @@ export default function AdminDashboard() {
                           <TableRow key={reg.reg_id} className="group hover:bg-white/5 border-white/5 transition-colors">
                             <TableCell className="py-8 px-8">
                                <div className="flex items-start gap-4">
-                                  <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center shadow-xl group-hover:border-primary/40 transition-all">
-                                     <span className="text-3xl font-heading font-black italic tracking-tighter text-white">#{reg.car_number}</span>
+                                  <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center shadow-xl group-hover:border-red-500/40 transition-all">
+                                     <span className="text-3xl font-heading font-black italic tracking-tighter text-red-500">#{reg.car_number}</span>
                                   </div>
                                   <div className="flex flex-col gap-1.5 justify-center h-16">
                                      <h4 className="text-xl font-heading text-white uppercase italic leading-none">{reg.team_name || "STORM RIDER"}</h4>

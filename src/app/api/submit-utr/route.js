@@ -29,19 +29,28 @@ export async function POST(request) {
     }
 
     const rows = await sheet.getRows();
-    const row = rows.find(r => r.get("reg_id") === regId);
+    const row = rows.find(r => {
+      const sid = String(r.get("reg_id") || "").trim();
+      const tid = String(regId).trim();
+      return sid === tid;
+    });
 
     if (!row) {
+      console.error("ROW NOT FOUND FOR ID:", regId, "AVAILABLE IDS:", rows.slice(0, 5).map(r => r.get("reg_id")));
       return NextResponse.json({ error: "Registration reference not found in database" }, { status: 404 });
     }
 
-    row.set("utr_number", utr);
-    row.set("has_screenshot", screenshot ? "YES" : "NO");
-    if (screenshotLink) {
-        row.set("screenshot_link", screenshotLink);
-    }
-    row.set("status", "PENDING_VERIFICATION");
+    // Use multiple methods to ensure update in different versions of lib
+    const updateData = {
+      utr_number: String(utr).trim(),
+      has_screenshot: screenshot ? "YES" : "NO",
+      screenshot_link: screenshotLink || row.get("screenshot_link") || "",
+      status: "PENDING_VERIFICATION"
+    };
+
+    row.assign(updateData);
     await row.save();
+    console.log("SHEET UPDATE SUCCESSFUL:", regId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

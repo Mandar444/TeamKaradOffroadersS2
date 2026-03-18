@@ -32,7 +32,7 @@ export default function LeaderboardPage() {
              <Clock className="w-16 h-16 text-zinc-700 mx-auto mb-6 animate-pulse" />
              <h2 className="text-4xl font-heading text-white uppercase italic mb-4">COMING SOON</h2>
              <p className="text-zinc-500 text-lg leading-relaxed">
-               The grid is being calibrated. Real-time standings for Season 1 will be available once the first flag drops on May 31st.
+               The grid is being calibrated. Real-time standings for Season 2 will be available once the first flag drops on May 29th.
              </p>
           </div>
 

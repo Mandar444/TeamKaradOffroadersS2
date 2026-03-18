@@ -11,12 +11,12 @@ const rajdhani = Rajdhani({
 
 export const metadata = {
   title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
-  description: "Official portal for Team Karad Off-Roaders Season 1. Experience the most thrilling off-roading rally in Karad, Maharashtra. Register now for the 2026 Season.",
-  keywords: ["offroading Karad", "Karad offroaders", "Team Karad", "offroad championship India", "TKO Season 1", "4x4 Karad", "Mahindra Thar Karad", "Maruti Gypsy Offroad"],
+  description: "Official portal for Team Karad Off-Roaders Season 2. Experience the most thrilling off-roading rally in Karad, Maharashtra. Register now for the 2026 Season.",
+  keywords: ["offroading Karad", "Karad offroaders", "Team Karad", "offroad championship India", "TKO Season 2", "4x4 Karad", "Mahindra Thar Karad", "Maruti Gypsy Offroad"],
   authors: [{ name: "Team Karad Off-Roaders" }],
   openGraph: {
     title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
-    description: "Join the elite lineup of off-roaders in Karad. Season 1 is coming this May 2026.",
+    description: "Join the elite lineup of off-roaders in Karad. Season 2 is coming this May 2026.",
     url: "https://teamkaradoffroaders.online",
     siteName: "Team Karad Off-Roaders",
     images: [
@@ -32,7 +32,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Team Karad Off-Roaders | Season 1",
+    title: "Team Karad Off-Roaders | Season 2",
     description: "India's most thrilling off-road championship. Born from dust, built for glory.",
     images: ["/logo.png"],
   },

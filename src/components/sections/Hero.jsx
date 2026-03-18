@@ -69,11 +69,11 @@ export default function Hero() {
           </div>
 
           <span className="inline-block px-4 py-1.5 mb-6 text-[10px] md:text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase text-center max-w-[90vw]">
-            31 MAY • VENUE: KARAD, MAHARASHTRA
+            29/30/31st MAY • VENUE: KARAD, MAHARASHTRA
           </span>
 
           <p className="text-sm md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-            Join 160+ professional drivers and co-drivers in our elite Season 1 championship. Register now to claim your legendary sticker number.
+            Join 160+ professional drivers and co-drivers in our elite Season 2 championship. Register now to claim your legendary sticker number.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
@@ -81,7 +81,7 @@ export default function Hero() {
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
-                <span className="skew-x-[12deg] whitespace-nowrap uppercase">DEPLOY ENTRY</span>
+                <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
               </Link>
             <Link 
               href="/teams" 
@@ -101,7 +101,7 @@ export default function Hero() {
           <div className="text-center">
             <Calendar className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />
             <p className="text-zinc-500 text-[10px] md:text-xs uppercase tracking-widest mb-1 font-bold">Date</p>
-            <p className="text-white font-heading text-sm md:text-lg text-center leading-tight">31 MAY<br/><span className="text-xs opacity-50">2026</span></p>
+            <p className="text-white font-heading text-sm md:text-lg text-center leading-tight">29/30/31st MAY<br/><span className="text-xs opacity-50">2026</span></p>
           </div>
           <div className="text-center">
             <MapPin className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-2" />

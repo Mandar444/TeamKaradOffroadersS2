@@ -109,9 +109,18 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 bg-zinc-950">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-heading text-white">COMPLETE <span className="text-primary italic">PAYMENT</span></h1>
-          <p className="text-zinc-500 mt-2">Registration ID: <span className="text-primary font-mono">{id}</span></p>
+        <div className="flex justify-between items-center mb-10">
+          <div className="text-left">
+            <h1 className="text-2xl md:text-4xl font-heading text-white">COMPLETE <span className="text-primary italic">PAYMENT</span></h1>
+            <p className="text-zinc-500 mt-1">ID: <span className="text-primary font-mono">{id}</span></p>
+          </div>
+          <Button 
+            variant="ghost" 
+            onClick={() => router.push("/")}
+            className="text-zinc-500 hover:text-white flex items-center gap-2 font-black uppercase tracking-widest text-[10px]"
+          >
+            CANCEL & HOME
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
@@ -140,10 +149,34 @@ export default function PaymentPage() {
 
                   <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg flex gap-3">
                     <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    <p className="text-amber-500/80 text-xs leading-relaxed">
-                      IMPORTATNT: The QR already includes your team info. Ensure the payment note shows: <br/>
-                      <b className="text-white">Team: {regData?.team_name} | Driver: {regData?.driver_name}</b>
+                    <div className="space-y-2">
+                       <p className="text-amber-500/80 text-xs leading-relaxed">
+                         IMPORTANT: Ensure the payment note shows: <br/>
+                         <b className="text-white">Team: {regData?.team_name} | Driver: {regData?.driver_name}</b>
+                       </p>
+                    </div>
+                  </div>
+
+                  {/* UPI Troubleshooting */}
+                  <div className="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
+                      <ShieldCheck className="w-12 h-12 text-blue-500" />
+                    </div>
+                    <h4 className="text-blue-400 font-heading text-xs uppercase tracking-widest mb-3">UPI Limit Issues?</h4>
+                    <p className="text-zinc-500 text-[10px] leading-relaxed mb-4">
+                      If you experience limits (INR 2000+), try the following:
                     </p>
+                    <ul className="space-y-2">
+                      {[
+                        "Switch Apps: Try Google Pay, PhonePe or Paytm",
+                        "Manual Entry: Copy UPI ID & enter in your bank app",
+                        "Scan Again: Ensure stable internet connection"
+                      ].map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-[10px] text-zinc-400 uppercase font-bold tracking-tight">
+                           <div className="w-1 h-1 bg-blue-500/40 rounded-full" /> {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>

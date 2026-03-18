@@ -25,7 +25,7 @@ export default function AdminLeaderboardPage() {
            </div>
            <h2 className="text-3xl font-heading text-white uppercase italic mb-4">SYSTEMS OFFLINE</h2>
            <p className="text-zinc-500 text-lg mb-8 max-w-lg mx-auto">
-             The leaderboard management module is locked until Season 1 begins. Dynamic scoring tools will be deployed here on May 31st.
+             The leaderboard management module is locked until Season 2 begins. Dynamic scoring tools will be deployed here on May 29th.
            </p>
            
            <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800/50 rounded-xl border border-white/5 text-zinc-600 text-[10px] font-black uppercase tracking-widest">

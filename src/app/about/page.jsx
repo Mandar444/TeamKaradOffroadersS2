@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Target, Heart, Shield, Zap, Users, Trophy, MapPin, Calendar, Activity, ShieldCheck, Globe, Instagram, Newspaper, Share2 } from "lucide-react";
 
 const milestones = [
-  { year: "2015", title: "Ignition", desc: "Team Karad Offroaders was founded by a passionate group of 4x4 enthusiasts with a vision to bring professional off-road motorsport to Western Maharashtra." },
-  { year: "2026", title: "Season 1", desc: "The definitive championship format launched, establishing a high-end platform for elite off-roaders across India to compete in a professional environment." },
+  { year: "2015", title: "Ignition", desc: "Founded by 4x4 enthusiasts to bring professional motorsport to Maharashtra." },
+  { year: "2026", title: "Season 2", desc: "The definitive championship format launched for elite off-roaders." },
 ];
 
 const values = [
@@ -18,9 +18,9 @@ const values = [
 ];
 
 const highlights = [
-  { icon: Users, stat: "160+", label: "Elite Slots", sub: "Season 1 Drivers" },
+  { icon: Users, stat: "160+", label: "Elite Entries", sub: "Season 2 Drivers" },
   { icon: Globe, stat: "PAN", label: "National Grid", sub: "All India Entry" },
-  { icon: Activity, stat: "8+", label: "Tech Categories", sub: "Vehicle Spec" },
+  { icon: Activity, stat: "8+", label: "Vehicle Categories", sub: "Vehicle Spec" },
   { icon: Shield, stat: "100%", label: "TKO Verified", sub: "Official Safety" },
 ];
 
@@ -68,7 +68,7 @@ export default function AboutPage() {
         {/* Technical HUD element */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-30">
           <div className="w-px h-24 bg-gradient-to-b from-primary to-transparent" />
-          <p className="text-[10px] font-black tracking-widest uppercase">Scroll To Deploy</p>
+          <p className="text-[10px] font-black tracking-widest uppercase">Scroll To Explore</p>
         </div>
       </section>
 
@@ -139,9 +139,9 @@ export default function AboutPage() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Current Mission: Season 1</h3>
+             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Current Mission: Season 2</h3>
              <h2 className="text-6xl md:text-9xl font-heading text-white uppercase tracking-tighter leading-none mb-8">
-               READY FOR <span className="text-primary italic">DEPLOYMENT</span>
+               READY FOR <span className="text-primary italic">THRILL</span>
              </h2>
              <p className="text-zinc-500 text-xl max-w-3xl mx-auto font-medium">
                A high-fidelity championship platform establishing a world-class venue 
@@ -263,13 +263,13 @@ export default function AboutPage() {
                  JOIN THE <br /> <span className="text-primary not-italic">ELITE</span>
                </h2>
                <p className="text-zinc-300 text-xl max-w-xl mx-auto mb-12 font-medium">
-                 Ready to test your limits? Join the Season 1 expansion and become part of India&apos;s most thrilling off-road community.
+                 Ready to test your limits? Join the Season 2 expansion and become part of India&apos;s most thrilling off-road community.
                </p>
                <Link
                   href="/register"
                   className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base border-none"
                >
-                  <span className="whitespace-nowrap">DEPLOY ENTRY</span>
+                  <span className="whitespace-nowrap">REGISTER NOW</span>
                </Link>
             </div>
          </motion.div>

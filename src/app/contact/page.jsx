@@ -57,6 +57,10 @@ export default function ContactPage() {
                     <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase">Email</Label>
                     <Input className="h-14 bg-white/5 border-white/5 rounded-xl" type="email" placeholder="you@email.com" />
                   </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase">Mobile Number</Label>
+                    <Input className="h-14 bg-white/5 border-white/5 rounded-xl" type="tel" placeholder="Your Mobile Number" />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black tracking-[0.3em] text-zinc-600 uppercase">Subject</Label>
