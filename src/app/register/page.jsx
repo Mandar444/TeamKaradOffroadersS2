@@ -118,20 +118,11 @@ export default function RegisterPage() {
   const onSubmit = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-      if (data.success && data.id) {
-        router.push(`/form-submitted/${data.id}`);
-      } else {
-        alert(data.error || "Registration failed. Please try again.");
-      }
+      // Transition to transient staging (no DB record yet)
+      sessionStorage.setItem("tko_reg_draft", JSON.stringify(values));
+      router.push("/registration-review");
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Staging error:", error);
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
