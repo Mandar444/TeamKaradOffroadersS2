@@ -468,7 +468,7 @@ export default function RegisterPage() {
 
                   <div className="grid grid-cols-1 gap-8 p-6 md:p-10 bg-black/50 rounded-2xl md:rounded-[2.5rem] border border-white/5">
                     <div className="space-y-4">
-                      <Label className="text-zinc-600 text-[10px] font-black tracking-[0.5em] uppercase">Total Entrants (including driver/co-driver)</Label>
+                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.5em] uppercase">Crew Count (including driver/co-driver)</Label>
                       <Input {...register("attendanceCount")} type="number" className="h-14 bg-zinc-900 border-white/5 rounded-xl text-3xl font-heading text-primary text-center" />
                       {errors.attendanceCount && <p className="text-red-500 text-[9px] font-black uppercase mt-1">{errors.attendanceCount.message}</p>}
                     </div>
