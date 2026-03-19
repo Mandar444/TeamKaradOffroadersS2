@@ -8,67 +8,67 @@ import Image from "next/image";
 const TEAM_MEMBERS = [
   {
     name: "Sangram Kadam",
-    role: "CORE ORGANIZER",
+    role: "CORE MEMBER",
     image: "/images/team/sangram_kadam_1.jpg",
   },
   {
     name: "Kiran Mali",
-    role: "CORE ORGANIZER / CHAMPION",
+    role: "CORE MEMBER",
     image: "/images/team/kiran_mali_1.jpg",
   },
   {
     name: "Ganesh Velhal",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/ganesh_velhal_1.jpg",
   },
   {
     name: "Hanmant Mali",
-    role: "EVENT MARSHAL",
+    role: "CORE MEMBER",
     image: "/images/team/hanmant_mali_1.jpg",
   },
   {
     name: "Advya Nikam",
-    role: "TECH ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/advya_nikam_1.jpg",
   },
   {
     name: "Ajay Bisure",
-    role: "EVENT MARSHAL",
+    role: "CORE MEMBER",
     image: "/images/team/ajay_bisure_1.jpg",
   },
   {
     name: "Pranav Kadam",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/pranav_kadam_1.jpg",
   },
   {
     name: "Parag Patil",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/parag_patil_1.jpg",
   },
   {
     name: "Mandar Shinde",
-    role: "EVENT MARSHAL",
+    role: "CORE MEMBER",
     image: "/images/team/mandar_shinde_1.jpg",
   },
   {
     name: "Aniruddha Bhosle",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/aniruddha_bhosle_1.jpg",
   },
   {
     name: "Aditya Dubal",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/aditya_dubal_1.jpg",
   },
   {
     name: "Shrish Dubal",
-    role: "EVENT MARSHAL",
+    role: "CORE MEMBER",
     image: "/images/team/shrish_dubal_1.jpg",
   },
   {
     name: "Dnyandev Desai",
-    role: "OFF-ROAD ARCHITECT",
+    role: "CORE MEMBER",
     image: "/images/team/dnyandev_desai_1.jpg",
   },
 ];
