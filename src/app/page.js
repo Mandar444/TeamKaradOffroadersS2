@@ -69,39 +69,6 @@ export default function Home() {
         <div className="bg-zinc-950">
           <CarCategories />
           <PastEvents />
-          
-          {/* Season 2 Visual Core */}
-          <section className="relative h-[60vh] md:h-[80vh] w-full overflow-hidden flex items-center justify-center p-6">
-            <div className="absolute inset-0 z-0">
-               <Image 
-                 src="/images/season2-hero.jpg" 
-                 alt="Season 2 Elite Lineup" 
-                 fill
-                 className="object-cover transition-transform duration-[10s] hover:scale-110 ease-linear"
-               />
-               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-               <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
-            </div>
-            
-            <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               className="relative z-10 text-center max-w-4xl"
-            >
-               <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/20 border border-primary/40 backdrop-blur-3xl mb-8 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-primary" />
-                  <p className="text-primary text-[10px] md:text-xs font-black uppercase tracking-[0.5em] m-0">Season 2 Operational Status: Active</p>
-               </div>
-               <h2 className="text-4xl md:text-8xl font-heading text-white italic uppercase tracking-tighter leading-none mb-8 drop-shadow-2xl">
-                  THE <span className="text-primary not-italic">ODYSSEY</span> <br/>
-                  <span className="text-6xl md:text-9xl">CONTINUES</span>
-               </h2>
-               <p className="text-zinc-200 text-xs md:text-lg max-w-2xl mx-auto font-medium uppercase font-sans tracking-[0.2em] leading-relaxed opacity-80 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-                  160+ Teams. 10+ Tactical Classes. One Unified Pursuit of Glory. Welcome to the proving grounds.
-               </p>
-            </motion.div>
-          </section>
 
           {/* Call to Action Section */}
           <section className="py-20 md:py-32 px-6 bg-primary/5">

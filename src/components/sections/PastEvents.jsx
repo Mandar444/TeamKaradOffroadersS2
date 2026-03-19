@@ -6,7 +6,7 @@ const events = [
   {
     year: "2026",
     name: "Team Karad Off-Road Event Season 2",
-    image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    image: "/images/season2-hero.jpg",
     stats: "35,000+ Spectators • 160+ Elite Entries"
   }
 ];
