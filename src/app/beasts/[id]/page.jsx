@@ -246,7 +246,7 @@ export default function BeastDetailPage() {
                   </div>
 
                   <a 
-                    href={`https://wa.me/917020440073?text=${encodeURIComponent(`Hi TKO, I am interested in the Technical Specs for the Beast: ${beast.name}. Please share more details.`)} focus`}
+                    href={`https://wa.me/918087977674?text=${encodeURIComponent(`Hi TKO, I am interested in the Technical Specs for the Beast: ${beast.name}. Please share more details.`)} focus`}
                     target="_blank"
                     rel="noreferrer"
                     className="flex w-full h-16 bg-white text-black font-black uppercase tracking-widest text-[10px] items-center justify-center hover:bg-primary transition-all rounded-2xl"

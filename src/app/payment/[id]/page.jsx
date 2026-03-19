@@ -45,19 +45,17 @@ export default function PaymentPage() {
     `upi://pay?pa=${PRICING_CONFIG.upiId}&pn=${encodeURIComponent(PRICING_CONFIG.upiName)}&am=${regData.amount}&tn=${encodeURIComponent(`Team: ${regData.team_name} | ID: ${id}`)}&cu=INR` 
     : "";
 
-  const [screenshot, setScreenshot] = useState(null);
-
+  // UTR submission logic has been decoupled from screenshot upload to ensure zero-fail reliability
   const handleSubmitUTR = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (utr.length < 12) return alert("UTR must be 12 digits");
-    if (!screenshot) return alert("Please upload the payment screenshot as requested");
     
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append("regId", id);
       formData.append("utr", utr);
-      formData.append("screenshot", screenshot);
+      // Screenshot is now verified manually via WhatsApp to prevent technical drop-offs
 
       const res = await fetch("/api/submit-utr", {
         method: "POST",
@@ -195,49 +193,43 @@ export default function PaymentPage() {
               </div>
 
               <div className="mt-12 pt-8 border-t border-zinc-800">
-                <form onSubmit={handleSubmitUTR} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-zinc-400">Step 1: Upload Payment Screenshot (Max 1MB)</Label>
-                    <div className="relative group">
-                      <Input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => setScreenshot(e.target.files[0])}
-                        className="bg-zinc-800 border-zinc-700 text-white h-12 pt-2 file:mr-4 file:bg-primary file:border-0 file:px-4 file:py-1 file:rounded-full file:text-xs file:font-semibold"
-                      />
+                  <div className="pt-12 text-center p-8 bg-zinc-900/50 border border-zinc-800 rounded-[2rem]">
+                    <div className="w-16 h-16 bg-emerald-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                       <Phone className="w-8 h-8 text-emerald-500" />
                     </div>
+                    <p className="text-zinc-600 text-[10px] uppercase font-black tracking-widest mb-3">Step 1: Send Screenshot</p>
+                    <h3 className="text-white font-heading text-xl uppercase italic mb-4">Share proof on WhatsApp</h3>
+                    <a 
+                      href={`https://wa.me/918087977674?text=${encodeURIComponent(`Hi TKO, I am sharing the payment screenshot for Reference: ${id}.`)}`}
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="inline-flex h-14 px-8 items-center gap-3 text-sm font-black uppercase tracking-widest bg-[#25D366] text-black rounded-2xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(37,211,102,0.2)]"
+                    >
+                       <Phone className="w-5 h-5 flex-shrink-0" /> Open WhatsApp Direct
+                    </a>
+                    <p className="text-zinc-500 text-[10px] mt-6 leading-relaxed max-w-[280px] mx-auto uppercase font-bold">
+                       Mandatory: Tap above to share your receipt BEFORE submitting the UTR below.
+                    </p>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-zinc-400">Step 2: Enter 12-digit UTR / Ref Number</Label>
+                  <div className="space-y-2 mt-10 p-2 bg-black/40 rounded-3xl border border-white/5">
+                    <Label className="text-zinc-500 text-[10px] uppercase font-black tracking-widest px-4 pt-2 block">Step 2: Enter 12-digit UTR / Ref Number</Label>
                     <Input 
                       required 
                       value={utr}
                       onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
                       placeholder="e.g. 123456789012" 
-                      className="h-14 bg-zinc-800 border-zinc-700 text-white font-mono text-xl tracking-[0.2em] text-center"
+                      className="h-16 bg-transparent border-none text-white font-mono text-2xl tracking-[0.2em] text-center focus-visible:ring-0"
                       maxLength={12}
                     />
                   </div>
                   <Button 
-                    disabled={utr.length !== 12 || !screenshot || loading} 
-                    className="w-full h-14 bg-primary text-black font-bold text-lg neon-glow"
+                    onClick={handleSubmitUTR}
+                    disabled={utr.length !== 12 || loading} 
+                    className="w-full h-16 bg-primary text-black font-black uppercase tracking-widest text-sm rounded-2xl shadow-glow hover:scale-[1.02] transition-all"
                   >
-                    {loading ? "VERIFYING..." : "FINISH REGISTRATION →"}
+                    {loading ? "SAVING RECORD..." : "FINISH REGISTRATION →"}
                   </Button>
-
-                  <div className="pt-4 text-center">
-                    <p className="text-zinc-600 text-[9px] uppercase font-black tracking-widest mb-3">Upload Issues?</p>
-                    <a 
-                      href={`https://wa.me/917020440073?text=${encodeURIComponent(`Hi TKO, I am facing an issue uploading my screenshot for Reference: ${id}. Here is my proof.`)}`}
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:scale-105 transition-all"
-                    >
-                       <Phone className="w-3.5 h-3.5" /> Submit via WhatsApp Direct
-                    </a>
-                  </div>
-                </form>
               </div>
             </CardContent>
           </Card>
