@@ -12,7 +12,7 @@ const beasts = [
     name: "Stallion",
     category: "EXPERT",
     type: "EXPERT DIVISION BUILD",
-    image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    image: "/images/beasts/stallion/stallion-hero.jpg",
     stats: { engine: "Expert Powertrain", lockers: "Pro-Locker", suspension: "Long Travel" }
   },
   {
@@ -52,7 +52,7 @@ const beasts = [
     name: "Club 33",
     category: "EXPERT",
     type: "EXPERT DIVISION BUILD",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    image: "/images/beasts/club33/club33-hero.jpg",
     stats: { power: "Refined", grip: "All Terrain", tech: "Expert" }
   },
   {
@@ -76,7 +76,7 @@ const beasts = [
     name: "Conqueror",
     category: "EXPERT",
     type: "EXPERT DIVISION BUILD",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    image: "/images/beasts/conqueror/conqueror-hero.jpg",
     stats: { power: "High Performance", grip: "Staked", tech: "Season 2" }
   }
 ];
