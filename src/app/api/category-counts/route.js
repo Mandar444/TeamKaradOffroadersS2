@@ -3,6 +3,7 @@ import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 import { CATEGORIES, MAX_CAR_NUMBER } from "@/config/pricing";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {

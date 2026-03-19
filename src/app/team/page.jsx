@@ -24,7 +24,7 @@ const TEAM_MEMBERS = [
   {
     name: "Sumit Shinde",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/sumit_shinde_1.jpg",
   },
   {
     name: "Ganesh Velhal",
@@ -34,12 +34,12 @@ const TEAM_MEMBERS = [
   {
     name: "Shriraj Jagdale",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/shriraj_jagdale_1.jpg",
   },
   {
     name: "Prateek Bode",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/prateek_bode_1.jpg",
   },
   {
     name: "Mahesh Jadhav",
@@ -54,12 +54,17 @@ const TEAM_MEMBERS = [
   {
     name: "Sahil Kadam",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/sahil_kadam_1.jpg",
   },
   {
     name: "Aditya Dubal",
     role: "CORE MEMBER",
     image: "/images/team/aditya_dubal_1.jpg",
+  },
+  {
+    name: "Rakesh Pawar",
+    role: "CORE MEMBER",
+    image: "/images/team/rakesh_pawar_1.jpg",
   },
   {
     name: "Shrish Dubal",
@@ -70,6 +75,11 @@ const TEAM_MEMBERS = [
     name: "Indrajeet Patil",
     role: "CORE MEMBER",
     image: "/logo.png",
+  },
+  {
+    name: "Shambhuraj Patil",
+    role: "CORE MEMBER",
+    image: "/images/team/shambhuraj_patil_2.jpg",
   },
   {
     name: "Advait Nikam",
@@ -102,19 +112,19 @@ const TEAM_MEMBERS = [
     image: "/images/team/hanmant_mali_1.jpg",
   },
   {
-    name: "Akshay Pawar",
+    name: "Akash Pawar",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/akash_pawar_1.jpg",
   },
   {
     name: "Sandeep Gujatti",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/sandeep_gujatti_1.jpg",
   },
   {
     name: "Rohan Jadhav",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/rohan_jadhav_1.png",
   },
   {
     name: "Suraj Nikam",
@@ -144,12 +154,52 @@ const TEAM_MEMBERS = [
   {
     name: "Yashraj Jagtap",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/yashraj_jagtap_1.jpg",
   },
   {
     name: "Pranav Kadam",
     role: "CORE MEMBER",
     image: "/images/team/pranav_kadam_1.jpg",
+  },
+  {
+    name: "Anup Kudale",
+    role: "CORE MEMBER",
+    image: "/images/team/anup_kudale_1.jpg",
+  },
+  {
+    name: "Aditya Jadhav",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Sangram Patole",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Kedar Patil",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Avdhoot Babar",
+    role: "MECHANIC",
+    image: "/images/team/avdhoot_babar_1.png",
+  },
+  {
+    name: "Nilkanth Sutar",
+    role: "MECHANIC",
+    image: "/logo.png",
+  },
+  {
+    name: "Vivek Bhairawkar",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Yuvraj Bhavke",
+    role: "CORE MEMBER",
+    image: "/logo.png",
   },
 ];
 
