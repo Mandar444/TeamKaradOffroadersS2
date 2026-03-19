@@ -7,39 +7,14 @@ import Image from "next/image";
 
 const TEAM_MEMBERS = [
   {
-    name: "Sangram Kadam",
+    name: "Amar Jadhav",
     role: "CORE MEMBER",
-    image: "/images/team/sangram_kadam_1.jpg",
+    image: "/images/team/amar_jadhav_1.jpg",
   },
   {
-    name: "Kiran Mali",
+    name: "Siddhesh Langde",
     role: "CORE MEMBER",
-    image: "/images/team/kiran_mali_1.jpg",
-  },
-  {
-    name: "Ganesh Velhal",
-    role: "CORE MEMBER",
-    image: "/images/team/ganesh_velhal_1.jpg",
-  },
-  {
-    name: "Hanmant Mali",
-    role: "CORE MEMBER",
-    image: "/images/team/hanmant_mali_1.jpg",
-  },
-  {
-    name: "Advya Nikam",
-    role: "CORE MEMBER",
-    image: "/images/team/advya_nikam_1.jpg",
-  },
-  {
-    name: "Ajay Bisure",
-    role: "CORE MEMBER",
-    image: "/images/team/ajay_bisure_1.jpg",
-  },
-  {
-    name: "Pranav Kadam",
-    role: "CORE MEMBER",
-    image: "/images/team/pranav_kadam_1.jpg",
+    image: "/images/team/siddhesh_langde_1.jpg",
   },
   {
     name: "Parag Patil",
@@ -47,14 +22,39 @@ const TEAM_MEMBERS = [
     image: "/images/team/parag_patil_1.jpg",
   },
   {
-    name: "Mandar Shinde",
+    name: "Sumit Shinde",
     role: "CORE MEMBER",
-    image: "/images/team/mandar_shinde_1.jpg",
+    image: "/logo.png",
   },
   {
-    name: "Aniruddha Bhosle",
+    name: "Ganesh Velhal",
     role: "CORE MEMBER",
-    image: "/images/team/aniruddha_bhosle_1.jpg",
+    image: "/images/team/ganesh_velhal_1.jpg",
+  },
+  {
+    name: "Shriraj Jagdale",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Prateek Bode",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Mahesh Jadhav",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Ajay Bisure",
+    role: "CORE MEMBER",
+    image: "/images/team/ajay_bisure_1.jpg",
+  },
+  {
+    name: "Sahil Kadam",
+    role: "CORE MEMBER",
+    image: "/logo.png",
   },
   {
     name: "Aditya Dubal",
@@ -67,19 +67,89 @@ const TEAM_MEMBERS = [
     image: "/images/team/shrish_dubal_1.jpg",
   },
   {
+    name: "Indrajeet Patil",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Advait Nikam",
+    role: "CORE MEMBER",
+    image: "/images/team/advya_nikam_1.jpg",
+  },
+  {
+    name: "Aniket Chavan",
+    role: "CORE MEMBER",
+    image: "/images/team/aniket_chavan_1.jpg",
+  },
+  {
     name: "Dnyandev Desai",
     role: "CORE MEMBER",
     image: "/images/team/dnyandev_desai_1.jpg",
   },
   {
-    name: "Abhay Jadhav",
+    name: "Kiran Mali",
+    role: "CORE MEMBER",
+    image: "/images/team/kiran_mali_1.jpg",
+  },
+  {
+    name: "Sangram Kadam",
+    role: "CORE MEMBER",
+    image: "/images/team/sangram_kadam_1.jpg",
+  },
+  {
+    name: "Hanmant Mali",
+    role: "CORE MEMBER",
+    image: "/images/team/hanmant_mali_1.jpg",
+  },
+  {
+    name: "Akshay Pawar",
     role: "CORE MEMBER",
     image: "/logo.png",
   },
   {
-    name: "Amar Jadhav",
+    name: "Sandeep Gujatti",
     role: "CORE MEMBER",
     image: "/logo.png",
+  },
+  {
+    name: "Rohan Jadhav",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Suraj Nikam",
+    role: "CORE MEMBER",
+    image: "/images/team/suraj_nikam_1.png",
+  },
+  {
+    name: "Swaroop Shitole",
+    role: "CORE MEMBER",
+    image: "/images/team/swaroop_shitole_1.jpg",
+  },
+  {
+    name: "Abhay Jadhavrao",
+    role: "CORE MEMBER",
+    image: "/images/team/abhay_jadhav_1.jpg",
+  },
+  {
+    name: "Aniruddha Sawantbhosle",
+    role: "CORE MEMBER",
+    image: "/images/team/aniruddha_bhosle_1.jpg",
+  },
+  {
+    name: "Mandar Shinde",
+    role: "DEVELOPER",
+    image: "/images/team/mandar_shinde_1.jpg",
+  },
+  {
+    name: "Yashraj Jagtap",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Pranav Kadam",
+    role: "CORE MEMBER",
+    image: "/images/team/pranav_kadam_1.jpg",
   },
 ];
 
