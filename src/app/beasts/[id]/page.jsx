@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const beastData = {
-  stallion: {
+    "stallion": {
     name: "Stallion",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     category: "EXPERT",
     heroImage: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
     desc: "Stallion is the ultimate power build in our Season 2 expert division. Engineered for raw strength and technical agility, it combines a high-torque powertrain with a custom suspension setup designed to maintain traction where others fail. A true force of nature on the grid.",
@@ -24,9 +24,9 @@ const beastData = {
       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
     ]
   },
-  dominator: {
+    dominator: {
     name: "Dominator",
-    type: "MODIFICATION_LEVEL: MODIFIED",
+    type: "MODIFIED DIVISION BUILD",
     category: "MODIFIED",
     heroImage: "/images/beasts/dominator/dominator-hero.jpg",
     desc: "Dominator is one of the flagship off-road machines of Team Karad Offroaders, purpose-built to compete in professional off-road competitions. Equipped with front and rear differential lockers, fiddle brakes for precise wheel control, and a powerful engineered engine that provides the torque needed to conquer steep climbs, deep mud, and rocky trails.",
@@ -43,9 +43,9 @@ const beastData = {
       "/images/beasts/dominator/dominator-4.jpg",
     ]
   },
-  dynamite: {
+    dynamite: {
     name: "Dynamite",
-    type: "MODIFICATION_LEVEL: MODIFIED",
+    type: "MODIFIED DIVISION BUILD",
     category: "MODIFIED",
     heroImage: "/images/beasts/dynamite/dynamite-hero.jpg",
     desc: "Dynamite is a testament to the skill of the driver combined with precision technical modifications. Competing in the Modified division, it represents the perfect balance of raw power and trail control, engineered to tackle obstacles that stop standard vehicles in their tracks.",
@@ -79,9 +79,9 @@ const beastData = {
        "/images/beasts/jeep3210/jeep3210-3.jpg",
      ]
   },
-  ashwamedh: {
+    ashwamedh: {
      name: "Ashwamedh",
-     type: "MODIFICATION_LEVEL: EXPERT",
+     type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
      heroImage: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
      desc: "Ashwamedh represents speed, endurance, and commanding performance. At first glance, it may appear like a regular jeep, but once it enters the track, it transforms into a true off-road beast, charging through obstacles with the strength and agility of a powerful horse.",
@@ -96,9 +96,9 @@ const beastData = {
        "/images/beasts/ashwamedh/ashwamedh-2.png",
      ]
   },
-  "club-33": {
+    "club-33": {
      name: "Club 33 Thunderstorm",
-     type: "MODIFICATION_LEVEL: EXPERT",
+     type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
      desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 Thunderstorm moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
@@ -112,9 +112,9 @@ const beastData = {
        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
      ]
   },
-  major: {
+    major: {
      name: "Major",
-     type: "MODIFICATION_LEVEL: EXPERT",
+     type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
      desc: "Major is the expert level warrior, proving that true capability lies in simplicity and skill. Pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence.",
@@ -128,9 +128,9 @@ const beastData = {
        "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
      ]
   },
-  conqueror: {
+    conqueror: {
      name: "Conqueror",
-     type: "MODIFICATION_LEVEL: EXPERT",
+     type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
      desc: "The newest addition to the expert category fleet. Conqueror lives up to its name by dominating technically demanding obstacles where power and precision must work in perfect harmony. Designed for the Season 2 championship, it features advanced technical enhancements for the most rugged conditions.",
@@ -243,19 +243,16 @@ export default function BeastDetailPage() {
                           <ShieldCheck className="w-4 h-4" /> READY TO COMPETITION
                        </span>
                     </div>
-                    <div className="flex justify-between items-center py-4 border-b border-white/5">
-                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Transmission</span>
-                       <span className="text-white font-heading text-sm uppercase">Manual 4WD</span>
-                    </div>
-                    <div className="flex justify-between items-center py-4 border-b border-white/5">
-                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Modification Level</span>
-                       <span className="text-white font-heading text-sm uppercase italic">EXTREME</span>
-                    </div>
                   </div>
 
-                  <Button className="w-full h-16 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-primary transition-all rounded-2xl">
+                  <a 
+                    href={`https://wa.me/917020440073?text=${encodeURIComponent(`Hi TKO, I am interested in the Technical Specs for the Beast: ${beast.name}. Please share more details.`)} focus`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex w-full h-16 bg-white text-black font-black uppercase tracking-widest text-[10px] items-center justify-center hover:bg-primary transition-all rounded-2xl"
+                  >
                     <Activity className="w-4 h-4 mr-2" /> Request Technical Specs
-                  </Button>
+                  </a>
                </div>
             </div>
          </div>

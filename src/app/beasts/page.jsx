@@ -11,7 +11,7 @@ const beasts = [
     id: "stallion",
     name: "Stallion",
     category: "EXPERT",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
     stats: { engine: "Expert Powertrain", lockers: "Pro-Locker", suspension: "Long Travel" }
   },
@@ -19,7 +19,7 @@ const beasts = [
     id: "dominator",
     name: "Dominator",
     category: "MODIFIED",
-    type: "MODIFICATION_LEVEL: MODIFIED",
+    type: "MODIFIED DIVISION BUILD",
     image: "/images/beasts/dominator/dominator-hero.jpg",
     stats: { engine: "Engineered", lockers: "Front/Rear", brakes: "Fiddle" }
   },
@@ -27,7 +27,7 @@ const beasts = [
     id: "dynamite",
     name: "Dynamite",
     category: "MODIFIED",
-    type: "MODIFICATION_LEVEL: MODIFIED",
+    type: "MODIFIED DIVISION BUILD",
     image: "/images/beasts/dynamite/dynamite-hero.jpg",
     stats: { engine: "Stock Performance", category: "Standard", body: "Modified" }
   },
@@ -43,7 +43,7 @@ const beasts = [
     id: "ashwamedh",
     name: "Ashwamedh",
     category: "EXPERT",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     image: "/images/beasts/ashwamedh/ashwamedh-hero.jpg",
     stats: { engine: "High Power", body: "Reinforced", chassis: "Expert" }
   },
@@ -51,7 +51,7 @@ const beasts = [
     id: "club-33",
     name: "Club 33 Thunderstorm",
     category: "EXPERT",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
     stats: { power: "Refined", grip: "All Terrain", tech: "Expert" }
   },
@@ -59,7 +59,7 @@ const beasts = [
     id: "major",
     name: "Major",
     category: "EXPERT",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
     stats: { power: "Expert Level", grip: "Original", tech: "Skill-Based" }
   },
@@ -67,7 +67,7 @@ const beasts = [
     id: "conqueror",
     name: "Conqueror",
     category: "EXPERT",
-    type: "MODIFICATION_LEVEL: EXPERT",
+    type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
     stats: { power: "High Performance", grip: "Staked", tech: "Season 2" }
   }
