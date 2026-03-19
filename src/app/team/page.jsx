@@ -41,6 +41,31 @@ const TEAM_MEMBERS = [
     role: "OFF-ROAD ARCHITECT",
     image: "/images/team/pranav_kadam_1.png",
   },
+  {
+    name: "Parag Patil",
+    role: "OFF-ROAD ARCHITECT",
+    image: "/images/team/parag_patil_1.png",
+  },
+  {
+    name: "Mandar Shinde",
+    role: "EVENT MARSHAL",
+    image: "/images/team/mandar_shinde_1.png",
+  },
+  {
+    name: "Aniruddha Bhosle",
+    role: "OFF-ROAD ARCHITECT",
+    image: "/images/team/aniruddha_bhosle_1.png",
+  },
+  {
+    name: "Aditya Dubal",
+    role: "OFF-ROAD ARCHITECT",
+    image: "/images/team/aditya_dubal_1.png",
+  },
+  {
+    name: "Shrish Dubal",
+    role: "EVENT MARSHAL",
+    image: "/images/team/shrish_dubal_1.png",
+  },
 ];
 
 export default function TeamPage() {
