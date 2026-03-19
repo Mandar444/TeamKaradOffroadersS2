@@ -118,9 +118,33 @@ export default function ReviewPage() {
                         <p className="text-primary font-heading text-3xl leading-none">#{data.carNumber}</p>
                      </div>
                   </div>
-                  <div>
-                    <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Vehicle</p>
-                    <p className="text-zinc-300 text-sm uppercase italic">{data.vehicleName} ({data.vehicleModel})</p>
+               </div>
+
+               {/* Dietary & Logistics */}
+               <div className="bg-zinc-900/40 p-6 rounded-3xl border border-white/5 space-y-4 md:col-span-2">
+                  <div className="flex items-center gap-3 text-primary">
+                    <Activity className="w-4 h-4" />
+                    <p className="text-[10px] font-black uppercase tracking-widest leading-none">Logistics & Dietary Manifest</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                     <div>
+                        <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Driver Food</p>
+                        <p className="text-white text-xs font-black uppercase tracking-widest">{data.driverFood}</p>
+                     </div>
+                     <div>
+                        <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Co-Driver Food</p>
+                        <p className="text-white text-xs font-black uppercase tracking-widest">{data.coDriverFood}</p>
+                     </div>
+                     {data.teamFood && (
+                       <div>
+                          <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Team Food (Extras)</p>
+                          <p className="text-white text-xs font-black uppercase tracking-widest">{data.teamFood}</p>
+                       </div>
+                     )}
+                  </div>
+                  <div className="pt-4 border-t border-white/5">
+                     <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Medical Context</p>
+                     <p className="text-zinc-300 text-xs italic">{data.medicalIssue || "None reported"}</p>
                   </div>
                </div>
             </div>

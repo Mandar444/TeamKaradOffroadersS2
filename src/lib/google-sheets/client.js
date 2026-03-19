@@ -36,10 +36,10 @@ export async function initSheets() {
     // Ensure "Registrations" sheet exists
     let regSheet = doc.sheetsByTitle['Registrations'];
     const regHeaders = [
-      'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone',
-      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'category', 'car_number',
-      'vehicle_name', 'vehicle_model', 'food_preference', 'medical_issue', 'attendance_count', 'extra_names',
-      'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
+      'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
+      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food', 
+      'category', 'car_number', 'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
+      'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
     ];
 
     if (!regSheet) {

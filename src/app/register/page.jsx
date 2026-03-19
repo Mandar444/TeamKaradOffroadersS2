@@ -63,6 +63,10 @@ const formSchema = z.object({
   attendanceCount: z.coerce.number().min(2, "Minimum 2 people (Driver + Co-driver)"),
   extraNames: z.string().optional(),
   
+  driverFood: z.string().min(1, "Food preference required"),
+  coDriverFood: z.string().min(1, "Food preference required"),
+  teamFood: z.string().optional(),
+  
   carNumber: z.string().min(1, "Sticker number is required"),
   ageAgreement: z.boolean().refine(v => v === true, "Must be 18+ to participate"),
   categoryAgreement: z.boolean().refine(v => v === true, "Must agree to category technical rules"),
@@ -88,6 +92,8 @@ export default function RegisterPage() {
     defaultValues: {
       category: "DIESEL_MODIFIED",
       attendanceCount: 2,
+      driverFood: "Non-Veg",
+      coDriverFood: "Non-Veg",
       ageAgreement: false,
       categoryAgreement: false,
     },
@@ -371,6 +377,18 @@ export default function RegisterPage() {
                          </Select>
                          {errors.driverBloodGroup && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest">{errors.driverBloodGroup.message}</p>}
                       </div>
+                      <div className="space-y-3 md:col-span-2">
+                        <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Driver Food Preference *</Label>
+                        <Select onValueChange={(v) => setValue("driverFood", v)} defaultValue="Non-Veg">
+                          <SelectTrigger className="h-14 bg-zinc-900 border-white/5 rounded-xl text-white">
+                            <SelectValue placeholder="FOOD PREF" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                             <SelectItem value="Veg">VEGETARIAN (VEG)</SelectItem>
+                             <SelectItem value="Non-Veg">NON-VEGETARIAN (NON-VEG)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
@@ -403,6 +421,18 @@ export default function RegisterPage() {
                          {errors.coDriverBloodGroup && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest">{errors.coDriverBloodGroup.message}</p>}
                       </div>
                       <div className="space-y-3 md:col-span-2">
+                        <Label className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em]">Co-Driver Food Preference *</Label>
+                        <Select onValueChange={(v) => setValue("coDriverFood", v)} defaultValue="Non-Veg">
+                          <SelectTrigger className="h-14 bg-zinc-900 border-white/5 rounded-xl text-white">
+                            <SelectValue placeholder="FOOD PREF" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-950 border-white/10 text-white">
+                             <SelectItem value="Veg">VEGETARIAN (VEG)</SelectItem>
+                             <SelectItem value="Non-Veg">NON-VEGETARIAN (NON-VEG)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-3 md:col-span-2">
                          <Label className="text-zinc-600 text-[9px] font-black tracking-[0.4em] uppercase">Secure Email Link *</Label>
                          <Input {...register("email")} type="email" placeholder="CONFIRMATION @ EMAIL" className="h-14 bg-zinc-900 border-white/5 rounded-xl text-lg lowercase" />
                          {errors.email && <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest">{errors.email.message}</p>}
@@ -415,7 +445,7 @@ export default function RegisterPage() {
                     <Button 
                       type="button" 
                       onClick={async () => {
-                        const isValid = await trigger(["teamName", "driverName", "driverPhone", "driverBloodGroup", "coDriverName", "coDriverPhone", "coDriverBloodGroup", "email"]);
+                        const isValid = await trigger(["teamName", "driverName", "driverPhone", "driverBloodGroup", "coDriverName", "coDriverPhone", "coDriverBloodGroup", "email", "driverFood", "coDriverFood"]);
                         if (isValid) {
                           setStep(4);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -456,6 +486,10 @@ export default function RegisterPage() {
                     <div className="space-y-3">
                        <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Additional Crew Members</Label>
                        <Textarea {...register("extraNames")} placeholder="Additional Crew names (If any)" className="h-28 bg-white/5 border-white/5 rounded-xl resize-none p-4" />
+                    </div>
+                    <div className="space-y-3 md:col-span-2">
+                       <Label className="text-zinc-600 text-[10px] font-black tracking-[0.4em] uppercase">Team Food Preference (Extra Mates)</Label>
+                       <Input {...register("teamFood")} placeholder="e.g. 5 Veg, 2 Non-Veg" className="h-14 bg-white/5 border-white/5 rounded-xl text-lg" />
                     </div>
                   </div>
 
