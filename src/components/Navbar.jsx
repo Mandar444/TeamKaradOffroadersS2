@@ -69,8 +69,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Links (Visible only on LG+ screens) */}
-          <div className="hidden lg:flex items-center gap-0.5 shrink-1">
+          {/* Desktop Links (Visible only on XL+ screens) */}
+          <div className="hidden xl:flex items-center gap-0.5 shrink-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -103,7 +103,7 @@ export default function Navbar() {
           {/* Mobile Toggle (Visible on all screens below LG) */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="xl:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -117,7 +117,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[89] bg-black/98 backdrop-blur-2xl pt-24 px-6 pb-10 overflow-y-auto lg:hidden"
+            className="fixed inset-0 z-[89] bg-black/98 backdrop-blur-2xl pt-24 px-6 pb-10 overflow-y-auto xl:hidden"
           >
             <div className="space-y-2">
               {NAV_LINKS.map((link, idx) => (

@@ -134,11 +134,16 @@ export default function PaymentPage() {
           <Card className="bg-zinc-900 border-zinc-800 border-t-4 border-t-primary overflow-hidden">
             <CardContent className="pt-8">
               <div className="flex flex-col items-center">
-                <div className="bg-white p-4 rounded-xl mb-6 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                <div className="bg-white p-4 rounded-xl mb-6 shadow-[0_0_30px_rgba(255,255,255,0.1)] w-full max-w-[280px] aspect-square flex items-center justify-center">
                   {upiUrl ? (
-                    <QRCodeSVG value={upiUrl} size={250} level="M" />
+                    <QRCodeSVG 
+                      value={upiUrl} 
+                      className="w-full h-full" 
+                      level="M" 
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
                   ) : (
-                    <div className="w-[250px] h-[250px] bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] uppercase font-bold tracking-widest">Generating QR Payload...</div>
+                    <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] uppercase font-bold tracking-widest text-center px-4">Generating QR Payload...</div>
                   )}
                 </div>
                 

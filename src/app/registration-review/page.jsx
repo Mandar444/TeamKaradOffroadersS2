@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CreditCard, ShieldCheck, Zap, User, Car, Users, ClipboardList, Loader2 } from "lucide-react";
+import { CheckCircle2, CreditCard, ShieldCheck, Zap, User, Car, Users, ClipboardList, Loader2, Activity } from "lucide-react";
 import { CATEGORIES } from "@/config/pricing";
 
 export default function ReviewPage() {
