@@ -83,8 +83,8 @@ export default function TeamsPage() {
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-12 bg-zinc-900/40 p-3 rounded-2xl border border-white/5 backdrop-blur-md">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-4 mb-12 bg-zinc-900/40 p-3 md:p-4 rounded-2xl md:rounded-3xl border border-white/5 backdrop-blur-md">
+          <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <Input 
               placeholder="Search driver or sticker #..." 
@@ -93,15 +93,15 @@ export default function TeamsPage() {
               className="pl-12 h-14 bg-black/50 border-white/5 focus:border-primary/50 transition-all rounded-xl text-lg"
             />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap md:flex-nowrap md:overflow-x-auto gap-2 pb-2 md:pb-0 custom-scrollbar scroll-smooth">
             {["ALL", ...Object.keys(CATEGORIES)].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
                 className={cn(
-                  "px-4 md:px-6 h-12 md:h-14 rounded-xl font-bold uppercase tracking-widest text-[9px] md:text-[10px] transition-all border whitespace-nowrap",
+                  "px-4 md:px-6 h-10 md:h-14 rounded-xl font-bold uppercase tracking-widest text-[8px] md:text-[10px] transition-all border whitespace-nowrap shrink-0",
                   category === cat 
-                    ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.4)] z-10 scale-110" 
+                    ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] z-10 md:scale-105" 
                     : "bg-white/5 text-zinc-500 border-white/5 hover:bg-white/10"
                 )}
               >

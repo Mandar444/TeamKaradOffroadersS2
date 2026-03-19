@@ -195,11 +195,15 @@ export default function RegisterPage() {
                       <SelectTrigger className="h-14 md:h-16 bg-black/60 border-white/5 rounded-xl md:rounded-2xl text-xs sm:text-base md:text-xl font-heading text-white tracking-widest overflow-hidden">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                      <SelectContent className="bg-zinc-900 border-white/10 text-white w-[90vw] md:w-full max-w-[500px]">
                         {Object.entries(CATEGORIES).map(([key, cat]) => (
-                          <SelectItem key={key} value={key} className="h-12 md:h-14 font-heading text-xs sm:text-lg tracking-widest">
-                            {cat.name} (₹{cat.fee.toLocaleString()})
-                            {counts[key] >= limit ? " [WAITLIST]" : ` [${limit - (counts[key] || 0)} LEFT]`}
+                          <SelectItem key={key} value={key} className="h-auto py-3 md:h-14 font-heading text-[10px] sm:text-lg tracking-widest cursor-pointer hover:bg-white/5">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-1 md:gap-4">
+                               <span className="truncate">{cat.name}</span>
+                               <span className="text-primary text-[8px] md:text-sm whitespace-nowrap">
+                                 ₹{cat.fee.toLocaleString()} {counts[key] >= limit ? " [FULL]" : ` [${limit - (counts[key] || 0)} LEFT]`}
+                               </span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
