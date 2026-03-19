@@ -45,12 +45,17 @@ export default function Hero() {
           <div className="mb-4 md:mb-8 relative flex justify-center w-full">
             {!logoError ? (
               <motion.img 
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.5, type: "spring" }}
+                transition={{ 
+                  delay: 0.5, 
+                  duration: 0.8,
+                  ease: "easeOut" 
+                }}
+                style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
                 src="/logo.png" 
                 alt="Team Karad Logo" 
-                className="w-32 h-32 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
+                className="w-40 h-40 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
                 onError={() => setLogoError(true)}
               />
             ) : (

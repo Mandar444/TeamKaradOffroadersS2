@@ -192,15 +192,19 @@ export default function RegisterPage() {
                   <div className="space-y-4 p-6 md:p-8 bg-zinc-900/40 rounded-2xl md:rounded-[2rem] border border-white/5">
                     <Label className="text-primary text-[10px] font-black tracking-[0.4em] uppercase">Vessel Category Authorization *</Label>
                     <Select onValueChange={(v) => setValue("category", v)} defaultValue="DIESEL_MODIFIED">
-                      <SelectTrigger className="h-14 md:h-16 bg-black/60 border-white/5 rounded-xl md:rounded-2xl text-xs sm:text-base md:text-xl font-heading text-white tracking-widest overflow-hidden">
+                      <SelectTrigger className="h-16 md:h-20 bg-black/60 border-white/10 rounded-xl md:rounded-2xl text-sm sm:text-lg md:text-2xl font-heading text-white tracking-widest overflow-hidden">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-900 border-white/10 text-white w-[90vw] md:w-full max-w-[500px]">
+                      <SelectContent 
+                        alignItemWithTrigger={false} 
+                        sideOffset={10}
+                        className="bg-zinc-900 border-white/20 text-white w-[92vw] md:w-full max-w-[550px]"
+                      >
                         {Object.entries(CATEGORIES).map(([key, cat]) => (
-                          <SelectItem key={key} value={key} className="h-auto py-3 md:h-14 font-heading text-[10px] sm:text-lg tracking-widest cursor-pointer hover:bg-white/5">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-1 md:gap-4">
-                               <span className="truncate">{cat.name}</span>
-                               <span className="text-primary text-[8px] md:text-sm whitespace-nowrap">
+                          <SelectItem key={key} value={key} className="h-auto py-4 md:h-16 font-heading text-xs sm:text-xl tracking-widest cursor-pointer hover:bg-white/5 border-b border-white/5 last:border-0">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-2 md:gap-6">
+                               <span className="truncate font-black text-white">{cat.name}</span>
+                               <span className="text-primary text-[10px] md:text-sm font-black whitespace-nowrap bg-primary/10 px-2 py-1 rounded-md border border-primary/20">
                                  ₹{cat.fee.toLocaleString()} {counts[key] >= limit ? " [FULL]" : ` [${limit - (counts[key] || 0)} LEFT]`}
                                </span>
                             </div>

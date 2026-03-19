@@ -71,6 +71,16 @@ const TEAM_MEMBERS = [
     role: "CORE MEMBER",
     image: "/images/team/dnyandev_desai_1.jpg",
   },
+  {
+    name: "Abhay Jadhav",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
+  {
+    name: "Amar Jadhav",
+    role: "CORE MEMBER",
+    image: "/logo.png",
+  },
 ];
 
 export default function TeamPage() {
