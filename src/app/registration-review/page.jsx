@@ -21,6 +21,8 @@ export default function ReviewPage() {
     }
   }, [router]);
 
+  const isFree = data && CATEGORIES[data.category]?.fee === 0;
+
   const handleFinalSubmit = async () => {
     if (!data) return;
     setLoading(true);
@@ -34,7 +36,13 @@ export default function ReviewPage() {
       const result = await response.json();
       if (result.success && result.id) {
         sessionStorage.removeItem("tko_reg_draft"); // Cleanup
-        router.push(`/payment/${result.id}`);
+        
+        // If it's a free category (e.g. Ladies), bypass payment window completely
+        if (isFree) {
+          router.push(`/form-submitted?id=${result.id}`);
+        } else {
+          router.push(`/payment/${result.id}`);
+        }
       } else {
         alert(result.error || "System error during finalization.");
       }
@@ -158,7 +166,10 @@ export default function ReviewPage() {
                 {loading ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                 ) : (
-                    <>CONFIRM & PROCEED TO PAYMENT <CreditCard className="w-5 h-5" /></>
+                    <>
+                      {isFree ? "CONFIRM & REGISTER" : "CONFIRM & PROCEED TO PAYMENT"} 
+                      {isFree ? <CheckCircle2 className="w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
+                    </>
                 )}
               </Button>
               <Button 
