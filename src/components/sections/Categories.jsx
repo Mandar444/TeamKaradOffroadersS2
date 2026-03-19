@@ -58,12 +58,12 @@ export default function CarCategories() {
                       <span className="text-2xl font-bold font-heading text-white">
                         ₹{category.fee.toLocaleString()}
                       </span>
+                      <span className="text-xs text-zinc-500 mr-2">/ ENTRY</span>
                       {category.lateFee > 0 && (
                         <span className="text-[10px] text-primary/60 font-black uppercase tracking-widest italic">
                           (Late Entry: ₹{category.lateFee.toLocaleString()})
                         </span>
                       )}
-                      <span className="text-xs text-zinc-500 ml-1">/ ENTRY</span>
                     </div>
                   </CardContent>
                 </Card>

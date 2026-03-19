@@ -114,6 +114,7 @@ export const CATEGORIES = {
     description: "Exclusive category for female off-roaders — Complete Fee Waiver",
     technicalTerms: [
        "Female driver mandatory",
+       "Co-driver can be anyone",
        "Vehicle must comply with safety standards",
        "Entry is completely sponsored and free for both early and late registration"
     ]
