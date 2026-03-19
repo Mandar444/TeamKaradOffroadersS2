@@ -40,16 +40,12 @@ export default function TeamsPage() {
     fetch("/api/teams")
       .then(res => res.json())
       .then(data => {
-        if (data.teams && data.teams.length > 0) {
-          setTeams(data.teams);
-        } else {
-          setTeams(DEMO_TEAMS);
-        }
+        setTeams(data.teams || []);
         setLoading(false);
       })
       .catch(err => {
         console.error("Fetch error:", err);
-        setTeams(DEMO_TEAMS);
+        setTeams([]);
         setLoading(false);
       });
   }, []);

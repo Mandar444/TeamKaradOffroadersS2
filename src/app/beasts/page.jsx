@@ -49,11 +49,19 @@ const beasts = [
   },
   {
     id: "club-33",
-    name: "Club 33 Thunderstorm",
+    name: "Club 33",
+    category: "EXPERT",
+    type: "EXPERT DIVISION BUILD",
+    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+    stats: { power: "Refined", grip: "All Terrain", tech: "Expert" }
+  },
+  {
+    id: "thunderstorm",
+    name: "Thunderstorm",
     category: "EXPERT",
     type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Refined", grip: "All Terrain", tech: "Expert" }
+    stats: { power: "Extreme", grip: "Pro-Traction", tech: "Expert" }
   },
   {
     id: "major",
