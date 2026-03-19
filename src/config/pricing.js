@@ -123,7 +123,7 @@ export const CATEGORIES = {
 
 export const PRICING_CONFIG = {
   currency: "INR",
-  upiId: "8087977674@okbizaxis",
+  upiId: "7020440073@okbizaxis",
   upiName: "Team Karad Offroaders",
 };
 
