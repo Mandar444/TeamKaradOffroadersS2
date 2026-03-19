@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { CheckCircle2, ChevronRight, Copy, AlertCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ChevronRight, Copy, AlertCircle, ShieldCheck, Phone } from "lucide-react";
 
 export default function PaymentPage() {
   const { id } = useParams();
@@ -20,26 +20,29 @@ export default function PaymentPage() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    setIsMounted(true);
     async function fetchDetails() {
+      if (!id) return;
       try {
         const res = await fetch(`/api/registration-details?id=${id}`);
-        const data = await res.json();
         if (res.ok) {
+          const data = await res.json();
           setRegData(data);
         } else {
-          setError(data.error || "Registration not found");
+          setError("Registration Record Not Found");
         }
       } catch (e) {
-        console.error("Failed to fetch data");
-        setError("Technical error connecting to server");
+        setError("Network Interrupt: Failed to fetch grid data");
       }
     }
     fetchDetails();
   }, [id]);
 
-  const upiUrl = regData ? 
-    `upi://pay?pa=${PRICING_CONFIG.upiId}&pn=${encodeURIComponent(PRICING_CONFIG.upiName)}&am=${regData.amount}&tn=${encodeURIComponent(`Team: ${regData.team_name} | Driver: ${regData.driver_name} | Co: ${regData.codriver_name} | Cat: ${regData.category}`)}&cu=INR` 
+  const upiUrl = (isMounted && regData) ? 
+    `upi://pay?pa=${PRICING_CONFIG.upiId}&pn=${encodeURIComponent(PRICING_CONFIG.upiName)}&am=${regData.amount}&tn=${encodeURIComponent(`Team: ${regData.team_name} | ID: ${id}`)}&cu=INR` 
     : "";
 
   const [screenshot, setScreenshot] = useState(null);

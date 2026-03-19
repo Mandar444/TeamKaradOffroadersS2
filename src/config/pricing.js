@@ -1,6 +1,6 @@
 export const CATEGORIES = {
   EXTREME: {
-    name: "Extreme (Late: ₹17,999)",
+    name: "Extreme",
     fee: 14999,
     lateFee: 17999,
     description: "On top of the line - Ultimate performance class",
@@ -12,7 +12,7 @@ export const CATEGORIES = {
     ]
   },
   DIESEL_MODIFIED: {
-    name: "Diesel Modified (Late: ₹12,999)",
+    name: "Diesel Modified",
     fee: 9999,
     lateFee: 12999,
     description: "High-performance diesel monsters built for ultimate trail conquest.",
@@ -24,7 +24,7 @@ export const CATEGORIES = {
     ]
   },
   PETROL_MODIFIED: {
-    name: "Petrol Modified (Late: ₹12,999)",
+    name: "Petrol Modified",
     fee: 9999,
     lateFee: 12999,
     description: "Turbocharged petrol builds designed for speed and technical precision.",
@@ -36,7 +36,7 @@ export const CATEGORIES = {
     ]
   },
   DIESEL_EXPERT: {
-    name: "Diesel Expert (Late: ₹9,999)",
+    name: "Diesel Expert",
     fee: 7999,
     lateFee: 9999,
     description: "Professional level diesel class for seasoned off-roaders.",
@@ -48,7 +48,7 @@ export const CATEGORIES = {
     ]
   },
   PETROL_EXPERT: {
-    name: "Petrol Expert (Late: ₹9,999)",
+    name: "Petrol Expert",
     fee: 7999,
     lateFee: 9999,
     description: "Expert level petrol class focused on technical mastery.",
@@ -60,7 +60,7 @@ export const CATEGORIES = {
     ]
   },
   THAR_SUV: {
-    name: "Thar SUV (Late: ₹9,999)",
+    name: "Thar SUV",
     fee: 7999,
     lateFee: 9999,
     description: "Battle-ready Mahindra Thar class. Built to dominate.",
@@ -72,7 +72,7 @@ export const CATEGORIES = {
     ]
   },
   SUV_MODIFIED: {
-    name: "SUV Modified (Late: ₹11,999)",
+    name: "SUV Modified",
     fee: 9999,
     lateFee: 11999,
     description: "Modified SUV class for heavy-duty challengers.",
@@ -84,7 +84,7 @@ export const CATEGORIES = {
     ]
   },
   JIMNY_SUV: {
-    name: "Jimny SUV (Late: ₹9,999)",
+    name: "Jimny SUV",
     fee: 7999,
     lateFee: 9999,
     description: "Suzuki Jimny Specific Category",
@@ -96,7 +96,7 @@ export const CATEGORIES = {
     ]
   },
   STOCK_NDMS: {
-    name: "Stock NDMS (Late: ₹7,999)",
+    name: "Stock NDMS",
     fee: 5999,
     lateFee: 7999,
     description: "Standard configuration with NDMS tires",
@@ -108,7 +108,7 @@ export const CATEGORIES = {
     ]
   },
   LADIES: {
-    name: "Ladies Category (FREE ENTRY)",
+    name: "Ladies Category",
     fee: 0,
     lateFee: 0,
     description: "Exclusive category for female off-roaders — Complete Fee Waiver",
