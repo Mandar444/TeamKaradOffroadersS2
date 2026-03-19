@@ -12,7 +12,7 @@ const beastData = {
     name: "Stallion",
     type: "EXPERT DIVISION BUILD",
     category: "EXPERT",
-    heroImage: "https://images.unsplash.com/photo-1541575140244-96c21308bc21?q=80&w=2070&auto=format&fit=crop",
+    heroImage: "/images/beasts/stallion/stallion-hero.jpg",
     desc: "Stallion is the ultimate power build in our Season 2 expert division. Engineered for raw strength and technical agility, it combines a high-torque powertrain with a custom suspension setup designed to maintain traction where others fail. A true force of nature on the grid.",
     specs: [
       { label: "Stability", value: "Expert Articulation", icon: Gauge },
@@ -21,7 +21,7 @@ const beastData = {
       { label: "Engine", value: "Technical Mastery", icon: Fuel },
     ],
     gallery: [
-      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+      "/images/beasts/stallion/stallion-hero.jpg",
     ]
   },
     dominator: {
@@ -97,11 +97,11 @@ const beastData = {
      ]
   },
     "club-33": {
-     name: "Club 33 Thunderstorm",
+     name: "Club 33",
      type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
-     heroImage: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-     desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 Thunderstorm moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
+     heroImage: "/images/beasts/club33/club33-hero.jpg",
+     desc: "Built to take on the toughest terrains and competitive off-road challenges. With impressive power and refined tuning, Club 33 moves through mud, rocks, and steep obstacles with confidence and precision, reflecting the spirit of determination that defines the team.",
      specs: [
        { label: "Build", value: "Refined Tuning", icon: Fuel },
        { label: "Spirit", value: "Confidence built", icon: Zap },
@@ -109,7 +109,9 @@ const beastData = {
        { label: "Grip", value: "Offroad Action", icon: Cog },
      ],
      gallery: [
-       "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
+       "/images/beasts/club33/club33-hero.jpg",
+       "/images/beasts/club33/club33-1.jpg",
+       "/images/beasts/club33/club33-rear.jpg",
      ]
   },
     major: {
@@ -132,7 +134,7 @@ const beastData = {
      name: "Conqueror",
      type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
-     heroImage: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop",
+     heroImage: "/images/beasts/conqueror/conqueror-hero.jpg",
      desc: "The newest addition to the expert category fleet. Conqueror lives up to its name by dominating technically demanding obstacles where power and precision must work in perfect harmony. Designed for the Season 2 championship, it features advanced technical enhancements for the most rugged conditions.",
      specs: [
        { label: "Drive", value: "Advanced 4WD", icon: Zap },
@@ -141,7 +143,9 @@ const beastData = {
        { label: "Spirit", value: "Built to Rule", icon: Fuel },
      ],
      gallery: [
-        "https://images.unsplash.com/photo-1605281317010-fe5ffe798156?q=80&w=2000&auto=format&fit=crop"
+       "/images/beasts/conqueror/conqueror-hero.jpg",
+       "/images/beasts/conqueror/conqueror-1.jpg",
+       "/images/beasts/conqueror/conqueror-2.jpg",
      ]
   }
 };
@@ -225,22 +229,22 @@ export default function BeastDetailPage() {
 
             {/* Quick Stats sidebar */}
             <div className="lg:col-span-5">
-               <div className="sticky top-32 p-10 bg-zinc-900 border border-white/5 rounded-[3rem] shadow-2xl space-y-10">
+                <div className="sticky top-32 p-10 bg-zinc-900 border border-white/5 rounded-[3rem] shadow-2xl space-y-10">
                   <div className="flex items-center gap-4">
                      <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-[0_0_30px_rgba(255,165,0,0.3)]">
-                        <Trophy className="w-6 h-6 text-black" />
+                        <ShieldCheck className="w-6 h-6 text-black" />
                      </div>
                      <div>
-                        <h4 className="text-white font-heading text-xl uppercase italic">Grid Record</h4>
-                        <p className="text-primary text-[10px] font-black tracking-widest uppercase opacity-80">Season 1 Veteran</p>
+                        <h4 className="text-white font-heading text-xl uppercase italic">Build Status</h4>
+                        <p className="text-primary text-[10px] font-black tracking-widest uppercase opacity-80">RACE COMMAND READY</p>
                      </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="flex justify-between items-center py-4 border-b border-white/5">
-                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Build Status</span>
+                       <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Readiness Node</span>
                        <span className="text-emerald-400 font-black text-[10px] tracking-widest uppercase flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4" /> READY TO COMPETITION
+                          <Activity className="w-4 h-4" /> VERIFIED GRID ACCESS
                        </span>
                     </div>
                   </div>
