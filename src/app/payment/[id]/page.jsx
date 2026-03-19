@@ -118,7 +118,7 @@ export default function PaymentPage() {
             <h1 className="text-2xl md:text-3xl font-heading text-white tracking-tighter uppercase leading-none">
               COMPLETE <span className="text-primary italic font-heading">PAYMENT</span>
             </h1>
-            <p className="text-zinc-500 mt-2 text-xs md:text-sm font-medium">Registration Reference: <span className="text-primary font-mono">{id}</span></p>
+            <p className="text-zinc-500 mt-2 text-xs md:text-sm font-medium">Registration Reference: <span className="text-primary font-mono">{id || "..."}</span></p>
           </div>
           <Button 
             variant="ghost" 
@@ -134,12 +134,16 @@ export default function PaymentPage() {
             <CardContent className="pt-8">
               <div className="flex flex-col items-center">
                 <div className="bg-white p-4 rounded-xl mb-6 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                  <QRCodeSVG value={upiUrl} size={250} level="M" />
+                  {upiUrl ? (
+                    <QRCodeSVG value={upiUrl} size={250} level="M" />
+                  ) : (
+                    <div className="w-[250px] h-[250px] bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] uppercase font-bold tracking-widest">Generating QR Payload...</div>
+                  )}
                 </div>
                 
                 <div className="text-center space-y-2 mb-8">
                   <p className="text-zinc-500 text-sm uppercase tracking-widest">Payable Amount</p>
-                  <p className="text-4xl font-bold font-heading text-white">₹{regData?.amount?.toLocaleString()}</p>
+                  <p className="text-4xl font-bold font-heading text-white">₹{regData?.amount?.toLocaleString() || "..."}</p>
                 </div>
 
                 <div className="w-full space-y-4">
@@ -158,7 +162,7 @@ export default function PaymentPage() {
                     <div className="space-y-2">
                        <p className="text-amber-500/80 text-xs leading-relaxed">
                          IMPORTANT: Ensure the payment note shows: <br/>
-                         <b className="text-white">Team: {regData?.team_name} | Driver: {regData?.driver_name}</b>
+                         <b className="text-white">Team: {regData?.team_name || "---"} | Driver: {regData?.driver_name || "---"}</b>
                        </p>
                     </div>
                   </div>
