@@ -17,42 +17,59 @@ const serviceAccountAuth = new JWT({
 
 export const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
 
+let isInitialized = false;
+
 export async function getSheetByName(name) {
-  await doc.loadInfo();
+  if (!isInitialized) {
+    await initSheets();
+  }
   return doc.sheetsByTitle[name];
 }
 
 export async function initSheets() {
-  await doc.loadInfo();
+  if (isInitialized) return;
   
-  // Ensure "Registrations" sheet exists and has correct headers
-  let regSheet = doc.sheetsByTitle['Registrations'];
-  const regHeaders = [
-    'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone',
-    'codriver_name', 'codriver_blood_group', 'codriver_phone', 'category', 'car_number',
-    'vehicle_name', 'vehicle_model', 'food_preference', 'medical_issue', 'attendance_count', 'extra_names',
-    'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
-  ];
+  try {
+    console.log("[SHEETS] Attempting structural synchronization...");
+    await doc.loadInfo();
+    
+    // Ensure "Registrations" sheet exists
+    let regSheet = doc.sheetsByTitle['Registrations'];
+    const regHeaders = [
+      'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone',
+      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'category', 'car_number',
+      'vehicle_name', 'vehicle_model', 'food_preference', 'medical_issue', 'attendance_count', 'extra_names',
+      'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
+    ];
 
-  if (!regSheet) {
-    regSheet = await doc.addSheet({
-      title: 'Registrations',
-      headerValues: regHeaders
+    if (!regSheet) {
+      console.log("[SHEETS] Manifest missing. Initializing 'Registrations' schema...");
+      regSheet = await doc.addSheet({
+        title: 'Registrations',
+        headerValues: regHeaders
+      });
+    }
+
+    // Ensure "Booked Numbers" sheet exists
+    let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
+    const bookedHeaders = ['category', 'car_number', 'reg_id', 'status', 'expires_at'];
+
+    if (!bookedSheet) {
+      console.log("[SHEETS] Number manifest missing. Initializing 'Booked Numbers' schema...");
+      bookedSheet = await doc.addSheet({
+        title: 'Booked Numbers',
+        headerValues: bookedHeaders
+      });
+    }
+
+    isInitialized = true;
+    console.log("[SHEETS] Core systems synchronized.");
+  } catch (error) {
+    console.error("[SHEETS] CRITICAL INITIALIZATION ERROR:", {
+       message: error.message,
+       code: error.code,
+       details: error.response?.data
     });
-  } else {
-    await regSheet.setHeaderRow(regHeaders);
-  }
-
-  // Ensure "Booked Numbers" sheet exists and has correct headers
-  let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
-  const bookedHeaders = ['category', 'car_number', 'reg_id', 'status', 'expires_at'];
-
-  if (!bookedSheet) {
-    bookedSheet = await doc.addSheet({
-      title: 'Booked Numbers',
-      headerValues: bookedHeaders
-    });
-  } else {
-    await bookedSheet.setHeaderRow(bookedHeaders);
+    throw error;
   }
 }
