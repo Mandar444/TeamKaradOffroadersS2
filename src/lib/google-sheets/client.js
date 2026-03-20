@@ -19,6 +19,21 @@ export const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
 
 let isInitialized = false;
 
+export const REG_HEADERS = [
+  'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
+  'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food', 
+  'category', 'car_number', 'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
+  'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
+];
+
+export const BOOKED_HEADERS = [
+  'reg_id', 'category', 'car_number', 'status', 'expires_at', 
+  'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
+  'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food',
+  'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
+  'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'submitted_at'
+];
+
 export async function getSheetByName(name) {
   if (!isInitialized) {
     await initSheets();
@@ -35,55 +50,26 @@ export async function initSheets() {
     
     // Ensure "Registrations" sheet exists
     let regSheet = doc.sheetsByTitle['Registrations'];
-    const regHeaders = [
-      'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
-      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food', 
-      'category', 'car_number', 'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
-      'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'utr_number', 'has_screenshot', 'screenshot_link', 'status', 'submitted_at', 'confirmed_at'
-    ];
-
     if (!regSheet) {
-      console.log("[SHEETS] Manifest missing. Initializing 'Registrations' schema...");
+      console.log("[SHEETS] 'Registrations' missing. Initializing schema...");
       regSheet = await doc.addSheet({
         title: 'Registrations',
-        headerValues: regHeaders
+        headerValues: REG_HEADERS
       });
     } else {
-      // Ensure all headers exist even if sheet was previously created
       await regSheet.loadHeaderRow();
-      const currentHeaders = regSheet.headerValues;
-      const missingHeaders = regHeaders.filter(h => !currentHeaders.includes(h));
-      
-      if (missingHeaders.length > 0) {
-        console.log("[SHEETS] Syncing headers for 'Registrations'...");
-        // This is a bit tricky with the library, usually best to just update all headers
-        await regSheet.setHeaderRow(regHeaders);
-      }
     }
 
     // Ensure "Booked Numbers" sheet exists
     let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
-    const bookedHeaders = [
-      'reg_id', 'category', 'car_number', 'status', 'expires_at', 
-      'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
-      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food',
-      'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
-      'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'submitted_at'
-    ];
-
     if (!bookedSheet) {
-      console.log("[SHEETS] Number manifest missing. Initializing 'Booked Numbers' schema...");
+      console.log("[SHEETS] 'Booked Numbers' missing. Initializing schema...");
       bookedSheet = await doc.addSheet({
         title: 'Booked Numbers',
-        headerValues: bookedHeaders
+        headerValues: BOOKED_HEADERS
       });
     } else {
       await bookedSheet.loadHeaderRow();
-      const currentHeaders = bookedSheet.headerValues;
-      const missingHeaders = bookedHeaders.filter(h => !currentHeaders.includes(h));
-      if (missingHeaders.length > 0) {
-        await bookedSheet.setHeaderRow(bookedHeaders);
-      }
     }
 
     isInitialized = true;
