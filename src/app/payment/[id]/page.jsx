@@ -28,15 +28,16 @@ export default function PaymentPage() {
       if (!id) return;
       try {
         const res = await fetch(`/api/registration-details?id=${id}`);
+        const result = await res.json();
         if (res.ok) {
-          const data = await res.json();
-          setRegData(data);
+          setRegData(result);
         } else {
-          setError("Registration Record Not Found");
+          setError(result.error || "Registration Record Not Found");
         }
       } catch (e) {
         setError("Network Interrupt: Failed to fetch grid data");
       }
+
     }
     fetchDetails();
   }, [id]);
