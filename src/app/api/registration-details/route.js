@@ -65,12 +65,17 @@ export async function GET(request) {
       amount: currentFee,
       status: row.get("status")
     });
-  } catch (error) {
+    } catch (error) {
     console.error("REGISTRATION DETAILS FETCH ERROR:", {
       message: error.message,
       stack: error.stack,
       id
     });
-    return NextResponse.json({ error: "Failed to fetch registration details", details: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      error: `Server Exception: ${error.message || "Unknown error during data parsing"}`, 
+      id: id,
+      hint: "Check your spreadsheet columns for 'reg_id' and 'category'"
+    }, { status: 500 });
   }
+
 }
