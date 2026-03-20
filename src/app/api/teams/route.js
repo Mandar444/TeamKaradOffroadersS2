@@ -9,9 +9,12 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
-    // Return only CONFIRMED registrations for public Grid Lineup
+    // Return any registration that has been confirmed by an admin
     const confirmedTeams = rows
-      .filter((row) => (row.get("status") || "").trim() === "CONFIRMED")
+      .filter((row) => {
+        const s = (row.get("status") || "").trim().toUpperCase();
+        return s === "CONFIRMED" || s === "AUTHORIZED GRID" || s === "AUTHORIZED";
+      })
       .map((row) => ({
         team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
@@ -23,11 +26,15 @@ export async function GET() {
         vehicle_name: row.get("vehicle_name"),
         vehicle_model: row.get("vehicle_model"),
         socials: row.get("socials"),
-        status: row.get("status") || "CONFIRMED",
+        status: "CONFIRMED", 
       }));
 
-    // Sort by car number
-    confirmedTeams.sort((a, b) => parseInt(a.car_number) - parseInt(b.car_number));
+    // Robust Sort: Handle car numbers with letters (e.g., 'S7')
+    confirmedTeams.sort((a, b) => {
+      const numA = parseInt(String(a.car_number).replace(/[^0-9]/g, "")) || 0;
+      const numB = parseInt(String(b.car_number).replace(/[^0-9]/g, "")) || 0;
+      return numA - numB;
+    });
 
     return NextResponse.json({ teams: confirmedTeams });
   } catch (error) {

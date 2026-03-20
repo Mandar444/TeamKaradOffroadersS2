@@ -27,8 +27,10 @@ export async function getSheetByName(name) {
 }
 
 export async function initSheets() {
+  if (isInitialized) return;
+  
   try {
-    console.log("[SHEETS] Attempting structural synchronization...");
+    console.log("[SHEETS] Initializing Master Synchronization Link...");
     await doc.loadInfo();
     
     // Ensure "Registrations" sheet exists
