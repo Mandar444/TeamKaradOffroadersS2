@@ -62,9 +62,10 @@ export async function GET(request) {
       codriver_name: row.get("codriver_name"),
       car_number: row.get("car_number"),
       category: category,
-      amount: currentFee,
+      amount: amount,
       status: row.get("status")
     });
+
     } catch (error) {
     console.error("REGISTRATION DETAILS FETCH ERROR:", {
       message: error.message,

@@ -23,7 +23,8 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
         </div>
       </div>
 
-      <ScrollArea className="h-[400px] rounded-md border border-zinc-800 bg-black/40 p-4">
+      <ScrollArea className="h-[600px] md:h-[700px] rounded-2xl border border-zinc-800 bg-black/40 p-6 shadow-inner relative overflow-y-auto custom-scrollbar">
+
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
           {numbers.map((num) => {
             const isTaken = takenNumbers.includes(num);
