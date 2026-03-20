@@ -25,17 +25,20 @@ export async function POST(request) {
     const now = new Date();
 
     // Helper for robust category matching
-    const catName = (CATEGORIES[data.category]?.name || "").toUpperCase().trim();
-    const catKey = data.category.toUpperCase().trim();
+    const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
+    const targetCatNormalized = normalize(data.category);
+    const targetCatNameNormalized = normalize(CATEGORIES[data.category]?.name || "");
     const targetNum = String(data.carNumber).trim();
 
     // 1. Check master Registrations first
     const isTakenInMaster = regRows.some(row => {
-        const rowCat = (row.get("category") || "").toUpperCase().trim();
+        const rowCatNorm = normalize(row.get("category"));
         const rowNum = String(row.get("car_number")).trim();
         const rowStatus = (row.get("status") || "").toUpperCase().trim();
 
-        if (rowCat !== catKey && rowCat !== catName) return false;
+        // Match if either the key (PETROL_EXPERT) or name (Petrol Expert) matches normalized
+        const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+        if (!isMatch) return false;
         if (rowNum !== targetNum) return false;
         
         return rowStatus !== "REJECTED";
@@ -47,10 +50,11 @@ export async function POST(request) {
 
     // 2. Check temporary holds
     const isTakenInHolds = bookedRows.some(row => {
-      const rowCat = (row.get("category") || "").toUpperCase().trim();
+      const rowCatNorm = normalize(row.get("category"));
       const rowNum = String(row.get("car_number")).trim();
 
-      if (rowCat !== catKey && rowCat !== catName) return false;
+      const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+      if (!isMatch) return false;
       if (rowNum !== targetNum) return false;
       
       const status = (row.get("status") || "").toUpperCase().trim();
@@ -65,6 +69,7 @@ export async function POST(request) {
     if (isTakenInHolds) {
       return NextResponse.json({ error: "Number is currently being held or already booked by someone else." }, { status: 400 });
     }
+
 
 
     const regId = `REG-${Date.now().toString().slice(-8)}`;

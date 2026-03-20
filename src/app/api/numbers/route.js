@@ -26,16 +26,18 @@ export async function GET(request) {
         regSheet.getRows()
     ]);
     
-    // Helper for robust category matching
-    const catName = (CATEGORIES[category]?.name || "").toUpperCase().trim();
-    const catKey = category.toUpperCase().trim();
+    // Helper for ULTRA-FUZZY category matching
+    const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
+    const targetCatNormalized = normalize(category);
+    const targetCatNameNormalized = normalize(CATEGORIES[category]?.name || "");
 
     // 1. Get numbers from Booked Numbers (Temporary holds)
     const holdNumbers = bookedRows
       .filter((row) => {
-        const rowCat = (row.get("category") || "").toUpperCase().trim();
-        // Match either the KEY (PETROL_MODIFIED) or the Full Name (PETROL MODIFIED)
-        if (rowCat !== catKey && rowCat !== catName) return false;
+        const rowCatNorm = normalize(row.get("category"));
+        const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+        
+        if (!isMatch) return false;
         
         const status = (row.get("status") || "").toUpperCase().trim();
         if (status === "BOOKED") return true;
@@ -52,11 +54,12 @@ export async function GET(request) {
     // 2. Get numbers from Registrations (Finalized/Pending Verification/Confirmed)
     const confirmedNumbers = regRows
       .filter((row) => {
-        const rowCat = (row.get("category") || "").toUpperCase().trim();
-        if (rowCat !== catKey && rowCat !== catName) return false;
+        const rowCatNorm = normalize(row.get("category"));
+        const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+        
+        if (!isMatch) return false;
         
         const status = (row.get("status") || "").toUpperCase().trim();
-        // Block if not rejected (Confirmed, Pending, etc)
         return status !== "REJECTED"; 
       })
       .map((row) => String(row.get("car_number")).trim());
@@ -64,7 +67,7 @@ export async function GET(request) {
     const allTaken = Array.from(new Set([...holdNumbers, ...confirmedNumbers]));
     
     // DEBUG: Final consolidated taken set
-    console.log(`[NUMBERS] Category: ${category}, Found: ${allTaken.length} taken slots - [${allTaken.join(', ')}]`);
+    console.log(`[NUMBERS] Category: ${category} (Norm: ${targetCatNormalized}), Found: ${allTaken.length} taken slots: [${allTaken.join(', ')}]`);
 
     return NextResponse.json(
       { booked: allTaken },
