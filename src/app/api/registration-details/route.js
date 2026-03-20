@@ -10,15 +10,27 @@ export async function GET(request) {
 
   try {
     await initSheets();
-    const sheet = await getSheetByName("Registrations");
-    const rows = await sheet.getRows();
-    const row = rows.find(r => r.get("reg_id") === id);
+    const regSheet = await getSheetByName("Registrations");
+    const bookedSheet = await getSheetByName("Booked Numbers");
+    
+    const [regRows, bookedRows] = await Promise.all([
+      regSheet.getRows(),
+      bookedSheet.getRows()
+    ]);
 
-    if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    // Search Master first, then Drafts
+    let row = regRows.find(r => r.get("reg_id") === id);
+    if (!row) {
+      row = bookedRows.find(r => r.get("reg_id") === id);
+    }
+
+    if (!row) {
+      return NextResponse.json({ error: "Registration Record Not Found" }, { status: 404 });
+    }
 
     const category = row.get("category");
-    // Dynamically retrieve the latest fee for the category, fallback to saved amount if category not found
-    const currentFee = CATEGORIES[category]?.fee || row.get("amount_paid");
+    const amount = CATEGORIES[category]?.fee || row.get("amount_paid") || 0;
+
 
     return NextResponse.json({
       id: row.get("reg_id"),
