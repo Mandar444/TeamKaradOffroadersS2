@@ -26,14 +26,18 @@ export async function GET(request) {
         regSheet.getRows()
     ]);
     
-    const now = new Date();
+    // Helper for robust category matching
+    const catName = (CATEGORIES[category]?.name || "").toUpperCase().trim();
+    const catKey = category.toUpperCase().trim();
 
     // 1. Get numbers from Booked Numbers (Temporary holds)
     const holdNumbers = bookedRows
       .filter((row) => {
-        if (row.get("category") !== category) return false;
+        const rowCat = (row.get("category") || "").toUpperCase().trim();
+        // Match either the KEY (PETROL_MODIFIED) or the Full Name (PETROL MODIFIED)
+        if (rowCat !== catKey && rowCat !== catName) return false;
         
-        const status = row.get("status");
+        const status = (row.get("status") || "").toUpperCase().trim();
         if (status === "BOOKED") return true;
         
         if (status === "HELD") {
@@ -43,22 +47,24 @@ export async function GET(request) {
         
         return false;
       })
-      .map((row) => String(row.get("car_number")));
+      .map((row) => String(row.get("car_number")).trim());
 
     // 2. Get numbers from Registrations (Finalized/Pending Verification/Confirmed)
-    // IMPORTANT: Even PENDING_VERIFICATION entries should block the number!
     const confirmedNumbers = regRows
       .filter((row) => {
-        if (row.get("category") !== category) return false;
+        const rowCat = (row.get("category") || "").toUpperCase().trim();
+        if (rowCat !== catKey && rowCat !== catName) return false;
         
-        const status = row.get("status");
-        // We block the number if it's confirmed, pending verification, or even rejected (until manual cleanup)
+        const status = (row.get("status") || "").toUpperCase().trim();
+        // Block if not rejected (Confirmed, Pending, etc)
         return status !== "REJECTED"; 
       })
-      .map((row) => String(row.get("car_number")));
+      .map((row) => String(row.get("car_number")).trim());
 
-    // Combine and unique
     const allTaken = Array.from(new Set([...holdNumbers, ...confirmedNumbers]));
+    
+    // DEBUG: Final consolidated taken set
+    console.log(`[NUMBERS] Category: ${category}, Found: ${allTaken.length} taken slots - [${allTaken.join(', ')}]`);
 
     return NextResponse.json(
       { booked: allTaken },

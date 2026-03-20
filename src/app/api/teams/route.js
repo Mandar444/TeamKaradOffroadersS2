@@ -9,8 +9,16 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
-    // Temporary debug: Return ALL registrations to see what is being fetched
+    // Filter: Show only Authorized teams with explicit UTR (Payment Evidence)
     const confirmedTeams = rows
+      .filter((row) => {
+        const s = (row.get("status") || "").trim().toUpperCase();
+        const utr = (row.get("utr_number") || "").trim();
+        const isVerified = (s === "CONFIRMED" || s === "AUTHORIZED GRID" || s === "AUTHORIZED");
+        
+        // Strict Mode: Must be verified AND have a UTR tracked
+        return isVerified && utr !== "";
+      })
       .map((row) => ({
         team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
@@ -22,13 +30,8 @@ export async function GET() {
         vehicle_name: row.get("vehicle_name"),
         vehicle_model: row.get("vehicle_model"),
         socials: row.get("socials"),
-        status: row.get("status") || "NONE",
+        status: "CONFIRMED", 
       }));
-
-    console.log(`[TEAMS_API] Total: ${rows.length}, Teams: ${confirmedTeams.length}`);
-    if (confirmedTeams.length > 0) {
-        console.log(`[TEAMS_API] First team status: ${confirmedTeams[0].status}`);
-    }
 
     // Robust Sort: Handle car numbers with letters (e.g., 'S7')
     confirmedTeams.sort((a, b) => {

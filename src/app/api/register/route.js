@@ -24,11 +24,21 @@ export async function POST(request) {
     
     const now = new Date();
 
+    // Helper for robust category matching
+    const catName = (CATEGORIES[data.category]?.name || "").toUpperCase().trim();
+    const catKey = data.category.toUpperCase().trim();
+    const targetNum = String(data.carNumber).trim();
+
     // 1. Check master Registrations first
     const isTakenInMaster = regRows.some(row => {
-        return row.get("category") === data.category && 
-               String(row.get("car_number")) === String(data.carNumber) &&
-               row.get("status") !== "REJECTED";
+        const rowCat = (row.get("category") || "").toUpperCase().trim();
+        const rowNum = String(row.get("car_number")).trim();
+        const rowStatus = (row.get("status") || "").toUpperCase().trim();
+
+        if (rowCat !== catKey && rowCat !== catName) return false;
+        if (rowNum !== targetNum) return false;
+        
+        return rowStatus !== "REJECTED";
     });
 
     if (isTakenInMaster) {
@@ -37,10 +47,13 @@ export async function POST(request) {
 
     // 2. Check temporary holds
     const isTakenInHolds = bookedRows.some(row => {
-      if (row.get("category") !== data.category) return false;
-      if (String(row.get("car_number")) !== String(data.carNumber)) return false;
+      const rowCat = (row.get("category") || "").toUpperCase().trim();
+      const rowNum = String(row.get("car_number")).trim();
+
+      if (rowCat !== catKey && rowCat !== catName) return false;
+      if (rowNum !== targetNum) return false;
       
-      const status = row.get("status");
+      const status = (row.get("status") || "").toUpperCase().trim();
       if (status === "BOOKED") return true; 
       if (status === "HELD") {
         const expiresAt = new Date(row.get("expires_at"));
@@ -52,6 +65,7 @@ export async function POST(request) {
     if (isTakenInHolds) {
       return NextResponse.json({ error: "Number is currently being held or already booked by someone else." }, { status: 400 });
     }
+
 
     const regId = `REG-${Date.now().toString().slice(-8)}`;
     // We NO LONGER add to "Registrations" sheet here to avoid ghost entries
