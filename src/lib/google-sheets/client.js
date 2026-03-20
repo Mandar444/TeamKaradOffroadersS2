@@ -58,10 +58,13 @@ export async function initSheets() {
       });
     } else {
       await regSheet.loadHeaderRow();
-      // If headers are missing or in wrong format, sync them ONCE
-      if (regSheet.headerValues[0] !== 'reg_id') {
-         console.log("[SHEETS] Syncing 'Registrations' master schema...");
-         await regSheet.setHeaderRow(REG_HEADERS);
+      const currentHeaders = regSheet.headerValues || [];
+      const missingHeaders = REG_HEADERS.filter(h => !currentHeaders.includes(h));
+      
+      if (missingHeaders.length > 0) {
+         console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Registrations'...`);
+         // Safely append new headers at the end
+         await regSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
       }
     }
 
@@ -75,11 +78,15 @@ export async function initSheets() {
       });
     } else {
       await bookedSheet.loadHeaderRow();
-      if (bookedSheet.headerValues[0] !== 'reg_id') {
-         console.log("[SHEETS] Syncing 'Booked Numbers' schema...");
-         await bookedSheet.setHeaderRow(BOOKED_HEADERS);
+      const currentHeaders = bookedSheet.headerValues || [];
+      const missingHeaders = BOOKED_HEADERS.filter(h => !currentHeaders.includes(h));
+      
+      if (missingHeaders.length > 0) {
+         console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Booked Numbers'...`);
+         await bookedSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
       }
     }
+
 
 
     isInitialized = true;

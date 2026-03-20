@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
+import { CATEGORIES } from "@/config/pricing";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -26,6 +27,8 @@ export async function GET(request) {
         regSheet.getRows()
     ]);
     
+    const now = new Date();
+
     // Helper for ULTRA-FUZZY category matching
     const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
     const targetCatNormalized = normalize(category);
