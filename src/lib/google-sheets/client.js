@@ -58,6 +58,11 @@ export async function initSheets() {
       });
     } else {
       await regSheet.loadHeaderRow();
+      // If headers are missing or in wrong format, sync them ONCE
+      if (regSheet.headerValues[0] !== 'reg_id') {
+         console.log("[SHEETS] Syncing 'Registrations' master schema...");
+         await regSheet.setHeaderRow(REG_HEADERS);
+      }
     }
 
     // Ensure "Booked Numbers" sheet exists
@@ -70,7 +75,12 @@ export async function initSheets() {
       });
     } else {
       await bookedSheet.loadHeaderRow();
+      if (bookedSheet.headerValues[0] !== 'reg_id') {
+         console.log("[SHEETS] Syncing 'Booked Numbers' schema...");
+         await bookedSheet.setHeaderRow(BOOKED_HEADERS);
+      }
     }
+
 
     isInitialized = true;
     console.log("[SHEETS] Core systems synchronized.");
