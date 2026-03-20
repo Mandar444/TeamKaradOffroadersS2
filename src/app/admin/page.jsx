@@ -226,9 +226,17 @@ export default function AdminDashboard() {
                                         <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                                      )}
                                   </div>
-                                  <div className="flex items-center gap-3 bg-black/40 border border-white/5 py-1.5 px-3 rounded-lg w-fit">
-                                     <CreditCard className="w-3.5 h-3.5 text-zinc-600" />
-                                     <span className="font-mono text-zinc-400 text-xs font-black tracking-widest">{reg.utr_number || "NO UTR"}</span>
+                                  <div className={cn(
+                                     "flex items-center gap-3 bg-black/40 border py-1.5 px-3 rounded-lg w-fit",
+                                     reg.utr_number ? "border-white/5" : "border-red-500/50 bg-red-400/5 animate-pulse"
+                                  )}>
+                                     <CreditCard className={cn("w-3.5 h-3.5", reg.utr_number ? "text-zinc-600" : "text-red-500")} />
+                                     <span className={cn(
+                                       "font-mono text-xs font-black tracking-widest",
+                                       reg.utr_number ? "text-zinc-400" : "text-red-500"
+                                     )}>
+                                       {reg.utr_number || "MISSING"}
+                                     </span>
                                   </div>
                                   {reg.screenshot_link ? (
                                      <a 
@@ -241,7 +249,7 @@ export default function AdminDashboard() {
                                      </a>
                                   ) : (
                                      <a 
-                                       href={`https://wa.me/91${reg.driver_phone}?text=${encodeURIComponent(`Hi ${reg.driver_name}, your TKO Registration (${reg.reg_id}) screenshot was not received. Please send it here for verification.`)}`}
+                                       href={`https://wa.me/91${reg.driver_phone}?text=${encodeURIComponent(`Hi ${reg.driver_name}, your TKO Registration (${reg.reg_id}) screenshot was received but the UTR number is not clear. Please send a clear screenshot where the Transaction ID/UTR is visible for verification.`)}`}
                                        target="_blank" 
                                        rel="noreferrer"
                                        className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition-colors animate-pulse"

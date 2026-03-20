@@ -14,7 +14,9 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
-    const registrations = rows.map(row => ({
+    const registrations = rows
+      .filter(row => row.get("status") !== "PENDING") // Hide ghost entries that haven't finished the payment gate
+      .map(row => ({
       reg_id: row.get("reg_id"),
       team_name: row.get("team_name"),
       driver_name: row.get("driver_name"),

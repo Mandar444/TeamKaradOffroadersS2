@@ -27,8 +27,6 @@ export async function getSheetByName(name) {
 }
 
 export async function initSheets() {
-  if (isInitialized) return;
-  
   try {
     console.log("[SHEETS] Attempting structural synchronization...");
     await doc.loadInfo();
@@ -48,11 +46,28 @@ export async function initSheets() {
         title: 'Registrations',
         headerValues: regHeaders
       });
+    } else {
+      // Ensure all headers exist even if sheet was previously created
+      await regSheet.loadHeaderRow();
+      const currentHeaders = regSheet.headerValues;
+      const missingHeaders = regHeaders.filter(h => !currentHeaders.includes(h));
+      
+      if (missingHeaders.length > 0) {
+        console.log("[SHEETS] Syncing headers for 'Registrations'...");
+        // This is a bit tricky with the library, usually best to just update all headers
+        await regSheet.setHeaderRow(regHeaders);
+      }
     }
 
     // Ensure "Booked Numbers" sheet exists
     let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
-    const bookedHeaders = ['category', 'car_number', 'reg_id', 'status', 'expires_at'];
+    const bookedHeaders = [
+      'reg_id', 'category', 'car_number', 'status', 'expires_at', 
+      'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
+      'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food',
+      'vehicle_name', 'vehicle_model', 'team_food', 'food_preference', 'medical_issue',
+      'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'submitted_at'
+    ];
 
     if (!bookedSheet) {
       console.log("[SHEETS] Number manifest missing. Initializing 'Booked Numbers' schema...");
@@ -60,6 +75,13 @@ export async function initSheets() {
         title: 'Booked Numbers',
         headerValues: bookedHeaders
       });
+    } else {
+      await bookedSheet.loadHeaderRow();
+      const currentHeaders = bookedSheet.headerValues;
+      const missingHeaders = bookedHeaders.filter(h => !currentHeaders.includes(h));
+      if (missingHeaders.length > 0) {
+        await bookedSheet.setHeaderRow(bookedHeaders);
+      }
     }
 
     isInitialized = true;

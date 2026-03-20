@@ -34,22 +34,25 @@ export async function POST(request) {
       return NextResponse.json({ error: "Car number already taken in this category" }, { status: 400 });
     }
 
-    // 2. Add to Registrations
-    await regSheet.addRow({
+    // 2. Add as Draft to Booked Numbers (Holds for 15 mins)
+    // We NO LONGER add to "Registrations" sheet here to avoid ghost entries
+    await bookedSheet.addRow({
       reg_id: regId,
+      category: data.category,
+      car_number: data.carNumber,
+      status: "HELD",
+      expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       team_name: data.teamName,
       driver_name: data.driverName,
       driver_blood_group: data.driverBloodGroup,
       driver_phone: data.driverPhone,
+      driver_food: data.driverFood,
       codriver_name: data.coDriverName,
       codriver_blood_group: data.coDriverBloodGroup,
       codriver_phone: data.coDriverPhone,
       codriver_food: data.coDriverFood,
-      category: data.category,
-      car_number: data.carNumber,
       vehicle_name: data.vehicleName,
       vehicle_model: data.vehicleModel,
-      driver_food: data.driverFood,
       team_food: data.teamFood,
       food_preference: `${data.driverFood} (D), ${data.coDriverFood} (CD), ${data.teamFood || 'No extra'} (T)`,
       medical_issue: data.medicalIssue,
@@ -58,18 +61,7 @@ export async function POST(request) {
       email: data.email,
       socials: data.socials || "",
       amount_paid: amount,
-      utr_number: "", 
-      status: "PENDING",
       submitted_at: new Date().toISOString(),
-    });
-
-    // 3. Temporarily hold the number
-    await bookedSheet.addRow({
-      category: data.category,
-      car_number: data.carNumber,
-      reg_id: regId,
-      status: "HELD",
-      expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
     });
 
     return NextResponse.json({ success: true, id: regId });

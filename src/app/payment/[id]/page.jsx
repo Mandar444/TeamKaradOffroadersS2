@@ -197,44 +197,72 @@ export default function PaymentPage() {
                 </div>
               </div>
 
-              <div className="mt-12 pt-8 border-t border-zinc-800">
-                  <div className="pt-12 text-center p-8 bg-zinc-900/50 border border-zinc-800 rounded-[2rem]">
-                    <div className="w-16 h-16 bg-emerald-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                       <Phone className="w-8 h-8 text-emerald-500" />
+              <div className="mt-12 pt-8 border-t border-zinc-800 space-y-8">
+                  {/* Step 1 & 2 Container */}
+                  <div className="p-8 bg-zinc-900/50 border border-primary/20 rounded-[2rem] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-6 opacity-5">
+                       <ShieldCheck className="w-24 h-24 text-primary" />
                     </div>
-                    <p className="text-zinc-600 text-[10px] uppercase font-black tracking-widest mb-3">Step 1: Send Screenshot</p>
-                    <h3 className="text-white font-heading text-xl uppercase italic mb-4">Share proof on WhatsApp</h3>
-                    <a 
-                      href={`https://wa.me/918087977674?text=${encodeURIComponent(`Hi TKO, I am sharing the payment screenshot for Reference: ${id}.`)}`}
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="inline-flex h-14 px-8 items-center gap-3 text-sm font-black uppercase tracking-widest bg-[#25D366] text-black rounded-2xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(37,211,102,0.2)]"
-                    >
-                       <Phone className="w-5 h-5 flex-shrink-0" /> Open WhatsApp Direct
-                    </a>
-                    <p className="text-zinc-500 text-[10px] mt-6 leading-relaxed max-w-[280px] mx-auto uppercase font-bold">
-                       Mandatory: Tap above to share your receipt BEFORE submitting the UTR below.
-                    </p>
-                  </div>
 
-                  <div className="space-y-2 mt-10 p-2 bg-black/40 rounded-3xl border border-white/5">
-                    <Label className="text-zinc-500 text-[10px] uppercase font-black tracking-widest px-4 pt-2 block">Step 2: Enter 12-digit UTR / Ref Number</Label>
-                    <Input 
-                      required 
-                      value={utr}
-                      onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
-                      placeholder="e.g. 123456789012" 
-                      className="h-16 bg-transparent border-none text-white font-mono text-2xl tracking-[0.2em] text-center focus-visible:ring-0"
-                      maxLength={12}
-                    />
+                    <div className="text-center mb-8">
+                      <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                         <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                         <span className="text-primary text-[10px] font-black uppercase tracking-widest">Mandatory Verification</span>
+                      </div>
+                      <h3 className="text-white font-heading text-2xl uppercase italic leading-none mb-2">FINAL AUTHORIZATION</h3>
+                      <p className="text-zinc-500 text-xs font-medium uppercase tracking-tight">You must complete BOTH steps below to secure your grid spot.</p>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* STEP 1: WhatsApp */}
+                      <div className="p-6 bg-black/40 border border-white/5 rounded-2xl text-center group hover:border-emerald-500/30 transition-all">
+                        <p className="text-emerald-500 text-[10px] uppercase font-black tracking-widest mb-3 flex items-center justify-center gap-2">
+                          <CheckCircle2 className="w-3 h-3" /> Step 01: Share Evidence (WA)
+                        </p>
+                        <a 
+                          href={`https://wa.me/918087977674?text=${encodeURIComponent(`Hi TKO, I am sharing the payment screenshot for Reference: ${id}. Team: ${regData?.team_name}. Note: I've ensured the UTR No is clearly visible.`)}`}
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="inline-flex h-14 w-full items-center justify-center gap-3 text-sm font-black uppercase tracking-widest bg-[#25D366] text-black rounded-xl hover:scale-[1.02] transition-all shadow-[0_0_30px_rgba(37,211,102,0.1)]"
+                        >
+                           <Phone className="w-5 h-5 flex-shrink-0" /> Share Screenshot (UTR Visible)
+                        </a>
+                        <p className="text-zinc-600 text-[9px] mt-4 font-bold uppercase tracking-tighter">Share on WhatsApp & then come back to Step 02</p>
+                      </div>
+
+                      {/* STEP 2: UTR */}
+                      <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
+                         <p className="text-primary text-[10px] uppercase font-black tracking-widest mb-3 flex items-center justify-center gap-2">
+                           <Zap className="w-3 h-3 fill-current" /> Step 02: Mandatory Log Transaction ID
+                         </p>
+                         <div className="bg-black/60 rounded-xl border border-white/5 p-2 mb-4">
+                            <Input 
+                              required 
+                              value={utr}
+                              onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
+                              placeholder="12-DIGIT UTR NUMBER" 
+                              className="h-16 bg-transparent border-none text-white font-mono text-2xl tracking-[0.2em] text-center focus-visible:ring-0 placeholder:text-zinc-800"
+                              maxLength={12}
+                            />
+                         </div>
+                         
+                         <Button 
+                          onClick={handleSubmitUTR}
+                          disabled={utr.length !== 12 || loading} 
+                          className="w-full h-16 bg-primary text-black font-black uppercase tracking-widest text-sm rounded-xl shadow-glow hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+                        >
+                          {loading ? "AUTHORIZING RECORD..." : "FINISH REGISTRATION"}
+                        </Button>
+
+                        <div className="mt-6 flex items-start gap-3 p-4 bg-red-500/5 border border-red-500/10 rounded-xl">
+                           <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
+                           <p className="text-red-500/80 text-[10px] font-bold uppercase leading-relaxed tracking-tight">
+                              CRITICAL: Your grid invitation will not trigger until you finish Step 02. Do not close this manifest.
+                           </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <Button 
-                    onClick={handleSubmitUTR}
-                    disabled={utr.length !== 12 || loading} 
-                    className="w-full h-16 bg-primary text-black font-black uppercase tracking-widest text-sm rounded-2xl shadow-glow hover:scale-[1.02] transition-all"
-                  >
-                    {loading ? "SAVING RECORD..." : "FINISH REGISTRATION →"}
-                  </Button>
               </div>
             </CardContent>
           </Card>
