@@ -18,6 +18,7 @@ const serviceAccountAuth = new JWT({
 export const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
 
 let isInitialized = false;
+let initPromise = null;
 
 export const REG_HEADERS = [
   'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
@@ -35,68 +36,82 @@ export const BOOKED_HEADERS = [
 ];
 
 export async function getSheetByName(name) {
-  if (!isInitialized) {
-    await initSheets();
-  }
+  await initSheets();
   return doc.sheetsByTitle[name];
 }
 
 export async function initSheets() {
   if (isInitialized) return;
   
-  try {
-    console.log("[SHEETS] Initializing Master Synchronization Link...");
-    await doc.loadInfo();
-    
-    // Ensure "Registrations" sheet exists
-    let regSheet = doc.sheetsByTitle['Registrations'];
-    if (!regSheet) {
-      console.log("[SHEETS] 'Registrations' missing. Initializing schema...");
-      regSheet = await doc.addSheet({
-        title: 'Registrations',
-        headerValues: REG_HEADERS
-      });
-    } else {
-      await regSheet.loadHeaderRow();
-      const currentHeaders = regSheet.headerValues || [];
-      const missingHeaders = REG_HEADERS.filter(h => !currentHeaders.includes(h));
-      
-      if (missingHeaders.length > 0) {
-         console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Registrations'...`);
-         // Safely append new headers at the end
-         await regSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
-      }
-    }
-
-    // Ensure "Booked Numbers" sheet exists
-    let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
-    if (!bookedSheet) {
-      console.log("[SHEETS] 'Booked Numbers' missing. Initializing schema...");
-      bookedSheet = await doc.addSheet({
-        title: 'Booked Numbers',
-        headerValues: BOOKED_HEADERS
-      });
-    } else {
-      await bookedSheet.loadHeaderRow();
-      const currentHeaders = bookedSheet.headerValues || [];
-      const missingHeaders = BOOKED_HEADERS.filter(h => !currentHeaders.includes(h));
-      
-      if (missingHeaders.length > 0) {
-         console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Booked Numbers'...`);
-         await bookedSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
-      }
-    }
-
-
-
-    isInitialized = true;
-    console.log("[SHEETS] Core systems synchronized.");
-  } catch (error) {
-    console.error("[SHEETS] CRITICAL INITIALIZATION ERROR:", {
-       message: error.message,
-       code: error.code,
-       details: error.response?.data
-    });
-    throw error;
+  // Singleton Lock: If another process is already initializing, wait for it
+  if (initPromise) {
+    await initPromise;
+    return;
   }
+
+  initPromise = (async () => {
+    try {
+      console.log("[SHEETS] Initializing Master Synchronization Link...");
+      // The doc is already initialized with serviceAccountAuth in the constructor.
+      // doc.useServiceAccountAuth is typically used if auth wasn't provided initially.
+      // Keeping it as per instruction, but it might be redundant here.
+      await doc.useServiceAccountAuth({
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      });
+      await doc.loadInfo();
+      
+      // Ensure "Registrations" sheet exists
+      let regSheet = doc.sheetsByTitle['Registrations'];
+      if (!regSheet) {
+        console.log("[SHEETS] 'Registrations' missing. Initializing schema...");
+        regSheet = await doc.addSheet({
+          title: 'Registrations',
+          headerValues: REG_HEADERS
+        });
+      } else {
+        await regSheet.loadHeaderRow();
+        const currentHeaders = regSheet.headerValues || [];
+        const missingHeaders = REG_HEADERS.filter(h => !currentHeaders.includes(h));
+        
+        if (missingHeaders.length > 0) {
+           console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Registrations'...`);
+           // Safely append new headers at the end
+           await regSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
+        }
+      }
+
+      // Ensure "Booked Numbers" sheet exists
+      let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
+      if (!bookedSheet) {
+        console.log("[SHEETS] 'Booked Numbers' missing. Initializing schema...");
+        bookedSheet = await doc.addSheet({
+          title: 'Booked Numbers',
+          headerValues: BOOKED_HEADERS
+        });
+      } else {
+        await bookedSheet.loadHeaderRow();
+        const currentHeaders = bookedSheet.headerValues || [];
+        const missingHeaders = BOOKED_HEADERS.filter(h => !currentHeaders.includes(h));
+        
+        if (missingHeaders.length > 0) {
+           console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Booked Numbers'...`);
+           await bookedSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
+        }
+      }
+
+      isInitialized = true;
+      console.log("[SHEETS] Core systems synchronized.");
+    } catch (error) {
+      console.error("[SHEETS] CRITICAL INITIALIZATION ERROR:", {
+        message: error.message,
+        stack: error.stack
+      });
+      throw error; // Propagate the error so the API can handle it
+    } finally {
+      initPromise = null;
+    }
+  })();
+
+  return initPromise;
 }
