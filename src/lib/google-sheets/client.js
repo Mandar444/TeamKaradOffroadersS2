@@ -61,9 +61,15 @@ export async function initSheets() {
         console.log("[SHEETS] 'Registrations' missing. Initializing schema...");
         regSheet = await doc.addSheet({
           title: 'Registrations',
-          headerValues: REG_HEADERS
+          headerValues: REG_HEADERS,
+          gridProperties: { columnCount: 35, rowCount: 2000 }
         });
       } else {
+        // Safety Resize Check: A-Z is only 26 cols, we need 28+
+        if ((regSheet.gridProperties?.columnCount || 0) < 35) {
+          console.log("[SHEETS] Resizing 'Registrations' grid for 28+ column support...");
+          await regSheet.updateProperties({ gridProperties: { columnCount: 35 } });
+        }
         await regSheet.loadHeaderRow();
         const currentHeaders = regSheet.headerValues || [];
         const missingHeaders = REG_HEADERS.filter(h => !currentHeaders.includes(h));
@@ -81,9 +87,14 @@ export async function initSheets() {
         console.log("[SHEETS] 'Booked Numbers' missing. Initializing schema...");
         bookedSheet = await doc.addSheet({
           title: 'Booked Numbers',
-          headerValues: BOOKED_HEADERS
+          headerValues: BOOKED_HEADERS,
+          gridProperties: { columnCount: 35, rowCount: 2000 }
         });
       } else {
+        if ((bookedSheet.gridProperties?.columnCount || 0) < 35) {
+          console.log("[SHEETS] Resizing 'Booked Numbers' grid for 28+ column support...");
+          await bookedSheet.updateProperties({ gridProperties: { columnCount: 35 } });
+        }
         await bookedSheet.loadHeaderRow();
         const currentHeaders = bookedSheet.headerValues || [];
         const missingHeaders = BOOKED_HEADERS.filter(h => !currentHeaders.includes(h));
