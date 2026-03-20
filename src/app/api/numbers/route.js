@@ -14,11 +14,22 @@ export async function GET(request) {
 
   try {
     await initSheets();
-    const sheet = await getSheetByName("Booked Numbers");
-    const rows = await sheet.getRows();
+    const bookedSheet = await getSheetByName("Booked Numbers");
+    const regSheet = await getSheetByName("Registrations");
+    
+    if (!bookedSheet || !regSheet) {
+        return NextResponse.json({ booked: [] });
+    }
+
+    const [bookedRows, regRows] = await Promise.all([
+        bookedSheet.getRows(),
+        regSheet.getRows()
+    ]);
     
     const now = new Date();
-    const bookedNumbers = rows
+
+    // 1. Get numbers from Booked Numbers (Temporary holds)
+    const holdNumbers = bookedRows
       .filter((row) => {
         if (row.get("category") !== category) return false;
         
@@ -34,8 +45,23 @@ export async function GET(request) {
       })
       .map((row) => String(row.get("car_number")));
 
+    // 2. Get numbers from Registrations (Finalized/Pending Verification/Confirmed)
+    // IMPORTANT: Even PENDING_VERIFICATION entries should block the number!
+    const confirmedNumbers = regRows
+      .filter((row) => {
+        if (row.get("category") !== category) return false;
+        
+        const status = row.get("status");
+        // We block the number if it's confirmed, pending verification, or even rejected (until manual cleanup)
+        return status !== "REJECTED"; 
+      })
+      .map((row) => String(row.get("car_number")));
+
+    // Combine and unique
+    const allTaken = Array.from(new Set([...holdNumbers, ...confirmedNumbers]));
+
     return NextResponse.json(
-      { booked: bookedNumbers },
+      { booked: allTaken },
       {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

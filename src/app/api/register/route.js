@@ -8,21 +8,40 @@ export async function POST(request) {
     const data = await request.json();
     await initSheets();
 
-    const regId = `REG-${Date.now()}`;
     const amount = CATEGORIES[data.category]?.fee || 0;
 
-    const regSheet = await getSheetByName("Registrations");
     const bookedSheet = await getSheetByName("Booked Numbers");
+    const regSheet = await getSheetByName("Registrations");
+    
+    if (!bookedSheet || !regSheet) {
+        return NextResponse.json({ error: "Storage error. Please try again." }, { status: 500 });
+    }
 
-    // 1. Check if number is actually taken (BOOKED or HELD within 15 mins)
-    const existingRows = await bookedSheet.getRows();
+    const [bookedRows, regRows] = await Promise.all([
+        bookedSheet.getRows(),
+        regSheet.getRows()
+    ]);
+    
     const now = new Date();
-    const isTaken = existingRows.some(row => {
-      const isSameNum = row.get("category") === data.category && String(row.get("car_number")) === String(data.carNumber);
-      if (!isSameNum) return false;
 
+    // 1. Check master Registrations first
+    const isTakenInMaster = regRows.some(row => {
+        return row.get("category") === data.category && 
+               String(row.get("car_number")) === String(data.carNumber) &&
+               row.get("status") !== "REJECTED";
+    });
+
+    if (isTakenInMaster) {
+        return NextResponse.json({ error: "This sticker number has already been finalized by another team." }, { status: 400 });
+    }
+
+    // 2. Check temporary holds
+    const isTakenInHolds = bookedRows.some(row => {
+      if (row.get("category") !== data.category) return false;
+      if (String(row.get("car_number")) !== String(data.carNumber)) return false;
+      
       const status = row.get("status");
-      if (status === "BOOKED") return true;
+      if (status === "BOOKED") return true; 
       if (status === "HELD") {
         const expiresAt = new Date(row.get("expires_at"));
         return expiresAt > now;
@@ -30,11 +49,11 @@ export async function POST(request) {
       return false;
     });
 
-    if (isTaken) {
-      return NextResponse.json({ error: "Car number already taken in this category" }, { status: 400 });
+    if (isTakenInHolds) {
+      return NextResponse.json({ error: "Number is currently being held or already booked by someone else." }, { status: 400 });
     }
 
-    // 2. Add as Draft to Booked Numbers (Holds for 15 mins)
+    const regId = `REG-${Date.now().toString().slice(-8)}`;
     // We NO LONGER add to "Registrations" sheet here to avoid ghost entries
     await bookedSheet.addRow({
       reg_id: regId,
