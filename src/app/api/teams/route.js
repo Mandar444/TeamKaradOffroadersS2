@@ -9,12 +9,8 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
-    // Return any registration that has been confirmed by an admin
+    // Temporary debug: Return ALL registrations to see what is being fetched
     const confirmedTeams = rows
-      .filter((row) => {
-        const s = (row.get("status") || "").trim().toUpperCase();
-        return s === "CONFIRMED" || s === "AUTHORIZED GRID" || s === "AUTHORIZED";
-      })
       .map((row) => ({
         team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
@@ -26,8 +22,13 @@ export async function GET() {
         vehicle_name: row.get("vehicle_name"),
         vehicle_model: row.get("vehicle_model"),
         socials: row.get("socials"),
-        status: "CONFIRMED", 
+        status: row.get("status") || "NONE",
       }));
+
+    console.log(`[TEAMS_API] Total: ${rows.length}, Teams: ${confirmedTeams.length}`);
+    if (confirmedTeams.length > 0) {
+        console.log(`[TEAMS_API] First team status: ${confirmedTeams[0].status}`);
+    }
 
     // Robust Sort: Handle car numbers with letters (e.g., 'S7')
     confirmedTeams.sort((a, b) => {
