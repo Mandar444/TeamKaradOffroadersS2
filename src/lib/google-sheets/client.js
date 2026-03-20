@@ -52,13 +52,7 @@ export async function initSheets() {
   initPromise = (async () => {
     try {
       console.log("[SHEETS] Initializing Master Synchronization Link...");
-      // The doc is already initialized with serviceAccountAuth in the constructor.
-      // doc.useServiceAccountAuth is typically used if auth wasn't provided initially.
-      // Keeping it as per instruction, but it might be redundant here.
-      await doc.useServiceAccountAuth({
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      });
+      // Authentication is already passed to the doc in the constructor via serviceAccountAuth
       await doc.loadInfo();
       
       // Ensure "Registrations" sheet exists
@@ -76,10 +70,10 @@ export async function initSheets() {
         
         if (missingHeaders.length > 0) {
            console.log(`[SHEETS] Appending ${missingHeaders.length} missing headers to 'Registrations'...`);
-           // Safely append new headers at the end
            await regSheet.setHeaderRow([...currentHeaders, ...missingHeaders]);
         }
       }
+
 
       // Ensure "Booked Numbers" sheet exists
       let bookedSheet = doc.sheetsByTitle['Booked Numbers'];

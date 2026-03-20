@@ -107,12 +107,11 @@ export async function POST(request) {
   } catch (error) {
     console.error("FULL REGISTRATION ERROR:", {
       message: error.message,
-      stack: error.stack,
-      data: error.response?.data
+      stack: error.stack
     });
     return NextResponse.json({ 
-      error: "Failed to save registration", 
-      details: error.message 
+      error: `Failed to save registration: ${error.message || "Unknown error"}`, 
     }, { status: 500 });
   }
+
 }
