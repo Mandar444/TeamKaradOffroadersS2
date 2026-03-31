@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { CATEGORIES } from "@/config/pricing";
+import { CATEGORIES, MAX_CAR_NUMBER } from "@/config/pricing";
 import NumberPicker from "@/components/sections/NumberPicker";
 import { cn } from "@/lib/utils";
 
@@ -78,7 +78,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [takenNumbers, setTakenNumbers] = useState([]);
   const [counts, setCounts] = useState({});
-  const [limit, setLimit] = useState(160);
+  const [limit, setLimit] = useState(MAX_CAR_NUMBER);
 
   const {
     register,
@@ -113,7 +113,7 @@ export default function RegisterPage() {
         const countData = await countRes.json();
         setTakenNumbers(numData.booked || []);
         setCounts(countData.counts || {});
-        setLimit(countData.limit || 160);
+        setLimit(countData.limit || MAX_CAR_NUMBER);
       } catch (err) {
         console.error("Failed to fetch stats", err);
       }

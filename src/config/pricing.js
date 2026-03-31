@@ -139,3 +139,5 @@ export const CATEGORY_PREFIXES = {
   STOCK_NDMS: "SN",
   LADIES: "LC",
 };
+
+export const MAX_CAR_NUMBER = 160;
