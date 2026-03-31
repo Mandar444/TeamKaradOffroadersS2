@@ -127,4 +127,15 @@ export const PRICING_CONFIG = {
   upiName: "Team Karad Offroaders",
 };
 
-export const MAX_CAR_NUMBER = 160;
+export const CATEGORY_PREFIXES = {
+  EXTREME: "EX",
+  DIESEL_MODIFIED: "DM",
+  PETROL_MODIFIED: "PM",
+  DIESEL_EXPERT: "DE",
+  PETROL_EXPERT: "PE",
+  THAR_SUV: "TS",
+  SUV_MODIFIED: "SM",
+  JIMNY_SUV: "JS",
+  STOCK_NDMS: "SN",
+  LADIES: "LC",
+};

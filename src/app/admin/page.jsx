@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, LogOut, Phone, Car, CreditCard, RefreshCw, Zap, ShieldCheck, Trophy, LayoutDashboard, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CATEGORY_PREFIXES } from "@/config/pricing";
 
 export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState([]);
@@ -180,7 +181,7 @@ export default function AdminDashboard() {
                             <TableCell className="py-8 px-8">
                                <div className="flex items-start gap-4">
                                   <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center shadow-xl group-hover:border-red-500/40 transition-all">
-                                     <span className="text-3xl font-heading font-black italic tracking-tighter text-red-500">#{reg.car_number}</span>
+                                     <span className="text-3xl font-heading font-black italic tracking-tighter text-red-500">{(CATEGORY_PREFIXES[reg.category] || "#")}{reg.car_number}</span>
                                   </div>
                                   <div className="flex flex-col gap-1.5 justify-center h-16">
                                      <h4 className="text-xl font-heading text-white uppercase italic leading-none">{reg.team_name || "STORM RIDER"}</h4>
