@@ -17,6 +17,11 @@ const TEAM_MEMBERS = [
     image: "/images/team/siddhesh_langde_1.jpg",
   },
   {
+    name: "Shantanu Patil",
+    role: "CORE MEMBER",
+    image: "/images/team/Shantanu Patil.jpeg",
+  },
+  {
     name: "Parag Patil",
     role: "CORE MEMBER",
     image: "/images/team/parag_patil_1.jpg",
@@ -37,7 +42,7 @@ const TEAM_MEMBERS = [
     image: "/images/team/shriraj_jagdale_1.jpg",
   },
   {
-    name: "Prateek Bode",
+    name: "Prateek Bodhe",
     role: "CORE MEMBER",
     image: "/images/team/prateek_bode_1.jpg",
   },
@@ -74,7 +79,7 @@ const TEAM_MEMBERS = [
   {
     name: "Indrajeet Patil",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/Indrajeet Patil.jpeg",
   },
   {
     name: "Shambhuraj Patil",
@@ -169,7 +174,7 @@ const TEAM_MEMBERS = [
   {
     name: "Aditya Jadhav",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/Aditya Jadhav.jpeg",
   },
   {
     name: "Sangram Patole",
@@ -192,14 +197,39 @@ const TEAM_MEMBERS = [
     image: "/logo.png",
   },
   {
-    name: "Vivek Bhairawkar",
+    name: "Vivek Bhairavkar",
     role: "CORE MEMBER",
-    image: "/logo.png",
+    image: "/images/team/Vivek Bhairavkar.jpeg",
   },
   {
     name: "Yuvraj Bhavke",
     role: "CORE MEMBER",
     image: "/logo.png",
+  },
+  {
+    name: "Vijay Bhau",
+    role: "CORE MEMBER",
+    image: "/images/team/Vjay bhau.jpeg",
+  },
+  {
+    name: "Pallavi Jadhav",
+    role: "CORE MEMBER",
+    image: "/images/team/Pallavi Jadhav.jpg",
+  },
+  {
+    name: "Shreeharsh Dubal",
+    role: "CORE MEMBER",
+    image: "/images/team/Shreeharsh Dubal.jpeg",
+  },
+  {
+    name: "Atharv Chavan",
+    role: "CORE MEMBER",
+    image: "/images/team/Atharv Chavan.jpeg",
+  },
+  {
+    name: "Avadhut Patil",
+    role: "CORE MEMBER",
+    image: "/images/team/Avadhut patil.jpeg",
   },
 ];
 

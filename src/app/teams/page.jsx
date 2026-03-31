@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Trophy, X, ShieldCheck, Instagram, Zap, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { CATEGORIES } from "@/config/pricing";
+import { CATEGORIES, CATEGORY_PREFIXES } from "@/config/pricing";
 
 const CATEGORY_STYLES = {
   "DIESEL_MODIFIED": "from-blue-500 to-indigo-600",
@@ -52,10 +52,12 @@ export default function TeamsPage() {
   }, []);
 
   const filteredTeams = teams.filter(team => {
+    const prefixedNum = `${CATEGORY_PREFIXES[team.category] || ""}${team.car_number}`;
     const matchesSearch = 
       team.team_name?.toLowerCase().includes(search.toLowerCase()) ||
       team.driver_name?.toLowerCase().includes(search.toLowerCase()) ||
-      team.car_number?.toString().includes(search);
+      team.car_number?.toString().includes(search) ||
+      prefixedNum.toLowerCase().includes(search.toLowerCase());
     
     const matchesCategory = category === "ALL" || team.category === category;
     
@@ -88,7 +90,7 @@ export default function TeamsPage() {
           <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <Input 
-              placeholder="Search driver or sticker #..." 
+              placeholder="Search driver, team or DM-27..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-12 h-14 bg-black/50 border-white/5 focus:border-primary/50 transition-all rounded-xl text-lg"
@@ -143,7 +145,9 @@ export default function TeamsPage() {
                       <p className="text-white text-xs font-bold uppercase tracking-widest opacity-80">{CATEGORIES[team.category]?.name || "COMPETITOR"}</p>
                     </div>
                     <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
-                      <span className="text-3xl font-heading font-black tracking-tighter italic">S{team.car_number}</span>
+                      <span className="text-2xl font-heading font-black tracking-tighter italic">
+                        {CATEGORY_PREFIXES[team.category] || "S"}{team.car_number}
+                      </span>
                     </div>
                   </div>
 
@@ -237,7 +241,7 @@ export default function TeamsPage() {
                    </div>
                     <div className="relative z-10 mt-10">
                        <h3 className="text-8xl lg:text-[10rem] font-heading text-white font-black leading-none tracking-tighter relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
-                          #{selectedTeam.car_number}
+                          {CATEGORY_PREFIXES[selectedTeam.category] || "#"}{selectedTeam.car_number}
                        </h3>
                        <Badge className="mt-6 bg-zinc-800/80 text-zinc-300 border-white/10 py-1.5 px-4 rounded-xl text-[10px] uppercase font-bold tracking-widest">
                          {CATEGORIES[selectedTeam.category]?.name || "Elite Division"}
@@ -360,7 +364,7 @@ export default function TeamsPage() {
                       
                       <div className="relative">
                          <h3 className="text-9xl font-heading text-white font-black leading-none tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-                            #{selectedTeam.car_number}
+                            {CATEGORY_PREFIXES[selectedTeam.category] || "#"}{selectedTeam.car_number}
                          </h3>
                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-zinc-800 text-primary border-primary/20 py-1 px-4 rounded-xl text-[8px] uppercase font-black tracking-widest shadow-xl whitespace-nowrap">
                             {CATEGORIES[selectedTeam.category]?.name || "Elite Division"}
