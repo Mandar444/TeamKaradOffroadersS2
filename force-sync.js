@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { doc, initSheets, REG_HEADERS, BOOKED_HEADERS } from "./src/lib/google-sheets/client.js";
 
 async function forceSyncHeaders() {
