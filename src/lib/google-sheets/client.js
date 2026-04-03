@@ -1,25 +1,6 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
-const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY
-  ? process.env.GOOGLE_PRIVATE_KEY.split(String.raw`\n`).join('\n').replace(/\\n/g, '\n').replace(/"/g, '').trim()
-  : undefined;
-
-const serviceAccountAuth = new JWT({
-  email: GOOGLE_CLIENT_EMAIL,
-  key: GOOGLE_PRIVATE_KEY,
-  scopes: [
-    'https://www.googleapis.com/auth/spreadsheets',
-  ],
-});
-
-export const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
-
-let isInitialized = false;
-let initPromise = null;
-
 export const REG_HEADERS = [
   'reg_id', 'team_name', 'driver_name', 'driver_blood_group', 'driver_phone', 'driver_food',
   'codriver_name', 'codriver_blood_group', 'codriver_phone', 'codriver_food', 
@@ -35,6 +16,11 @@ export const BOOKED_HEADERS = [
   'attendance_count', 'extra_names', 'email', 'socials', 'amount_paid', 'submitted_at'
 ];
 
+export let doc = null;
+let serviceAccountAuth = null;
+let isInitialized = false;
+let initPromise = null;
+
 export async function getSheetByName(name) {
   await initSheets();
   return doc.sheetsByTitle[name];
@@ -43,7 +29,6 @@ export async function getSheetByName(name) {
 export async function initSheets() {
   if (isInitialized) return;
   
-  // Singleton Lock: If another process is already initializing, wait for it
   if (initPromise) {
     await initPromise;
     return;
@@ -52,7 +37,33 @@ export async function initSheets() {
   initPromise = (async () => {
     try {
       console.log("[SHEETS] Initializing Master Synchronization Link...");
-      // Authentication is already passed to the doc in the constructor via serviceAccountAuth
+      
+      const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+      const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
+      let GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY;
+
+      if (!SPREADSHEET_ID || !GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+        throw new Error("Missing Google Sheets environment variables (ID, Email, or Private Key)");
+      }
+
+      // Handle både literal newlines and escaped \n sequences
+      GOOGLE_PRIVATE_KEY = GOOGLE_PRIVATE_KEY
+        .replace(/\\n/g, '\n')     // Convert literal \n to newlines
+        .replace(/"/g, '')         // Remove wrapping quotes if present
+        .trim();
+
+      if (!serviceAccountAuth) {
+        serviceAccountAuth = new JWT({
+          email: GOOGLE_CLIENT_EMAIL,
+          key: GOOGLE_PRIVATE_KEY,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
+      }
+
+      if (!doc) {
+        doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
+      }
+
       await doc.loadInfo();
       
       // Ensure "Registrations" sheet exists
@@ -65,9 +76,8 @@ export async function initSheets() {
           gridProperties: { columnCount: 35, rowCount: 2000 }
         });
       } else {
-        // Safety Resize Check: A-Z is only 26 cols, we need 28+
         if ((regSheet.gridProperties?.columnCount || 0) < 35) {
-          console.log("[SHEETS] Resizing 'Registrations' grid for 28+ column support...");
+          console.log("[SHEETS] Resizing 'Registrations' grid...");
           await regSheet.updateProperties({ gridProperties: { columnCount: 35 } });
         }
         await regSheet.loadHeaderRow();
@@ -80,7 +90,6 @@ export async function initSheets() {
         }
       }
 
-
       // Ensure "Booked Numbers" sheet exists
       let bookedSheet = doc.sheetsByTitle['Booked Numbers'];
       if (!bookedSheet) {
@@ -92,7 +101,7 @@ export async function initSheets() {
         });
       } else {
         if ((bookedSheet.gridProperties?.columnCount || 0) < 35) {
-          console.log("[SHEETS] Resizing 'Booked Numbers' grid for 28+ column support...");
+          console.log("[SHEETS] Resizing 'Booked Numbers' grid...");
           await bookedSheet.updateProperties({ gridProperties: { columnCount: 35 } });
         }
         await bookedSheet.loadHeaderRow();
@@ -112,7 +121,7 @@ export async function initSheets() {
         message: error.message,
         stack: error.stack
       });
-      throw error; // Propagate the error so the API can handle it
+      throw error;
     } finally {
       initPromise = null;
     }
