@@ -21,9 +21,13 @@ export async function GET() {
     
     // 1. Process Master Registrations
     const masterRegistrations = regRows
-      .filter(row => row.get("status") !== "PENDING")
-      .map(row => ({
-        reg_id: row.get("reg_id"),
+      .filter(row => row.get("status") !== "PENDING" && row.get("status") !== "")
+      .map(row => {
+        let displayStatus = row.get("status");
+        if (displayStatus === "PENDING_UTR") displayStatus = "AWAITING_PAYMENT";
+        
+        return {
+          reg_id: row.get("reg_id"),
         team_name: row.get("team_name"),
         driver_name: row.get("driver_name"),
         driver_blood_group: row.get("driver_blood_group"),
@@ -39,9 +43,10 @@ export async function GET() {
         utr_number: row.get("utr_number"),
         socials: row.get("socials"),
         screenshot_link: row.get("screenshot_link"),
-        status: row.get("status"),
+        status: displayStatus,
         submitted_at: row.get("submitted_at") || new Date().toISOString(),
-      }));
+      };
+    });
 
     const masterIds = new Set(masterRegistrations.map(r => String(r.reg_id).trim().toUpperCase()));
 
@@ -76,8 +81,8 @@ export async function GET() {
 
     // Sort: Pending/Stuck first, then by date
     registrations.sort((a, b) => {
-      const isAWaiting = a.status.includes("PENDING") || a.status === "STUCK_IN_DRAFT";
-      const isBWaiting = b.status.includes("PENDING") || b.status === "STUCK_IN_DRAFT";
+      const isAWaiting = a.status.includes("PENDING") || a.status === "STUCK_IN_DRAFT" || a.status === "AWAITING_PAYMENT";
+      const isBWaiting = b.status.includes("PENDING") || b.status === "STUCK_IN_DRAFT" || b.status === "AWAITING_PAYMENT";
       if (isAWaiting && !isBWaiting) return -1;
       if (!isAWaiting && isBWaiting) return 1;
       return new Date(b.submitted_at) - new Date(a.submitted_at);

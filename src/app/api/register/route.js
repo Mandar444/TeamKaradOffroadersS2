@@ -73,8 +73,7 @@ export async function POST(request) {
 
 
     const regId = `REG-${Date.now().toString().slice(-8)}`;
-    // We NO LONGER add to "Registrations" sheet here to avoid ghost entries
-    await bookedSheet.addRow({
+    const submissionData = {
       reg_id: regId,
       category: data.category,
       car_number: data.carNumber,
@@ -100,7 +99,16 @@ export async function POST(request) {
       socials: data.socials || "",
       amount_paid: amount,
       submitted_at: new Date().toISOString(),
-    });
+    };
+
+    // Add to BOTH sheets initially as requested by user
+    await Promise.all([
+      bookedSheet.addRow(submissionData),
+      regSheet.addRow({
+        ...submissionData,
+        status: "PENDING_UTR" // Distinguish in main sheet that UTR is missing
+      })
+    ]);
 
     return NextResponse.json({ success: true, id: regId });
 

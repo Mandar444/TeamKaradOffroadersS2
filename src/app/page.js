@@ -110,6 +110,7 @@ export default function Home() {
                     <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
                     <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
                     <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+                    <Link href="/sponsors" className="hover:text-white transition-colors">Sponsors</Link>
                   </div>
                 </div>
                 <div>

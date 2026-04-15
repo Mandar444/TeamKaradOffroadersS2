@@ -6,15 +6,28 @@ async function checkSheet() {
     await initSheets();
     const sheet = await getSheetByName("Registrations");
     console.log("Headers in sheet (Registrations):", sheet.headerValues);
-    console.log("Expected headers:", REG_HEADERS);
+    
+    // Testing write permission
+    console.log("Attempting to add a test row...");
+    const testRow = await sheet.addRow({
+      reg_id: "TEST-WRITE",
+      team_name: "DEBUG TEST",
+      submitted_at: new Date().toISOString()
+    });
+    console.log("Successfully added test row. ID:", testRow.get("reg_id"));
+    
+    // Cleaning up the test row
+    console.log("Deleting test row...");
+    await testRow.delete();
+    console.log("Successfully deleted test row.");
+
     const rows = await sheet.getRows();
     console.log("Total rows in Registrations:", rows.length);
-    if (rows.length > 0) {
-       console.log("Row 0 keys:", Object.keys(rows[0].toObject()));
-       console.log("Row 0 data:", rows[0].toObject());
-    }
   } catch (err) {
     console.error("Debug failed:", err.message);
+    if (err.response) {
+       console.error("Response data:", err.response.data);
+    }
   }
 }
 
