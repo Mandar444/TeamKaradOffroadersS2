@@ -37,24 +37,21 @@ export async function POST(request) {
     // Normalized matching helper
     const matchId = (val) => String(val || "").trim().toUpperCase() === String(regId).trim().toUpperCase();
 
-    // 1. Check if already in Master
+    // 1. Look for row in Master (Registrations) - Should always be there now
     const masterRows = await regSheet.getRows();
     let masterRow = masterRows.find(r => matchId(r.get("reg_id")));
 
     if (!masterRow) {
-      console.log(`[UTR-SUBMIT] ${regId} not in Master. Searching in Drafts...`);
-      // 2. Search in Drafts (Booked Numbers)
+      console.log(`[UTR-SUBMIT] ${regId} NOT in Master. Checking fallback draft move...`);
       const draftRows = await bookedSheet.getRows();
       const draft = draftRows.find(r => matchId(r.get("reg_id")));
 
       if (!draft) {
-        console.error(`[UTR-SUBMIT] ${regId} NOT FOUND in Drafts or Master.`);
-        return NextResponse.json({ error: "Registration record not found or session expired." }, { status: 404 });
+        console.error(`[UTR-SUBMIT] ${regId} NOT FOUND in any sheet.`);
+        return NextResponse.json({ error: "Registration record not found. Please try registering again." }, { status: 404 });
       }
 
-      console.log(`[UTR-SUBMIT] Found ${regId} in Drafts. Moving to Master...`);
-
-      // 3. Move from Draft to Master Registrations in ONE SHOT
+      console.log(`[UTR-SUBMIT] Found in Drafts. Moving to Master...`);
       masterRow = await regSheet.addRow({
         reg_id: draft.get("reg_id"),
         team_name: draft.get("team_name"),
@@ -79,33 +76,23 @@ export async function POST(request) {
         socials: draft.get("socials"),
         amount_paid: draft.get("amount_paid"),
         submitted_at: draft.get("submitted_at") || new Date().toISOString(),
-        // Payment info integrated immediately
-        utr_number: String(utr).trim(),
-        has_screenshot: screenshotLink ? "YES" : (screenshot ? "YES" : "WA_MANUAL"),
-        screenshot_link: screenshotLink || "",
-        status: "PENDING_VERIFICATION",
       });
+    }
 
-      console.log(`[UTR-SUBMIT] Created row in Master for ${regId}`);
+    // Now update Master row with payment info
+    console.log(`[UTR-SUBMIT] Updating payment info for ${regId}...`);
+    masterRow.set("utr_number", String(utr).trim());
+    masterRow.set("has_screenshot", screenshotLink ? "YES" : (screenshot ? "YES" : "WA_MANUAL"));
+    if (screenshotLink) masterRow.set("screenshot_link", screenshotLink);
+    masterRow.set("status", "PENDING_VERIFICATION");
+    await masterRow.save();
 
-      // 4. Update draft status
-      try {
-        draft.set("status", "BOOKED");
-        await draft.save();
-        console.log(`[UTR-SUBMIT] Marked draft ${regId} as BOOKED`);
-      } catch (draftErr) {
-        console.error(`[UTR-SUBMIT] FAILED to mark draft as BOOKED:`, draftErr.message);
-        // We don't fail the whole request since it's already in Master
-      }
-    } else {
-      console.log(`[UTR-SUBMIT] ${regId} already in Master. Updating payment info...`);
-      // Update existing master row
-      masterRow.set("utr_number", String(utr).trim());
-      masterRow.set("has_screenshot", screenshotLink ? "YES" : (screenshot ? "YES" : "WA_MANUAL"));
-      if (screenshotLink) masterRow.set("screenshot_link", screenshotLink);
-      masterRow.set("status", "PENDING_VERIFICATION");
-      await masterRow.save();
-      console.log(`[UTR-SUBMIT] Master row updated for ${regId}`);
+    // Also update Booked Numbers status to BOOKED (representing number is locked waiting for verification)
+    const draftRows = await bookedSheet.getRows();
+    const draft = draftRows.find(r => matchId(r.get("reg_id")));
+    if (draft) {
+      draft.set("status", "BOOKED");
+      await draft.save();
     }
 
     return NextResponse.json({ success: true });
