@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
+import { CATEGORIES } from "@/config/pricing";
 
 export const dynamic = 'force-dynamic';
 
@@ -9,6 +10,14 @@ export async function GET() {
     const sheet = await getSheetByName("Registrations");
     const rows = await sheet.getRows();
     
+    // Categorization Helper
+    const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
+    const catMap = {};
+    Object.keys(CATEGORIES).forEach(key => {
+      catMap[normalize(key)] = key;
+      catMap[normalize(CATEGORIES[key].name)] = key;
+    });
+
     // Filter: Show only Authorized teams with explicit UTR (Payment Evidence)
     const confirmedTeams = rows
       .filter((row) => {
@@ -19,19 +28,24 @@ export async function GET() {
         // Strict Mode: Must be verified AND have a UTR tracked
         return isVerified && utr !== "";
       })
-      .map((row) => ({
-        team_name: row.get("team_name"),
-        driver_name: row.get("driver_name"),
-        driver_blood_group: row.get("driver_blood_group"),
-        codriver_name: row.get("codriver_name"),
-        codriver_blood_group: row.get("codriver_blood_group"),
-        car_number: row.get("car_number"),
-        category: row.get("category"),
-        vehicle_name: row.get("vehicle_name"),
-        vehicle_model: row.get("vehicle_model"),
-        socials: row.get("socials"),
-        status: "CONFIRMED", 
-      }));
+      .map((row) => {
+        const rawCat = row.get("category");
+        const canonicalCat = catMap[normalize(rawCat)] || rawCat;
+        
+        return {
+          team_name: row.get("team_name"),
+          driver_name: row.get("driver_name"),
+          driver_blood_group: row.get("driver_blood_group"),
+          codriver_name: row.get("codriver_name"),
+          codriver_blood_group: row.get("codriver_blood_group"),
+          car_number: row.get("car_number"),
+          category: canonicalCat,
+          vehicle_name: row.get("vehicle_name"),
+          vehicle_model: row.get("vehicle_model"),
+          socials: row.get("socials"),
+          status: "CONFIRMED", 
+        };
+      });
 
     // Robust Sort: Handle car numbers with letters (e.g., 'S7')
     confirmedTeams.sort((a, b) => {

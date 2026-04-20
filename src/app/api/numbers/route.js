@@ -29,18 +29,28 @@ export async function GET(request) {
     
     const now = new Date();
 
-    // Helper for ULTRA-FUZZY category matching
     const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
-    const targetCatNormalized = normalize(category);
-    const targetCatNameNormalized = normalize(CATEGORIES[category]?.name || "");
+    
+    // Create a robust mapping from normalized category names/keys to the canonical keys
+    const catMap = {};
+    Object.keys(CATEGORIES).forEach(key => {
+      catMap[normalize(key)] = key;
+      catMap[normalize(CATEGORIES[key].name)] = key;
+    });
+
+    const targetCanonical = catMap[normalize(category)];
+    if (!targetCanonical) {
+        console.warn(`[NUMBERS] Unknown category requested: ${category}`);
+    }
 
     // 1. Get numbers from Booked Numbers (Temporary holds)
     const holdNumbers = bookedRows
       .filter((row) => {
-        const rowCatNorm = normalize(row.get("category"));
-        const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+        const rawCat = row.get("category");
+        const rowCanonical = catMap[normalize(rawCat)] || normalize(rawCat);
         
-        if (!isMatch) return false;
+        // Match ONLY if the canonical keys match
+        if (rowCanonical !== targetCanonical) return false;
         
         const status = (row.get("status") || "").toUpperCase().trim();
         if (status === "BOOKED") return true;
@@ -57,10 +67,10 @@ export async function GET(request) {
     // 2. Get numbers from Registrations (Finalized/Pending Verification/Confirmed)
     const confirmedNumbers = regRows
       .filter((row) => {
-        const rowCatNorm = normalize(row.get("category"));
-        const isMatch = (rowCatNorm === targetCatNormalized || rowCatNorm === targetCatNameNormalized);
+        const rawCat = row.get("category");
+        const rowCanonical = catMap[normalize(rawCat)] || normalize(rawCat);
         
-        if (!isMatch) return false;
+        if (rowCanonical !== targetCanonical) return false;
         
         const status = (row.get("status") || "").toUpperCase().trim();
         return status !== "REJECTED"; 
