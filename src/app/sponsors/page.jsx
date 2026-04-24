@@ -61,7 +61,7 @@ export default function SponsorsPage() {
                 Elevate your brand alongside the legends. Exclusive partnership opportunities for TKO Season 2 are now open.
              </p>
              <Link 
-                href="/contact" 
+                href="/about#contact" 
                 className="inline-flex h-14 md:h-16 px-10 md:px-16 items-center justify-center bg-white text-black font-black uppercase tracking-[0.4em] text-[10px] md:text-sm rounded-2xl hover:bg-primary hover:scale-105 transition-all shadow-2xl"
              >
                 Request Prospectus

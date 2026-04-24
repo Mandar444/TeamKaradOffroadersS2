@@ -1,13 +1,8 @@
-import { Inter, Rajdhani } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const rajdhani = Rajdhani({ 
-  subsets: ["latin"], 
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-rajdhani" 
-});
+const interStack = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+const rajdhaniStack = '"Arial Narrow", "Franklin Gothic Medium", "Segoe UI", ui-sans-serif, system-ui, sans-serif';
 
 export const metadata = {
   title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
@@ -47,7 +42,13 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/logo.png" />
       </head>
-      <body className={`${inter.variable} ${rajdhani.variable} font-sans antialiased rally-grid bg-background text-foreground overflow-x-hidden`}>
+      <body
+        style={{
+          "--font-inter": interStack,
+          "--font-rajdhani": rajdhaniStack,
+        }}
+        className="font-sans antialiased rally-grid bg-background text-foreground overflow-x-hidden"
+      >
         <ClientLayout>
           {children}
         </ClientLayout>
