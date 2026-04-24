@@ -116,10 +116,10 @@ export default function Home() {
                 <div>
                   <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Explore</p>
                   <div className="flex flex-col gap-2 text-sm text-zinc-600">
-                    <Link href="/beasts" className="hover:text-white transition-colors">Our Beasts</Link>
-                    <Link href="/team" className="hover:text-white transition-colors">Our Team</Link>
+                    <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
+                    <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
                     <Link href="/teams" className="hover:text-white transition-colors">Participants</Link>
-                    <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                    <Link href="/about#contact" className="hover:text-white transition-colors">Contact</Link>
                   </div>
                 </div>
                 <div>

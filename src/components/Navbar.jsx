@@ -11,12 +11,9 @@ const NAV_LINKS = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/about", label: "About Us" },
   { href: "/regulations", label: "Regulations" },
-  { href: "/beasts", label: "Our Beasts" },
   { href: "/gallery", label: "Gallery" },
   { href: "/sponsors", label: "Sponsors" },
-  { href: "/team", label: "Our Team" },
   { href: "/teams", label: "Participants" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
