@@ -11,12 +11,6 @@ export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
   const isVerifyPage = pathname?.startsWith("/verify");
-  const isRegistrationFlow =
-    pathname?.startsWith("/register") ||
-    pathname?.startsWith("/payment") ||
-    pathname?.startsWith("/registration-review") ||
-    pathname?.startsWith("/success") ||
-    pathname?.startsWith("/form-submitted");
   const hideLayout = isAdminPage || isVerifyPage;
 
   return (
@@ -25,7 +19,7 @@ export default function ClientLayout({ children }) {
       {children}
       
       {/* Global Floating Register CTA */}
-      {!hideLayout && !isRegistrationFlow && (
+      {!hideLayout && (
         <motion.div
           initial={{ scale: 0, opacity: 0, x: 50 }}
           animate={{ scale: 1, opacity: 1, x: 0 }}
