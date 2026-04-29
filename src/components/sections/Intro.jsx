@@ -73,9 +73,12 @@ export default function Intro({ onComplete }) {
               animate={{ opacity: 1, scale: 1 }}
               className="mb-12"
             >
+              {/* SEO Optimized Hidden H1 */}
+              <h1 className="sr-only">Team Karad Off-Roaders | India's Most Thrilling Offroading Event and Competition</h1>
+              
               <img 
                 src="/logo.png" 
-                alt="Team Karad Logo"
+                alt="Team Karad Off-Roaders - Best Offroading Competition in India"
                 className="w-64 md:w-96 h-auto drop-shadow-[0_0_40px_rgba(255,165,0,0.4)]"
                 onError={(e) => {
                   e.target.style.display = 'none';
@@ -83,10 +86,10 @@ export default function Intro({ onComplete }) {
                 }}
               />
               <div id="intro-fallback-text" className="hidden">
-                <h1 className="text-5xl md:text-8xl font-heading text-white tracking-tighter">
-                  TEAM <span className="text-primary italic">KARAD</span>
-                </h1>
-                <p className="text-xl md:text-3xl text-primary font-heading tracking-[0.5em] mt-2 font-bold uppercase">OFFROADERS</p>
+                <p className="text-5xl md:text-8xl font-heading text-white tracking-tighter">
+                  TEAM KARAD <span className="text-primary italic">OFF-ROADERS</span>
+                </p>
+                <p className="text-xl md:text-3xl text-primary font-heading tracking-[0.5em] mt-2 font-bold uppercase">India's Ultimate Off-Road Event</p>
               </div>
             </motion.div>
 

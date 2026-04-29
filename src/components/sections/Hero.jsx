@@ -41,8 +41,12 @@ export default function Hero() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          {/* Logo - Main Branding */}
           <div className="mb-4 md:mb-8 relative flex justify-center w-full">
+            {/* Screen Reader Optimized H1 */}
+            <h1 className="sr-only">
+              Team Karad Off-Roaders | Best Offroading Event & Competition in India for Offroading Cars
+            </h1>
+
             {!logoError ? (
               <motion.img 
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -54,15 +58,15 @@ export default function Hero() {
                 }}
                 style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
                 src="/logo.png" 
-                alt="Team Karad Logo" 
+                alt="Team Karad Off-Roaders - Premier Offroading Event and Competition in India" 
                 className="w-40 h-40 md:w-96 md:h-96 object-contain drop-shadow-[0_0_50px_rgba(255,165,0,0.5)]"
                 onError={() => setLogoError(true)}
               />
             ) : (
               <div className="text-center py-4 px-2">
-                  <h1 className="text-[12vw] md:text-9xl font-heading text-white tracking-tighter drop-shadow-[0_0_20px_oklch(0.7_0.2_60)] leading-none">
+                  <p className="text-[12vw] md:text-9xl font-heading text-white tracking-tighter drop-shadow-[0_0_20px_oklch(0.7_0.2_60)] leading-none uppercase">
                     TEAM <span className="text-primary italic">KARAD</span>
-                  </h1>
+                  </p>
                   <p className="text-xs md:text-3xl text-primary font-heading tracking-[0.2em] md:tracking-[0.6em] opacity-80 uppercase font-bold mt-4">OFF-ROAD EVENT • EST. 2015</p>
               </div>
             )}

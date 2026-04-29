@@ -26,7 +26,10 @@ export default function CarCategories() {
           <h2 className="text-3xl md:text-5xl font-heading text-white mb-4 tracking-tight">
             VEHICLE <span className="text-primary italic">CATEGORIES</span>
           </h2>
-          <div className="w-24 h-1 bg-primary mx-auto" />
+          <p className="text-zinc-500 text-sm md:text-base max-w-xl mx-auto mt-4 uppercase tracking-[0.2em] font-bold">
+            THE ULTIMATE LINEUP OF OFFROADING CARS IN INDIA
+          </p>
+          <div className="w-24 h-1 bg-primary mx-auto mt-6" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
