@@ -121,7 +121,7 @@ export default function TeamsPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              key={team.car_number}
+              key={`${team.category}-${team.car_number}-${idx}`}
               onClick={() => setSelectedTeam(team)}
               className="group cursor-pointer"
             >
