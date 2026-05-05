@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Power } from "lucide-react";
 
@@ -51,6 +52,7 @@ export default function Intro({ onComplete }) {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden cursor-none">
+      <style>{`.tko-floating-ctas{display:none!important}`}</style>
       {/* Custom Cursor */}
       <motion.div
         animate={{ x: mousePos.x - 20, y: mousePos.y - 20 }}
@@ -73,9 +75,11 @@ export default function Intro({ onComplete }) {
               animate={{ opacity: 1, scale: 1 }}
               className="mb-12"
             >
-              <img 
-                src="/logo.png" 
+              <Image
+                src="/logo.png"
                 alt="Team Karad Logo"
+                width={384}
+                height={384}
                 className="w-64 md:w-96 h-auto drop-shadow-[0_0_40px_rgba(255,165,0,0.4)]"
                 onError={(e) => {
                   e.target.style.display = 'none';
@@ -116,8 +120,8 @@ export default function Intro({ onComplete }) {
             {/* The "Crazy" Strip Animation */}
             <motion.div
               initial={{ scale: 0, opacity: 0, rotate: 45 }}
-              animate={{ 
-                scale: [0, 2, 8], 
+              animate={{
+                scale: [0, 2, 8],
                 opacity: [0, 1, 0],
                 x: [0, -400, -2000],
                 y: [0, 400, 2000]
@@ -125,7 +129,7 @@ export default function Intro({ onComplete }) {
               transition={{ duration: 3, ease: "circIn" }}
               className="absolute pointer-events-none"
             >
-              <div 
+              <div
                 className="w-[300vw] h-[600px] bg-primary/30 blur-[120px] skew-x-[45deg]"
                 style={{ background: "linear-gradient(90deg, transparent, oklch(0.7 0.2 60), transparent)" }}
               />
@@ -140,10 +144,12 @@ export default function Intro({ onComplete }) {
                   transition={{ type: "spring", damping: 12, stiffness: 80 }}
                   className="z-50"
                 >
-                  <img 
-                    src="/logo.png" 
+                  <Image
+                    src="/logo.png"
                     alt="Team Karad Logo"
-                    className="w-[85vw] max-w-[600px] md:max-w-[900px] h-auto drop-shadow-[0_0_100px_rgba(255,165,0,0.8)]" 
+                    width={900}
+                    height={900}
+                    className="w-[85vw] max-w-[600px] md:max-w-[900px] h-auto drop-shadow-[0_0_100px_rgba(255,165,0,0.8)]"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       document.getElementById('intro-slam-fallback').style.display = 'block';
@@ -166,9 +172,9 @@ export default function Intro({ onComplete }) {
                     key={i}
                     initial={{ x: -100, opacity: 0 }}
                     animate={{ x: [0, 2000], opacity: [0, 0.2, 0] }}
-                    transition={{ 
-                      duration: 0.5, 
-                      repeat: Infinity, 
+                    transition={{
+                      duration: 0.5,
+                      repeat: Infinity,
                       delay: i * 0.1,
                       ease: "linear"
                     }}
@@ -179,7 +185,7 @@ export default function Intro({ onComplete }) {
             </div>
 
             {/* Screen Shake Wrapper */}
-            <motion.div 
+            <motion.div
                animate={isVibrating ? {
                  x: [0, -5, 5, -5, 5, 0],
                  y: [0, 5, -5, 5, -5, 0]

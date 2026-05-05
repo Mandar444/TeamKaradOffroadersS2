@@ -91,9 +91,23 @@
 }
 
 @layer base {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
+
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -124,6 +138,21 @@
     opacity: 0.15;
     pointer-events: none;
     z-index: -2;
+  }
+
+  img,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+
+  main,
+  section,
+  article,
+  div,
+  header,
+  footer {
+    min-width: 0;
   }
 }
 
@@ -166,7 +195,7 @@ h1, h2, h3, .font-heading {
   font-family: var(--font-rajdhani), sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -176,6 +205,13 @@ button, .button, a {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .tracking-widest,
+  [class*="tracking-["] {
+    letter-spacing: 0.16em;
+  }
 }
 
 

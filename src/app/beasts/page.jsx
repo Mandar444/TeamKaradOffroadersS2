@@ -131,7 +131,7 @@ function BeastCard({ beast, idx }) {
             "--mouse-x": `${mousePos.x}px`,
             "--mouse-y": `${mousePos.y}px`
           }}
-          className="relative h-[500px] w-full rounded-[3rem] bg-zinc-950 border border-white/5 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)] transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-[0_40px_100px_rgba(255,165,0,0.15)]"
+          className="relative h-[420px] sm:h-[500px] w-full rounded-[2rem] sm:rounded-[3rem] bg-zinc-950 border border-white/5 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)] transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-[0_40px_100px_rgba(255,165,0,0.15)]"
         >
           {/* Spotlight Glow Overlay */}
           <div className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,165,0,0.2),transparent_60%)]" />
@@ -147,20 +147,20 @@ function BeastCard({ beast, idx }) {
           <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
 
           {/* Card Content (Floating with Z-index) */}
-          <div className="absolute bottom-0 left-0 p-10 w-full z-40 transform translate-z-[80px]" style={{ transform: "translateZ(80px)" }}>
+          <div className="absolute bottom-0 left-0 p-5 sm:p-10 w-full z-40 transform translate-z-[80px]" style={{ transform: "translateZ(80px)" }}>
              <div className="flex items-center gap-3 mb-6">
-                <span className="bg-primary/95 text-black text-[10px] font-black tracking-[0.2em] px-4 py-1.5 rounded-full uppercase shadow-glow">
+                <span className="bg-primary/95 text-black text-[10px] font-black tracking-[0.12em] sm:tracking-[0.2em] px-4 py-1.5 rounded-full uppercase shadow-glow">
                    {beast.category}
                 </span>
              </div>
-             <h3 className="text-5xl font-heading text-white uppercase italic tracking-tighter leading-none mb-4 drop-shadow-2xl">
+             <h3 className="text-4xl sm:text-5xl font-heading text-white uppercase italic tracking-normal leading-none mb-4 drop-shadow-2xl">
                 {beast.name}
              </h3>
-             <p className="text-zinc-500 text-[11px] font-black tracking-[0.6em] uppercase mb-8 ml-1">
+             <p className="text-zinc-500 text-[11px] font-black tracking-[0.18em] sm:tracking-[0.6em] uppercase mb-8 ml-1">
                 {beast.type}
              </p>
              
-             <div className="flex gap-8 pt-8 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-6 group-hover:translate-y-0 duration-500 ease-out">
+             <div className="flex flex-wrap gap-4 sm:gap-8 pt-8 border-t border-white/5 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all sm:transform sm:translate-y-6 group-hover:translate-y-0 duration-500 ease-out">
                  {Object.entries(beast.stats).map(([k, v]) => (
                    <div key={k} className="text-left space-y-1">
                       <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{k}</p>
@@ -196,14 +196,14 @@ export default function BeastsPage() {
       <div className="absolute top-0 left-0 w-full h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
-      <section className="px-6 py-12 md:py-20 relative z-10">
+      <section className="px-4 sm:px-6 py-12 md:py-20 relative z-10">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Tactical Arsenal</p>
-            <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.6em] mb-4">Tactical Arsenal</p>
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-heading tracking-normal uppercase leading-none mb-8">
               THE <span className="text-primary italic">BEASTS</span>
             </h1>
-            <p className="text-zinc-400 text-xl max-w-2xl leading-relaxed font-medium">
+            <p className="text-zinc-400 text-base sm:text-xl max-w-2xl leading-relaxed font-medium">
               Cinematic profiles of the off-road machines engineered to dominate Season 2. 
               Built for war, refined for victory.
             </p>
@@ -211,7 +211,7 @@ export default function BeastsPage() {
         </div>
       </section>
 
-      <section className="px-6 pb-20 relative z-10">
+      <section className="px-4 sm:px-6 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {beasts.map((beast, idx) => (
             <BeastCard key={beast.id} beast={beast} idx={idx} />
@@ -219,12 +219,12 @@ export default function BeastsPage() {
         </div>
       </section>
 
-      <section className="px-6 py-20 text-center relative z-10">
-         <Link href="/regulations" className="group inline-flex items-center gap-4 p-8 bg-zinc-900/40 rounded-[2.5rem] border border-white/5 hover:border-primary/30 transition-all">
+      <section className="px-4 sm:px-6 py-16 sm:py-20 text-center relative z-10">
+         <Link href="/regulations" className="group inline-flex flex-col sm:flex-row items-center gap-4 p-5 sm:p-8 bg-zinc-900/40 rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 hover:border-primary/30 transition-all">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                <Info className="w-6 h-6 text-primary" />
             </div>
-            <div className="text-left">
+            <div className="text-center sm:text-left">
                <p className="text-white font-heading text-xl uppercase italic">Check Technical Regulations</p>
                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Verify class specs for Season 2</p>
             </div>

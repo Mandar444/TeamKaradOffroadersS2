@@ -1,53 +1,83 @@
 "use client";
 
+import { Suspense } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Trophy, Save, Zap, AlertCircle } from "lucide-react";
+import { ArrowLeft, DatabaseZap, Trophy } from "lucide-react";
+import LeaderboardSnapshotViewer from "@/components/leaderboard/LeaderboardSnapshotViewer";
+import LeaderboardVisibilityControl from "@/components/leaderboard/LeaderboardVisibilityControl";
 
 export default function AdminLeaderboardPage() {
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
-        <div className="flex items-center gap-4 mb-12">
-           <div className="w-12 h-12 bg-primary/10 rounded-xl border border-primary/20 flex items-center justify-center">
-              <Trophy className="w-6 h-6 text-primary" />
-           </div>
-           <div>
-              <p className="text-primary text-[10px] font-black uppercase tracking-[0.4em] leading-none mb-1">Command Center</p>
-              <h1 className="text-4xl font-heading text-white uppercase italic tracking-tighter">LEADERBOARD <span className="text-primary not-italic">UPDATE</span></h1>
-           </div>
-        </div>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <div className="absolute inset-0 z-0 text-white/5">
+        <div className="absolute top-0 right-0 h-[560px] w-[70%] bg-primary/10 blur-[150px] opacity-30" />
+        <div className="absolute bottom-0 left-0 h-[420px] w-[55%] bg-orange-500/10 blur-[140px] opacity-20" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+      </div>
 
-        <div className="bg-zinc-900/40 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] p-12 text-center">
-           <div className="flex justify-center mb-8">
-              <div className="p-6 rounded-full bg-primary/5 border border-primary/10">
-                 <Zap className="w-12 h-12 text-primary" />
-              </div>
-           </div>
-           <h2 className="text-3xl font-heading text-white uppercase italic mb-4">SYSTEMS OFFLINE</h2>
-           <p className="text-zinc-500 text-lg mb-8 max-w-lg mx-auto">
-             The leaderboard management module is locked until Season 2 begins. Dynamic scoring tools will be deployed here on May 29th.
-           </p>
-           
-           <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800/50 rounded-xl border border-white/5 text-zinc-600 text-[10px] font-black uppercase tracking-widest">
-              <AlertCircle className="w-3 h-3" /> Standby for Deployment
-           </div>
-        </div>
+      <div className="relative z-10 mx-auto max-w-[1920px] px-4 py-10 sm:px-6 lg:px-8">
+        <Link
+          href="/admin"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-zinc-950/80 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 transition-colors hover:border-primary/40 hover:text-primary"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Race Control
+        </Link>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 opacity-30 grayscale pointer-events-none">
-           <div className="p-8 bg-zinc-950 border border-white/5 rounded-2xl">
-              <div className="h-4 w-24 bg-zinc-800 rounded-full mb-6" />
-              <div className="space-y-4">
-                 <div className="h-12 w-full bg-zinc-900 rounded-xl" />
-                 <div className="h-12 w-full bg-zinc-900 rounded-xl" />
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="mb-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
+        >
+          <div className="max-w-4xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
+                <Trophy className="h-6 w-6 text-primary" />
               </div>
-           </div>
-           <div className="p-8 bg-zinc-950 border border-white/5 rounded-2xl">
-              <div className="h-4 w-24 bg-zinc-800 rounded-full mb-6" />
-              <div className="space-y-4">
-                 <div className="h-40 w-full bg-zinc-900 rounded-xl" />
+              <div>
+                <p className="text-[10px] font-black uppercase leading-none tracking-[0.5em] text-primary">
+                  Admin Console
+                </p>
+                <p className="mt-2 text-[10px] font-black uppercase tracking-[0.32em] text-zinc-600">
+                  Synced from TKO app export
+                </p>
               </div>
-           </div>
-        </div>
+            </div>
+            <h1 className="font-heading text-5xl uppercase leading-none tracking-tighter text-white sm:text-7xl md:text-8xl">
+              Leaderboard <span className="text-primary italic">Control</span>
+            </h1>
+            <p className="mt-5 max-w-3xl text-sm leading-relaxed text-zinc-400 sm:text-base">
+              Displays the latest leaderboard snapshot pushed by the scoring app. Use refresh inside the panel after a
+              new export is synced.
+            </p>
+          </div>
+
+          <div className="rounded-[1.6rem] border border-white/10 bg-zinc-950/70 px-5 py-4 backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+              <DatabaseZap className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.35em] text-zinc-600">Source</p>
+                <p className="mt-1 text-xs font-black uppercase tracking-[0.22em] text-primary">
+                  /api/leaderboard-sync
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <LeaderboardVisibilityControl />
+
+        <Suspense
+          fallback={
+            <div className="rounded-[2rem] border border-[#2b1a0f] bg-black p-8 text-center text-[#ff9a2c]">
+              Loading synced leaderboard...
+            </div>
+          }
+        >
+          <LeaderboardSnapshotViewer respectVisibility={false} detailReturnHref="/admin/leaderboard" />
+        </Suspense>
       </div>
     </div>
   );
