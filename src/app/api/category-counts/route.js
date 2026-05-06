@@ -22,13 +22,21 @@ export async function GET() {
     const now = new Date();
     const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
     
+    // Create a mapping from normalized category names/keys to the canonical keys
+    const catMap = {};
+    Object.keys(CATEGORIES).forEach(key => {
+      catMap[normalize(key)] = key;
+      catMap[normalize(CATEGORIES[key].name)] = key;
+    });
+
     // Track processed IDs to avoid double counting
     const processedIds = new Set();
 
     // 1. Count from Master Registrations (PRIORITY)
     regRows.forEach(row => {
       const id = normalize(row.get("reg_id"));
-      const cat = normalize(row.get("category"));
+      const rawCat = row.get("category");
+      const cat = catMap[normalize(rawCat)];
       const status = (row.get("status") || "").toUpperCase().trim();
       
       if (id && cat && counts[cat] !== undefined && status !== "REJECTED") {
@@ -40,7 +48,8 @@ export async function GET() {
     // 2. Count from Booked Numbers (Holds) ONLY if not already in master
     bookedRows.forEach(row => {
       const id = normalize(row.get("reg_id"));
-      const cat = normalize(row.get("category"));
+      const rawCat = row.get("category");
+      const cat = catMap[normalize(rawCat)];
       const status = (row.get("status") || "").toUpperCase().trim();
       
       if (!id || processedIds.has(id)) return;
@@ -53,7 +62,7 @@ export async function GET() {
         if (expiresAt > now) shouldCount = true;
       }
 
-      if (shouldCount && counts[cat] !== undefined) {
+      if (shouldCount && cat && counts[cat] !== undefined) {
         counts[cat]++;
         processedIds.add(id);
       }
