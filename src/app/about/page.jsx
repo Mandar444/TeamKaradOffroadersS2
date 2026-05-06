@@ -48,19 +48,19 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: "circOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-8 shadow-[0_0_30px_rgba(255,165,0,0.2)]">
+            <div className="inline-flex max-w-full items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.6em] mb-8 shadow-[0_0_30px_rgba(255,165,0,0.2)]">
                <Activity className="w-3 h-3 animate-pulse" /> Official Team Directive
             </div>
-            <h1 className="text-[12vw] md:text-[8vw] font-heading tracking-tighter uppercase leading-none mb-4 italic text-glow-amber">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-heading tracking-normal uppercase leading-none mb-4 italic text-glow-amber">
                TEAM <span className="text-primary not-italic">KARAD</span>
             </h1>
-            <h2 className="text-4xl md:text-6xl font-heading text-zinc-500 uppercase tracking-[0.2em] mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-heading text-zinc-500 uppercase tracking-[0.12em] sm:tracking-[0.2em] mb-12">
                OFF-ROADERS <span className="text-white">EST. 2015</span>
             </h2>
           </motion.div>
@@ -69,7 +69,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="text-zinc-400 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed font-medium"
+            className="text-zinc-400 text-base sm:text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed font-medium"
           >
              A passionate community of 4x4 enthusiasts based in Karad, Maharashtra, 
              actively participating in and organizing off-road motorsport events across India.
@@ -84,20 +84,20 @@ export default function AboutPage() {
       </section>
 
       {/* 2. CORE IDENTITY SECTION */}
-      <section className="px-6 py-16 md:py-32 relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <section className="px-4 sm:px-6 py-16 md:py-32 relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="relative"
           >
-             <div className="absolute -left-10 top-0 text-[10rem] font-black text-white/5 pointer-events-none select-none italic leading-none">TEAM KARAD</div>
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.6em] mb-6">Autonomous Profile</h3>
-             <h2 className="text-5xl md:text-7xl font-heading text-white tracking-widest uppercase mb-8 leading-tight">
+             <div className="absolute -left-10 top-0 text-7xl sm:text-[10rem] font-black text-white/5 pointer-events-none select-none italic leading-none">TEAM KARAD</div>
+             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.6em] mb-6">Autonomous Profile</h3>
+             <h2 className="text-4xl sm:text-5xl md:text-7xl font-heading text-white tracking-normal sm:tracking-widest uppercase mb-8 leading-tight">
                CONQUERING <br /> THE <span className="text-primary italic">UNREACHABLE</span>
              </h2>
-             <div className="space-y-6 text-zinc-400 text-lg leading-relaxed">
+             <div className="space-y-6 text-zinc-400 text-base sm:text-lg leading-relaxed">
                 <p>
                   Our team consists of skilled drivers, co-drivers, mechanics, and off-road specialists 
                   who share a deep interest in adventure, vehicle engineering, and extreme terrain driving.
@@ -118,7 +118,7 @@ export default function AboutPage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                 className="p-8 bg-zinc-950/40 border border-white/5 rounded-3xl group hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,165,0,0.1)] relative overflow-hidden backdrop-blur-md"
+                 className="p-6 sm:p-8 bg-zinc-950/40 border border-white/5 rounded-3xl group hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,165,0,0.1)] relative overflow-hidden backdrop-blur-md"
                >
                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
                     <v.icon className="w-20 h-20 text-white" />
@@ -148,13 +148,13 @@ export default function AboutPage() {
            ))}
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-24">
-             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.8em] mb-6">Current Mission: Season 2</h3>
-             <h2 className="text-6xl md:text-9xl font-heading text-white uppercase tracking-tighter leading-none mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-16 md:mb-24">
+             <h3 className="text-primary text-[11px] font-black uppercase tracking-[0.18em] sm:tracking-[0.8em] mb-6">Current Mission: Season 2</h3>
+             <h2 className="text-5xl sm:text-6xl md:text-9xl font-heading text-white uppercase tracking-normal leading-none mb-8">
                READY FOR <span className="text-primary italic">THRILL</span>
              </h2>
-             <p className="text-zinc-500 text-xl max-w-3xl mx-auto font-medium">
+             <p className="text-zinc-500 text-base sm:text-xl max-w-3xl mx-auto font-medium">
                A high-fidelity championship platform establishing a world-class venue 
                for motorsport and adventure in Western Maharashtra.
              </p>
@@ -168,11 +168,11 @@ export default function AboutPage() {
                  whileInView={{ opacity: 1, scale: 1 }}
                  viewport={{ once: true }}
                  transition={{ delay: idx * 0.1 }}
-                 className="flex flex-col items-center p-12 bg-black border border-white/5 rounded-[3rem] relative overflow-hidden group hover:border-primary/50 transition-all duration-500 h-[380px] justify-center text-center shadow-2xl"
+                 className="flex min-h-[300px] flex-col items-center p-8 sm:p-12 bg-black border border-white/5 rounded-[2rem] sm:rounded-[3rem] relative overflow-hidden group hover:border-primary/50 transition-all duration-500 justify-center text-center shadow-2xl"
                >
                  <div className="absolute inset-0 bg-mesh-amber opacity-0 group-hover:opacity-10 transition-opacity" />
-                 <h4 className="text-7xl md:text-8xl font-heading text-white mb-2 group-hover:text-primary transition-colors tracking-tighter">{h.stat}</h4>
-                 <p className="text-primary text-xs font-black uppercase tracking-[0.4em] mb-4">{h.label}</p>
+                 <h4 className="text-6xl md:text-8xl font-heading text-white mb-2 group-hover:text-primary transition-colors tracking-normal">{h.stat}</h4>
+                 <p className="text-primary text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-4">{h.label}</p>
                  <div className="h-px w-10 bg-zinc-800 mb-6 group-hover:w-20 group-hover:bg-primary transition-all duration-500" />
                  <p className="text-zinc-500 font-medium text-sm">{h.sub}</p>
                </motion.div>
@@ -182,7 +182,7 @@ export default function AboutPage() {
       </section>
 
       {/* 4. THE JOURNEY TIMELINE - CINEMATIC VERSION */}
-      <section className="px-6 py-20 md:py-40 overflow-hidden relative">
+      <section className="px-4 sm:px-6 py-20 md:py-40 overflow-hidden relative">
         <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
         
         <div className="max-w-6xl mx-auto relative">
@@ -191,11 +191,11 @@ export default function AboutPage() {
                initial={{ opacity: 0, y: 20 }}
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
-               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-4"
+               className="inline-flex max-w-full items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-4"
              >
                 <Activity className="w-3 h-3" /> Historical Archive
              </motion.div>
-             <h2 className="text-6xl md:text-8xl font-heading text-white uppercase tracking-tighter leading-none">
+             <h2 className="text-5xl sm:text-6xl md:text-8xl font-heading text-white uppercase tracking-normal leading-none">
                THE <span className="text-primary italic">PROGRESSION</span>
              </h2>
              <div className="w-24 h-1 bg-primary/30 mx-auto mt-8 blur-sm animate-pulse" />
@@ -205,7 +205,7 @@ export default function AboutPage() {
             {/* 1. DYNAMIC NEON PATH */}
             <div className="absolute left-[31px] md:left-1/2 top-0 bottom-0 w-[2px] neon-path opacity-50" />
             
-            <div className="space-y-32">
+            <div className="space-y-24 md:space-y-32">
               {milestones.map((m, idx) => (
                 <motion.div
                   key={m.year}
@@ -237,7 +237,7 @@ export default function AboutPage() {
                   {/* Card area */}
                   <div className={`flex-1 pl-16 md:px-20 text-left ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
                      <motion.div 
-                       className="p-8 md:p-10 rounded-[2.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl relative group hover:border-primary/30 transition-all duration-500"
+                       className="p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl relative group hover:border-primary/30 transition-all duration-500"
                      >
                         <div className="absolute -top-4 left-10 md:left-auto md:right-10 px-4 py-1 bg-primary text-black text-[10px] font-black uppercase tracking-widest skew-x-[-20deg] shadow-[0_10px_20px_rgba(255,165,0,0.2)]">
                            <span className="block skew-x-[20deg]">{m.title}</span>
@@ -261,19 +261,19 @@ export default function AboutPage() {
       </section>
 
       {/* 5. CTA SECTION */}
-      <section className="px-6 py-20">
+      <section className="px-4 sm:px-6 py-20">
          <motion.div 
            initial={{ opacity: 0, scale: 0.95 }}
            whileInView={{ opacity: 1, scale: 1 }}
            viewport={{ once: true }}
-           className="max-w-6xl mx-auto p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] bg-mesh-amber border border-primary/20 relative overflow-hidden text-center"
+           className="max-w-6xl mx-auto p-6 sm:p-10 md:p-32 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[4rem] bg-mesh-amber border border-primary/20 relative overflow-hidden text-center"
          >
             <div className="absolute inset-0 bg-black/60 pointer-events-none" />
             <div className="relative z-10">
-               <h2 className="text-5xl md:text-8xl font-heading text-white uppercase mb-8 leading-none italic">
+               <h2 className="text-4xl sm:text-5xl md:text-8xl font-heading text-white uppercase mb-8 leading-none italic">
                  JOIN THE <br /> <span className="text-primary not-italic">ELITE</span>
                </h2>
-               <p className="text-zinc-300 text-xl max-w-xl mx-auto mb-12 font-medium">
+               <p className="text-zinc-300 text-base sm:text-xl max-w-xl mx-auto mb-12 font-medium">
                  Ready to test your limits? Join the Season 2 expansion and become part of India&apos;s most thrilling off-road community.
                </p>
                <Link
@@ -287,7 +287,7 @@ export default function AboutPage() {
       </section>
 
       {/* 6. CONTACT COMMAND CENTER */}
-      <section id="contact" className="px-6 py-20 md:py-32 relative overflow-hidden">
+      <section id="contact" className="px-4 sm:px-6 py-20 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
         <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
@@ -298,16 +298,16 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="max-w-4xl"
           >
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Uplink Station</p>
-            <h2 className="text-5xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8 italic">
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.6em] mb-4">Uplink Station</p>
+            <h2 className="text-4xl sm:text-5xl md:text-8xl font-heading tracking-normal uppercase leading-none mb-8 italic">
               CONTACT <span className="text-primary not-italic">BASE</span>
             </h2>
-            <p className="text-zinc-400 text-lg md:text-2xl max-w-3xl leading-relaxed font-medium">
+            <p className="text-zinc-400 text-base sm:text-lg md:text-2xl max-w-3xl leading-relaxed font-medium">
               We would be happy to connect with you for event participation, sponsorship opportunities, collaborations, or any inquiries related to Team Karad Off-Roaders.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mt-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mt-16 md:mt-20">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -356,7 +356,7 @@ export default function AboutPage() {
                   <Mail className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1">Official Communications</p>
+                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-1">Official Communications</p>
                   <p className="text-white text-[15px] md:text-lg font-heading break-all md:break-normal">teamkaradoffroaders@gmail.com</p>
                 </div>
               </motion.a>
@@ -375,7 +375,7 @@ export default function AboutPage() {
                   <MapPin className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1">Base Operations</p>
+                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-1">Base Operations</p>
                   <p className="text-white text-[15px] md:text-lg font-heading break-all md:break-normal">Karad, Maharashtra, India</p>
                 </div>
               </motion.a>
@@ -391,7 +391,7 @@ export default function AboutPage() {
                   <Clock className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1">Operational Status</p>
+                  <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-1">Operational Status</p>
                   <p className="text-white text-[15px] md:text-lg font-heading break-all md:break-normal">Online 24/7 for Inquiries</p>
                 </div>
               </motion.div>
@@ -414,14 +414,14 @@ export default function AboutPage() {
                   className="grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                 ></iframe>
                 <div className="absolute top-6 left-6 z-20">
-                  <div className="px-4 py-1.5 bg-black/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2">
+                  <div className="max-w-[calc(100vw-5rem)] px-4 py-1.5 bg-black/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     <span className="text-white text-[10px] font-black uppercase tracking-widest">Base Operations Signal</span>
                   </div>
                 </div>
               </motion.div>
 
-              <div className="grid grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
                 {socials.map((s, idx) => (
                   <motion.a
                     key={s.label}

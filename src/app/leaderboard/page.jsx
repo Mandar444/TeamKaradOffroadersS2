@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -64,9 +64,9 @@ function VictoryShieldCard({ entry, rank, heightClass, spotlight = false }) {
       <div className="absolute inset-[10px] bg-black/80" style={shieldStyle} />
       <div className="absolute inset-[10px] border border-white/10" style={shieldStyle} />
 
-      <div className="relative z-10 h-full flex flex-col items-center text-center px-5 py-8">
+      <div className="relative z-10 h-full flex flex-col items-center text-center px-4 py-6 md:px-5 md:py-8">
         <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-3">{rank}</p>
-        <div className="w-40 h-40 md:w-48 md:h-48 overflow-hidden">
+        <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 overflow-hidden flex-shrink-0 mb-2 md:mb-4">
           <Image
             src="/images/season1-victory-shield.png"
             alt="Season 1 victory shield"
@@ -77,11 +77,11 @@ function VictoryShieldCard({ entry, rank, heightClass, spotlight = false }) {
           />
         </div>
 
-        <div className="mt-6 rounded-2xl bg-black/85 backdrop-blur-md border border-primary/20 px-5 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.45)] w-full max-w-[240px]">
-          <h4 className="text-lg md:text-2xl font-heading uppercase italic leading-none text-white">
+        <div className="mt-2 rounded-2xl bg-black/85 backdrop-blur-md border border-primary/20 px-4 py-4 md:px-5 md:py-5 shadow-[0_12px_30px_rgba(0,0,0,0.45)] w-full max-w-[100%] md:max-w-[340px] min-h-[108px] md:min-h-[120px] flex flex-col items-center justify-center relative z-20">
+          <h4 className="text-sm md:text-lg lg:text-xl font-heading uppercase italic leading-snug text-white text-center whitespace-normal break-words px-1">
             {entry?.name || "Winner Name"}
           </h4>
-          <p className="text-zinc-300 text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] mt-2">
+          <p className="text-zinc-300 text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] mt-2 text-center whitespace-normal break-words px-1">
             {entry?.team || "Team Name"}
           </p>
         </div>
@@ -112,27 +112,29 @@ export default function LeaderboardPage() {
           </div>
 
           <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Tactical Standings</p>
-          <h1 className="text-6xl md:text-8xl font-heading tracking-tighter uppercase leading-none mb-6">LEADERBOARD</h1>
-          <p className="text-zinc-400 text-lg md:text-xl max-w-3xl leading-relaxed">
+          <h1 className="text-4xl sm:text-5xl md:text-8xl font-heading tracking-tighter uppercase leading-[0.9] mb-6 max-w-full break-words text-balance px-2">
+            LEADERBOARD
+          </h1>
+          <p className="text-zinc-400 text-base sm:text-lg md:text-xl max-w-3xl leading-relaxed px-2">
             Switch between the latest saved leaderboard snapshot and the season victory archive.
           </p>
         </motion.div>
 
         <div className="mt-12">
           <Tabs defaultValue="live" className="w-full">
-            <div className="flex justify-center">
-              <TabsList className="h-auto rounded-3xl bg-zinc-950/80 border border-white/5 p-3 gap-3">
+            <div className="flex justify-start sm:justify-center overflow-x-auto pb-2 sm:pb-0">
+              <TabsList className="h-auto w-max min-w-full sm:w-auto flex-nowrap rounded-3xl bg-zinc-950/80 border border-white/5 p-2 sm:p-3 gap-2 sm:gap-3">
                 <TabsTrigger
                   value="live"
-                  className="px-7 py-4 md:px-10 md:py-5 rounded-2xl font-heading text-lg md:text-2xl uppercase tracking-tighter text-white/55 transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-white"
+                  className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 rounded-2xl font-heading text-[11px] sm:text-sm md:text-2xl uppercase tracking-tighter text-white/55 transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-white whitespace-nowrap"
                 >
                   LIVE LEADERBOARD
                 </TabsTrigger>
                 <TabsTrigger
                   value="victory"
-                  className="px-7 py-4 md:px-10 md:py-5 rounded-2xl font-heading text-lg md:text-2xl uppercase tracking-tighter text-white/55 transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-white"
+                  className="shrink-0 px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 rounded-2xl font-heading text-[11px] sm:text-sm md:text-2xl uppercase tracking-tighter text-white/55 transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-white whitespace-nowrap"
                 >
-                  VICTORY SHIELD
+                  HALL OF FAME
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -142,7 +144,9 @@ export default function LeaderboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <LeaderboardSnapshotViewer />
+                <Suspense fallback={<div className="rounded-[2rem] border border-[#2b1a0f] bg-black p-8 text-center text-[#ff9a2c]">Loading leaderboard...</div>}>
+                  <LeaderboardSnapshotViewer />
+                </Suspense>
               </motion.div>
             </TabsContent>
 
@@ -157,7 +161,7 @@ export default function LeaderboardPage() {
                   <div className="relative z-10 p-6 md:p-10">
                     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
                       <div>
-                        <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">VICTORY SHIELD</p>
+                        <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">HALL OF FAME</p>
                         <h2 className="text-4xl md:text-6xl font-heading uppercase tracking-tighter leading-none italic">
                           Season <span className="text-primary not-italic">Champions</span>
                         </h2>
@@ -168,12 +172,12 @@ export default function LeaderboardPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-black/60 p-6 md:p-8 group">
+                    <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-black/60 p-5 sm:p-6 md:p-8 group">
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-60" />
                         <div className="relative z-10">
-                          <div className="flex items-center gap-4 mb-8">
-                            <div className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center overflow-hidden">
+                          <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center overflow-hidden">
                               <Image
                                 src="/images/season1-victory-shield.png"
                                 alt="Season 1 victory shield"
@@ -195,15 +199,15 @@ export default function LeaderboardPage() {
                             The original run that kicked off Team Karad Off-Roaders Season 1 and defined the archive.
                           </p>
 
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-3 gap-2 sm:gap-3">
                             {[
                               { label: "Year", value: "2025" },
                               { label: "Status", value: "Closed" },
                               { label: "Badge", value: "Legend" },
                             ].map((item) => (
-                              <div key={item.label} className="rounded-2xl border border-white/5 bg-zinc-950/80 p-4">
+                              <div key={item.label} className="rounded-2xl border border-white/5 bg-zinc-950/80 p-3 sm:p-4">
                                 <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">{item.label}</p>
-                                <p className="text-xl md:text-2xl font-heading uppercase italic leading-none text-white">{item.value}</p>
+                                <p className="text-sm sm:text-lg md:text-2xl font-heading uppercase italic leading-tight text-white break-words">{item.value}</p>
                               </div>
                             ))}
                           </div>
@@ -226,12 +230,12 @@ export default function LeaderboardPage() {
                         </div>
                       </div>
 
-                      <div className="relative overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/15 to-black p-6 md:p-8 group">
+                      <div className="relative overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/15 to-black p-5 sm:p-6 md:p-8 group">
                         <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
                         <div className="relative z-10">
-                          <div className="flex items-center gap-4 mb-8">
-                            <div className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-                              <Zap className="w-8 h-8 text-primary" />
+                          <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+                              <Zap className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
                             </div>
                             <div>
                               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Victory Card</p>
@@ -245,15 +249,152 @@ export default function LeaderboardPage() {
                             The active championship season, reserved for live results, final rankings, and the winning moment.
                           </p>
 
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-3 gap-2 sm:gap-3">
                             {[
                               { label: "Year", value: "2026" },
                               { label: "Status", value: "Live" },
                               { label: "Badge", value: "Elite" },
                             ].map((item) => (
-                              <div key={item.label} className="rounded-2xl border border-white/5 bg-black/60 p-4">
+                              <div key={item.label} className="rounded-2xl border border-white/5 bg-black/60 p-3 sm:p-4">
                                 <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">{item.label}</p>
-                                <p className="text-xl md:text-2xl font-heading uppercase italic leading-none text-white">{item.value}</p>
+                                <p className="text-sm sm:text-lg md:text-2xl font-heading uppercase italic leading-tight text-white break-words">{item.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="md:hidden space-y-6 mb-8">
+                      <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-black/60 p-5 group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-60" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-5">
+                            <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                              <Image
+                                src="/images/season1-victory-shield.png"
+                                alt="Season 1 victory shield"
+                                width={56}
+                                height={56}
+                                className="w-full h-full object-cover"
+                                priority
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Victory Card</p>
+                              <h3 className="text-2xl font-heading uppercase italic leading-tight">
+                                Season <span className="text-primary not-italic">1</span>
+                              </h3>
+                            </div>
+                          </div>
+
+                          <p className="text-zinc-400 text-sm leading-relaxed mb-5">
+                            The original run that kicked off Team Karad Off-Roaders Season 1 and defined the archive.
+                          </p>
+
+                          <div className="grid grid-cols-3 gap-2">
+                            {[
+                              { label: "Year", value: "2025" },
+                              { label: "Status", value: "Closed" },
+                              { label: "Badge", value: "Legend" },
+                            ].map((item) => (
+                              <div key={item.label} className="rounded-2xl border border-white/5 bg-zinc-950/80 p-3 min-w-0">
+                                <p className="text-zinc-500 text-[9px] font-black uppercase tracking-[0.3em] mb-2">{item.label}</p>
+                                <p className="text-sm font-heading uppercase italic leading-tight text-white break-words">{item.value}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="mt-5">
+                            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-3">
+                              Vehicle Categories
+                            </p>
+                            <div className="flex gap-2 overflow-x-auto pb-1">
+                              {SEASON_ONE_CATEGORIES.map((category) => (
+                                <button
+                                  key={category}
+                                  type="button"
+                                  onClick={() => setSelectedCategory(category)}
+                                  className={`shrink-0 px-3 py-2 rounded-full border text-[10px] font-black uppercase tracking-[0.25em] transition-colors whitespace-nowrap ${
+                                    selectedCategory === category
+                                      ? "border-primary/40 bg-primary/10 text-primary"
+                                      : "border-white/10 bg-black/40 text-zinc-300 hover:border-primary/30 hover:text-primary"
+                                  }`}
+                                >
+                                  {category}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedCategory && winners.length > 0 && (
+                        <div className="rounded-[2rem] border border-primary/15 bg-black/60 p-5">
+                          <div className="flex items-center justify-between gap-3 mb-5">
+                            <div className="min-w-0">
+                              <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">Season Winner Card</p>
+                              <h3 className="text-2xl font-heading uppercase tracking-tighter leading-tight break-words">
+                                {selectedCategory}
+                              </h3>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCategory(null)}
+                              className="w-10 h-10 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors shrink-0"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          <div className="space-y-3">
+                            {winners.map((winner) => (
+                              <div key={winner.place} className="rounded-2xl border border-white/5 bg-zinc-950/80 px-4 py-4">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    <p className="text-primary text-[10px] font-black uppercase tracking-[0.45em] mb-1">{winner.place}</p>
+                                    <p className="text-base font-heading uppercase italic leading-tight text-white break-words">
+                                      {winner.name}
+                                    </p>
+                                  </div>
+                                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] shrink-0 text-right max-w-[45%] break-words">
+                                    {winner.team}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="relative overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/15 to-black p-5 group">
+                        <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-5">
+                            <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+                              <Zap className="w-7 h-7 text-primary" />
+                            </div>
+                            <div>
+                              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Victory Card</p>
+                              <h3 className="text-2xl font-heading uppercase italic leading-tight">
+                                Season <span className="text-primary not-italic">2</span>
+                              </h3>
+                            </div>
+                          </div>
+
+                          <p className="text-zinc-300 text-sm leading-relaxed mb-5">
+                            The active championship season, reserved for live results, final rankings, and the winning moment.
+                          </p>
+
+                          <div className="grid grid-cols-3 gap-2">
+                            {[
+                              { label: "Year", value: "2026" },
+                              { label: "Status", value: "Live" },
+                              { label: "Badge", value: "Elite" },
+                            ].map((item) => (
+                              <div key={item.label} className="rounded-2xl border border-white/5 bg-black/60 p-3 min-w-0">
+                                <p className="text-zinc-500 text-[9px] font-black uppercase tracking-[0.3em] mb-2">{item.label}</p>
+                                <p className="text-sm font-heading uppercase italic leading-tight text-white break-words">{item.value}</p>
                               </div>
                             ))}
                           </div>
@@ -262,7 +403,7 @@ export default function LeaderboardPage() {
                     </div>
 
                     {selectedCategory && winners.length > 0 && (
-                      <div className="rounded-[2rem] border border-white/5 bg-black/60 p-6 md:p-8 mt-8">
+                      <div className="hidden md:block rounded-[2rem] border border-white/5 bg-black/60 p-6 md:p-8 mt-8">
                         <div className="flex items-center justify-between gap-4 mb-8">
                           <div>
                             <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">Season Winner Card</p>
@@ -295,7 +436,7 @@ export default function LeaderboardPage() {
 
                     <div className="rounded-[2rem] border border-white/5 bg-black/60 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 mt-8">
                       <div>
-                        <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">Victory Panel</p>
+                        <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">Hall Of Fame Panel</p>
                         <h3 className="text-3xl font-heading uppercase italic leading-none mb-3">
                           The card that crowns the winner.
                         </h3>

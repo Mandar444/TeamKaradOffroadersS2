@@ -212,11 +212,6 @@ const TEAM_MEMBERS = [
     image: "/images/team/Vjay bhau.jpeg",
   },
   {
-    name: "Pallavi Jadhav",
-    role: "CORE MEMBER",
-    image: "/images/team/Pallavi Jadhav.jpg",
-  },
-  {
     name: "Shreeharsh Dubal",
     role: "CORE MEMBER",
     image: "/images/team/Shreeharsh Dubal.jpeg",

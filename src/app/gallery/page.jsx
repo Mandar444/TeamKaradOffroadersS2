@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Camera, ArrowRight, Users, CarFront, ChevronDown } from "lucide-react";
 
@@ -48,29 +49,31 @@ function FeatureCard({ title, description, href, image, badge, icon: Icon }) {
       <motion.article
         whileHover={{ y: -6 }}
         transition={{ duration: 0.25 }}
-        className="relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-zinc-950/80 min-h-[360px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+        className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2.25rem] border border-white/5 bg-zinc-950/80 min-h-[320px] sm:min-h-[360px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
       >
         <div className="absolute inset-0">
-          <img
+          <Image
             src={image}
             alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
         </div>
 
-        <div className="relative z-10 h-full flex flex-col justify-end p-8 md:p-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300 w-fit mb-5">
+        <div className="relative z-10 h-full flex flex-col justify-end p-5 sm:p-8 md:p-10">
+          <div className="inline-flex max-w-full items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-[10px] font-black uppercase tracking-[0.16em] sm:tracking-[0.4em] text-zinc-300 w-fit mb-5">
             {Icon ? <Icon className="w-3.5 h-3.5 text-primary" /> : null}
             {badge}
           </div>
-          <h2 className="text-4xl md:text-5xl font-heading uppercase tracking-tighter leading-none text-white mb-4 italic">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading uppercase tracking-normal leading-none text-white mb-4 italic">
             {title}
           </h2>
           <p className="text-zinc-300 text-sm md:text-base max-w-md leading-relaxed mb-8">
             {description}
           </p>
-          <div className="inline-flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.35em]">
+          <div className="inline-flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.35em]">
             Explore
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -82,21 +85,20 @@ function FeatureCard({ title, description, href, image, badge, icon: Icon }) {
 
 export default function GalleryPage() {
   const [lightbox, setLightbox] = useState(null);
-  const [seasonOneOpen, setSeasonOneOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[60%] h-[50vh] bg-mesh-amber opacity-10 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
-      <section className="px-6 py-12 md:py-20 relative z-10">
+      <section className="px-4 sm:px-6 py-12 md:py-20 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-12 md:mb-16">
-            <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] mb-4">Visual Archive</p>
-            <h1 className="text-[12vw] md:text-8xl font-heading tracking-tighter uppercase leading-none mb-8">
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.6em] mb-4">Visual Archive</p>
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-heading tracking-normal uppercase leading-none mb-8">
               THE <span className="text-primary italic">GALLERY</span>
             </h1>
-            <p className="text-zinc-400 text-lg md:text-xl max-w-3xl leading-relaxed font-medium">
+            <p className="text-zinc-400 text-base sm:text-lg md:text-xl max-w-3xl leading-relaxed font-medium">
               One hub for the machines, the crew, and the Season 1 image archive.
             </p>
           </motion.div>
@@ -118,88 +120,42 @@ export default function GalleryPage() {
               badge={teamPreview.badge}
               icon={Users}
             />
-            <motion.article
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-zinc-950/80 min-h-[360px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-            >
-              <button
-                type="button"
-                onClick={() => setSeasonOneOpen((open) => !open)}
-                className="group block w-full text-left"
+            <Link href="/gallery/season-1" className="group block">
+              <motion.article
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2.25rem] border border-white/5 bg-zinc-950/80 min-h-[320px] sm:min-h-[360px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
               >
                 <div className="absolute inset-0">
-                  <img
+                  <Image
                     src="/gallery/gallery-1.jpg"
-                    alt="Team Karad Offroaders Season 1"
+                    alt="Karad Offroad Season 1"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
                 </div>
 
-                <div className="relative z-10 h-full flex flex-col justify-end p-8 md:p-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300 w-fit mb-5">
+                <div className="relative z-10 h-full flex flex-col justify-end p-5 sm:p-8 md:p-10">
+                  <div className="inline-flex max-w-full items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-[10px] font-black uppercase tracking-[0.16em] sm:tracking-[0.4em] text-zinc-300 w-fit mb-5">
                     <Camera className="w-3.5 h-3.5 text-primary" />
                     Season 1 Archive
                   </div>
-                  <h2 className="text-4xl md:text-5xl font-heading uppercase tracking-tighter leading-none text-white mb-4 italic">
-                    Team Karad Offroaders <span className="text-primary not-italic">Season 1</span>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading uppercase tracking-normal leading-none text-white mb-4 italic">
+                    Karad Offroad <span className="text-primary not-italic">Season 1</span>
                   </h2>
                   <p className="text-zinc-300 text-sm md:text-base max-w-md leading-relaxed mb-6">
-                    Open the archive to reveal the current Season 1 gallery images.
+                    Explore the Season 1 gallery images inside the archive.
                   </p>
-                  <div className="inline-flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.35em]">
-                    {seasonOneOpen ? "Hide Archive" : "View Archive"}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${seasonOneOpen ? "rotate-180" : ""}`} />
+                  <div className="inline-flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.35em]">
+                    Explore
+                    <ChevronDown className="w-4 h-4" />
                   </div>
                 </div>
-              </button>
-
-              <AnimatePresence>
-                {seasonOneOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="relative z-10 overflow-hidden border-t border-white/5 bg-black/65 backdrop-blur-md"
-                  >
-                    <div className="p-5 md:p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {galleryItems.map((item, idx) => (
-                        <motion.div
-                          key={idx}
-                          layout
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          className="aspect-[4/5] group cursor-pointer relative overflow-hidden rounded-2xl border border-white/5 hover:border-primary/20 transition-all"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLightbox(idx);
-                          }}
-                        >
-                          <img
-                            src={item.src}
-                            alt={item.caption}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                            <div className="p-4">
-                              <p className="text-white font-heading text-sm md:text-lg uppercase">{item.caption}</p>
-                              <p className="text-zinc-400 text-[10px] uppercase tracking-[0.3em] mt-1">{item.category}</p>
-                            </div>
-                          </div>
-                          <div className="absolute top-3 right-3 w-9 h-9 bg-black/50 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Camera className="w-4 h-4 text-white" />
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.article>
+              </motion.article>
+            </Link>
           </div>
         </div>
       </section>

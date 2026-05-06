@@ -3,6 +3,17 @@ import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 
 export const dynamic = 'force-dynamic';
 
+function normalizeValue(value) {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function buildTeamId(team) {
+  return [
+    normalizeValue(team.category),
+    normalizeValue(team.car_number),
+  ].join("|");
+}
+
 export async function GET() {
   try {
     await initSheets();
@@ -33,14 +44,36 @@ export async function GET() {
         status: "CONFIRMED", 
       }));
 
+    const uniqueTeams = [];
+    const seenIds = new Set();
+
+    for (const team of confirmedTeams) {
+      const recordId = buildTeamId(team);
+      if (seenIds.has(recordId)) {
+        continue;
+      }
+
+      seenIds.add(recordId);
+      uniqueTeams.push({
+        ...team,
+        recordId,
+      });
+    }
+
     // Robust Sort: Handle car numbers with letters (e.g., 'S7')
-    confirmedTeams.sort((a, b) => {
+    uniqueTeams.sort((a, b) => {
+      const categoryA = normalizeValue(a.category);
+      const categoryB = normalizeValue(b.category);
+      if (categoryA !== categoryB) {
+        return categoryA.localeCompare(categoryB);
+      }
+
       const numA = parseInt(String(a.car_number).replace(/[^0-9]/g, "")) || 0;
       const numB = parseInt(String(b.car_number).replace(/[^0-9]/g, "")) || 0;
       return numA - numB;
     });
 
-    return NextResponse.json({ teams: confirmedTeams });
+    return NextResponse.json({ teams: uniqueTeams });
   } catch (error) {
     console.error("Teams fetch error:", error);
     return NextResponse.json({ teams: [] });

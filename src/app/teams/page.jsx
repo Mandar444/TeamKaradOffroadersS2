@@ -3,6 +3,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Trophy, X, ShieldCheck, Instagram, Zap, Shield, ExternalLink } from "lucide-react";
@@ -41,7 +42,7 @@ export default function TeamsPage() {
     fetch("/api/teams")
       .then(res => res.json())
       .then(data => {
-        setTeams(data.teams || []);
+        setTeams(Array.isArray(data.teams) ? data.teams : []);
         setLoading(false);
       })
       .catch(err => {
@@ -52,12 +53,17 @@ export default function TeamsPage() {
   }, []);
 
   const filteredTeams = teams.filter(team => {
-    const prefixedNum = `${CATEGORY_PREFIXES[team.category] || ""}${team.car_number}`;
+    const searchTerm = search.trim().toLowerCase();
+    const teamName = String(team.team_name ?? "").toLowerCase();
+    const driverName = String(team.driver_name ?? "").toLowerCase();
+    const carNumber = String(team.car_number ?? "");
+    const prefixedNum = `${CATEGORY_PREFIXES[team.category] || ""}${carNumber}`;
     const matchesSearch = 
-      team.team_name?.toLowerCase().includes(search.toLowerCase()) ||
-      team.driver_name?.toLowerCase().includes(search.toLowerCase()) ||
-      team.car_number?.toString().includes(search) ||
-      prefixedNum.toLowerCase().includes(search.toLowerCase());
+      searchTerm === "" ||
+      teamName.includes(searchTerm) ||
+      driverName.includes(searchTerm) ||
+      carNumber.includes(search.trim()) ||
+      prefixedNum.toLowerCase().includes(searchTerm);
     
     const matchesCategory = category === "ALL" || team.category === category;
     
@@ -65,7 +71,7 @@ export default function TeamsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-[50%] h-[50vh] bg-mesh-amber opacity-5 blur-[150px] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
 
@@ -74,11 +80,11 @@ export default function TeamsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-6"
+            className="inline-flex max-w-full items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.4em] mb-6"
           >
             <Zap className="w-3 h-3" /> Team Karad Off-Roaders Official
           </motion.div>
-          <h1 className="text-6xl md:text-8xl font-heading text-white tracking-tighter uppercase mb-4 leading-none">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-heading text-white tracking-normal uppercase mb-4 leading-none">
             THE <span className="text-primary italic">LINEUP</span>
           </h1>
           <p className="text-sm md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
@@ -93,7 +99,7 @@ export default function TeamsPage() {
               placeholder="Search driver, team or DM-27..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-12 h-14 bg-black/50 border-white/5 focus:border-primary/50 transition-all rounded-xl text-lg"
+              className="pl-12 h-12 sm:h-14 bg-black/50 border-white/5 focus:border-primary/50 transition-all rounded-xl text-base sm:text-lg"
             />
           </div>
           <div className="flex flex-wrap md:flex-nowrap md:overflow-x-auto gap-2 pb-2 md:pb-0 custom-scrollbar scroll-smooth">
@@ -121,11 +127,11 @@ export default function TeamsPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              key={team.car_number}
+              key={team.recordId || `${team.category}-${team.car_number}-${team.team_name}`}
               onClick={() => setSelectedTeam(team)}
               className="group cursor-pointer"
             >
-              <div className="relative bg-zinc-950 border border-white/10 rounded-[2rem] p-0 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(255,165,0,0.15)] hover:border-primary/40 flex h-64">
+              <div className="relative bg-zinc-950 border border-white/10 rounded-[1.5rem] sm:rounded-[2rem] p-0 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(255,165,0,0.15)] hover:border-primary/40 flex min-h-64">
                 <div className="hidden sm:flex w-12 bg-zinc-900 border-r border-white/5 flex-col items-center justify-between py-6 opacity-40 group-hover:opacity-100 transition-opacity">
                    <div className="rotate-[-90deg] whitespace-nowrap text-[7px] font-black tracking-[0.4em] text-zinc-600 uppercase">
                      TK-S2-GRID-ACCESS
@@ -133,26 +139,26 @@ export default function TeamsPage() {
                    <ShieldCheck className="w-4 h-4 text-primary" />
                 </div>
 
-                <div className="flex-1 p-6 md:p-8 relative flex flex-col justify-between">
+                <div className="flex-1 p-5 sm:p-6 md:p-8 relative flex min-w-0 flex-col justify-between gap-6">
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none bg-mesh-amber" />
                   <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-5 transition-all">
                     <Trophy className="w-32 h-32 text-white" />
                   </div>
                   
-                  <div className="flex justify-between items-start relative z-10">
-                    <div className="flex flex-col gap-1">
-                      <p className="text-[10px] font-black tracking-[0.4em] text-primary uppercase leading-none">Vessel Class</p>
+                  <div className="flex justify-between items-start gap-3 relative z-10">
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <p className="text-[10px] font-black tracking-[0.2em] sm:tracking-[0.4em] text-primary uppercase leading-none">Vessel Class</p>
                       <p className="text-white text-xs font-bold uppercase tracking-widest opacity-80">{CATEGORIES[team.category]?.name || "COMPETITOR"}</p>
                     </div>
-                    <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
-                      <span className="text-2xl font-heading font-black tracking-tighter italic">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-black border border-white/10 rounded-2xl flex shrink-0 items-center justify-center text-white shadow-xl group-hover:border-primary/60 transition-all duration-500">
+                      <span className="text-xl sm:text-2xl font-heading font-black tracking-normal italic">
                         {CATEGORY_PREFIXES[team.category] || "S"}{team.car_number}
                       </span>
                     </div>
                   </div>
 
                   <div className="relative z-10 space-y-2">
-                    <h3 className="text-3xl font-heading text-white uppercase italic tracking-wide group-hover:text-primary transition-colors leading-none">
+                    <h3 className="text-2xl sm:text-3xl font-heading text-white uppercase italic tracking-normal group-hover:text-primary transition-colors leading-none break-words">
                       {team.team_name || "STORM RIDER"}
                     </h3>
                     <div className="flex items-center gap-2">
@@ -187,7 +193,7 @@ export default function TeamsPage() {
             rel="noopener noreferrer"
             className="group block relative p-[1px] rounded-[1.5rem] bg-zinc-900 border border-white/5 overflow-hidden hover:border-primary/20 transition-all active:scale-[0.98]"
           >
-            <div className="relative z-10 p-5 md:p-6 flex items-center justify-between gap-6">
+            <div className="relative z-10 p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                <div className="flex items-center gap-5">
                   <div className="w-14 h-14 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] rounded-2xl p-0.5 shadow-xl group-hover:rotate-6 transition-transform">
                      <div className="bg-black w-full h-full rounded-[0.9rem] flex items-center justify-center">
@@ -203,7 +209,7 @@ export default function TeamsPage() {
                     </p>
                   </div>
                </div>
-               <div className="flex items-center gap-2 px-5 py-2.5 bg-primary text-black rounded-xl font-black uppercase tracking-widest text-[10px] group-hover:bg-white transition-colors">
+               <div className="flex w-full sm:w-auto items-center justify-center gap-2 px-5 py-2.5 bg-primary text-black rounded-xl font-black uppercase tracking-widest text-[10px] group-hover:bg-white transition-colors">
                   Open <ExternalLink className="w-3 h-3" />
                </div>
             </div>
@@ -226,7 +232,7 @@ export default function TeamsPage() {
                    <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')]" />
                    <div className="relative z-10">
                       <div className="flex items-center gap-3 mb-8">
-                        <img src="/logo.png" className="w-10 h-10 object-contain" alt="TKO" />
+                        <Image src="/logo.png" width={40} height={40} className="w-10 h-10 object-contain" alt="TKO" />
                         <div>
                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] leading-none">Global Event</p>
                            <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest mt-1 italic leading-none">Season 2 Edition</p>
@@ -342,28 +348,28 @@ export default function TeamsPage() {
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.9 }}
-                className="md:hidden flex flex-col w-full max-w-sm bg-black border border-white/10 rounded-[3rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,1)] relative z-10"
+                className="md:hidden flex flex-col w-full max-w-sm max-h-[92vh] bg-black border border-white/10 rounded-[2rem] overflow-y-auto shadow-[0_40px_100px_rgba(0,0,0,1)] relative z-10"
               >
                 {/* Header Strip */}
                 <div className="bg-primary p-3 flex justify-center items-center gap-2">
                    <div className="w-1 h-1 rounded-full bg-black animate-ping" />
-                   <span className="text-[10px] font-black text-black uppercase tracking-[0.5em]">Official Grid Access - Active</span>
+                   <span className="text-[10px] font-black text-black uppercase tracking-[0.16em]">Official Grid Access - Active</span>
                 </div>
 
-                <div className="p-8 pb-4 relative overflow-hidden">
+                <div className="p-6 sm:p-8 pb-4 relative overflow-hidden">
                    <div className="absolute top-0 right-0 p-10 opacity-[0.03] rotate-12">
                       <Trophy className="w-64 h-64 text-white" />
                    </div>
                    
                    <div className="relative z-10 flex flex-col items-center text-center">
-                      <img src="/logo.png" className="w-16 h-16 object-contain mb-6 drop-shadow-[0_0_20px_rgba(255,165,0,0.4)]" alt="TKO" />
+                      <Image src="/logo.png" width={64} height={64} className="w-16 h-16 object-contain mb-6 drop-shadow-[0_0_20px_rgba(255,165,0,0.4)]" alt="TKO" />
                       <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1 italic">S1 COMPETITOR</p>
-                      <h2 className="text-3xl font-heading text-white uppercase italic tracking-tighter leading-none mb-6">
+                      <h2 className="text-2xl sm:text-3xl font-heading text-white uppercase italic tracking-normal leading-none mb-6">
                          {selectedTeam.team_name || "PRO RIVAL"}
                       </h2>
                       
                       <div className="relative">
-                         <h3 className="text-9xl font-heading text-white font-black leading-none tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
+                         <h3 className="text-7xl sm:text-9xl font-heading text-white font-black leading-none tracking-normal drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
                             {CATEGORY_PREFIXES[selectedTeam.category] || "#"}{selectedTeam.car_number}
                          </h3>
                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-zinc-800 text-primary border-primary/20 py-1 px-4 rounded-xl text-[8px] uppercase font-black tracking-widest shadow-xl whitespace-nowrap">
@@ -380,8 +386,8 @@ export default function TeamsPage() {
                    <div className="w-10 h-10 bg-black/90 border border-white/10 rounded-full -mr-9 shadow-inner" />
                 </div>
 
-                <div className="px-8 pb-10 space-y-8 relative z-10">
-                   <div className="grid grid-cols-2 gap-4 bg-zinc-900/50 p-6 rounded-[2rem] border border-white/5">
+                <div className="px-5 sm:px-8 pb-8 sm:pb-10 space-y-8 relative z-10">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-zinc-900/50 p-5 sm:p-6 rounded-[2rem] border border-white/5">
                       <div className="text-center md:text-left">
                          <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mb-1">Driver</p>
                          <p className="text-sm font-heading text-white uppercase truncate">{selectedTeam.driver_name}</p>

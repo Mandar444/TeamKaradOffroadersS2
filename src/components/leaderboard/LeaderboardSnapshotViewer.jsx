@@ -1,427 +1,479 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Clock3, RefreshCw, ShieldAlert, Users, Trophy } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Info } from "lucide-react";
+import {
+  fetchLeaderboardSnapshot,
+  fetchLeaderboardVisibility,
+  getCategoriesFromSnapshot,
+  normalizeCategoryKey,
+  normalizeResultIdentityKey,
+  normalizeShortIdentityKey,
+} from "@/lib/leaderboard-snapshot";
 
-const apiUrl = "/api/leaderboard";
-const EMPTY_ARRAY = [];
-
-function normalizeCategory(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_-]+/g, " ");
-}
-
-function getCategoryKey(item) {
-  if (typeof item === "string") return item;
-  return item?.key || item?.categoryKey || item?.category || item?.label || item?.name || "";
-}
-
-function getCategoryLabel(item) {
-  if (typeof item === "string") return item;
-  return item?.label || item?.name || item?.title || item?.category || item?.key || "Category";
-}
-
-function getNumericValue(value) {
-  if (typeof value === "number") return value;
-  const parsed = Number(String(value || "").replace(/[^0-9.-]/g, ""));
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function formatTimeParts(totalSeconds) {
-  const safe = Math.max(0, Math.floor(totalSeconds || 0));
-  const hours = String(Math.floor(safe / 3600)).padStart(2, "0");
-  const minutes = String(Math.floor((safe % 3600) / 60)).padStart(2, "0");
-  const seconds = String(safe % 60).padStart(2, "0");
-  return `${hours}:${minutes}:${seconds}`;
-}
-
-function getDisputeRemainingSeconds(dispute, now) {
-  if (typeof dispute?.remainingSeconds === "number") {
-    return Math.max(0, dispute.remainingSeconds);
-  }
-
-  const expiresAt = dispute?.expiresAt || dispute?.expires_at || dispute?.holdExpiresAt;
-  if (!expiresAt) return null;
-
-  const remaining = Math.floor((new Date(expiresAt).getTime() - now) / 1000);
-  return Number.isFinite(remaining) ? Math.max(0, remaining) : null;
-}
-
-function pickEntries(result) {
-  return result?.dayEntries || result?.entries || result?.days || [];
-}
-
-function pickTrackSummaries(result) {
-  return result?.trackSummaries || result?.tracks || [];
-}
-
-function pickVehiclePoints(result) {
+function TotalCell({ total }) {
   return (
-    result?.totalVehiclePoints ??
-    result?.vehiclePoints ??
-    result?.totalPoints ??
-    result?.total ??
-    result?.points ??
-    0
+    <div className="flex flex-col items-end leading-none">
+      <span className="font-mono text-[28px] font-black text-[#ff7a00] md:text-[32px]">{total}/700</span>
+      <span className="mt-2 text-[12px] font-black uppercase tracking-[0.08em] text-[#d9a36d]">PTS</span>
+    </div>
   );
 }
 
-export default function LeaderboardSnapshotViewer() {
+function RealisticTrophyIcon({ id, className = "" }) {
+  const gradientId = `trophy-metal-${id}`;
+  const shadowId = `trophy-shadow-${id}`;
+  const shineId = `trophy-shine-${id}`;
+
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      aria-hidden="true"
+      className={className}
+      role="img"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="12" x2="52" y1="6" y2="58" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#fff8cc" />
+          <stop offset="0.18" stopColor="#ffd86d" />
+          <stop offset="0.45" stopColor="#ff9f1a" />
+          <stop offset="0.68" stopColor="#b95a08" />
+          <stop offset="1" stopColor="#fff0a8" />
+        </linearGradient>
+        <radialGradient id={shineId} cx="28%" cy="18%" r="55%">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="0.36" stopColor="#ffffff" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        <filter id={shadowId} x="-35%" y="-30%" width="170%" height="170%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" floodColor="#2a1200" floodOpacity="0.45" />
+        </filter>
+      </defs>
+      <g filter={`url(#${shadowId})`}>
+        <path
+          d="M17.5 11.5h29v7.8c0 12.3-5.3 21-14.5 22.7-9.2-1.7-14.5-10.4-14.5-22.7v-7.8Z"
+          fill={`url(#${gradientId})`}
+          stroke="#fff1a8"
+          strokeWidth="1.3"
+        />
+        <path
+          d="M17.7 17.2H9.5c.4 10.2 5.5 16.4 13.8 17.7"
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="5.2"
+        />
+        <path
+          d="M46.3 17.2h8.2c-.4 10.2-5.5 16.4-13.8 17.7"
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="5.2"
+        />
+        <path d="M28.5 41.5h7v8h-7z" fill={`url(#${gradientId})`} />
+        <path d="M22 50h20l2.6 6.5H19.4L22 50Z" fill={`url(#${gradientId})`} stroke="#7a3500" strokeWidth="1" />
+        <path d="M16 56h32v5H16z" fill={`url(#${gradientId})`} stroke="#7a3500" strokeWidth="1" rx="1.8" />
+        <path
+          d="M22.2 15.7c.6 8.8 3.7 15.2 9.8 18.7 5.7-3.4 8.7-9.4 9.6-17.2"
+          fill="none"
+          stroke="#6d3000"
+          strokeOpacity="0.22"
+          strokeWidth="2"
+        />
+        <path d="M18.8 12.8h12.5c-1.8 7.9-5.1 13.8-10 17.8-1.7-3.2-2.5-7-2.5-11.5v-6.3Z" fill={`url(#${shineId})`} />
+      </g>
+    </svg>
+  );
+}
+
+function PositionCell({ position }) {
+  const podiumLabel = position === 1 ? "1st" : position === 2 ? "2nd" : position === 3 ? "3rd" : `${position}`;
+  const isPodium = position <= 3;
+  const podiumStyles = {
+    1: {
+      shell: "border-[#ffd36a]/70 bg-[linear-gradient(135deg,rgba(255,211,106,0.22),rgba(255,122,0,0.08))] text-[#ffd36a] shadow-[0_0_26px_rgba(255,185,64,0.28)]",
+      iconWrap: "border-[#ffd36a]/50 bg-[#ffd36a] text-[#1a0d00] shadow-[0_0_18px_rgba(255,211,106,0.45)]",
+      icon: "fill-[#1a0d00] text-[#1a0d00]",
+      label: "text-[#ffd36a]",
+    },
+    2: {
+      shell: "border-[#d8e0ef]/60 bg-[linear-gradient(135deg,rgba(216,224,239,0.18),rgba(122,143,171,0.08))] text-[#e7edf7] shadow-[0_0_22px_rgba(216,224,239,0.18)]",
+      iconWrap: "border-[#e7edf7]/45 bg-[#d8e0ef] text-[#111827] shadow-[0_0_16px_rgba(216,224,239,0.32)]",
+      icon: "fill-[#111827] text-[#111827]",
+      label: "text-[#e7edf7]",
+    },
+    3: {
+      shell: "border-[#d98745]/65 bg-[linear-gradient(135deg,rgba(217,135,69,0.2),rgba(98,49,18,0.08))] text-[#f3a45f] shadow-[0_0_22px_rgba(217,135,69,0.2)]",
+      iconWrap: "border-[#f3a45f]/45 bg-[#d98745] text-[#170a02] shadow-[0_0_16px_rgba(217,135,69,0.34)]",
+      icon: "fill-[#170a02] text-[#170a02]",
+      label: "text-[#f3a45f]",
+    },
+  };
+  const activeStyle = podiumStyles[position];
+
+  if (!isPodium) {
+    return (
+      <div className="inline-flex min-w-[58px] items-center justify-center rounded-full border border-[#2b1709] bg-[#101010] px-3 py-2 font-mono text-[13px] font-black uppercase text-[#d9a36d]">
+        {podiumLabel}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`relative inline-flex items-center gap-2 overflow-hidden rounded-full border py-1.5 pl-1.5 pr-3 font-mono text-[13px] font-black uppercase ${activeStyle.shell}`}>
+      <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.22),transparent_32%)]" />
+      <span className={`relative flex h-9 w-9 items-center justify-center rounded-full border ${activeStyle.iconWrap}`}>
+        <RealisticTrophyIcon id={position} className="h-7 w-7" />
+      </span>
+      <span className={`relative tracking-[0.08em] ${activeStyle.label}`}>{podiumLabel}</span>
+    </div>
+  );
+}
+
+function getTrackSummaryForLabel(row, trackLabel, fallbackIndex) {
+  const summaries = row?.trackSummaries || [];
+  const normalizedTrackLabel = String(trackLabel || "").trim().toLowerCase();
+
+  return (
+    summaries.find(summary => String(summary?.trackLabel || "").trim().toLowerCase() === normalizedTrackLabel) ||
+    summaries[fallbackIndex] ||
+    null
+  );
+}
+
+function buildDetailHref({ activeCategory, row, trackLabel, entry, returnHref = "" }) {
+  const fallbackRecord = {
+    category: activeCategory?.key || "",
+    track_name: trackLabel,
+    sticker_number: row?.stickerNumber || "",
+    driver_name: row?.driverName || "",
+    selected_day_label: entry?.dayLabel || "",
+  };
+  const key = entry?.key || normalizeResultIdentityKey(fallbackRecord);
+  const shortKey = normalizeShortIdentityKey(fallbackRecord);
+  const params = new URLSearchParams();
+
+  if (key) {
+    params.set("key", key);
+  }
+
+  if (shortKey) {
+    params.set("shortKey", shortKey);
+  }
+
+  params.set("category", activeCategory?.label || activeCategory?.key || "Category");
+  params.set("categoryKey", activeCategory?.key || "");
+  params.set("track", trackLabel || "Track");
+  params.set("sticker", row?.stickerNumber || "");
+  params.set("driver", row?.driverName || "");
+  params.set("day", entry?.dayLabel || "");
+  params.set("timing", entry?.timingLabel || "");
+  params.set("points", entry?.pointsLabel || "");
+  params.set("rank", entry?.rankLabel || "");
+
+  if (returnHref) {
+    params.set("returnTo", returnHref);
+  }
+
+  return `/leaderboard/details?${params.toString()}`;
+}
+
+function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref }) {
+  if (!summary) {
+    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">NA</span>;
+  }
+
+  if (!summary.entries || summary.entries.length === 0) {
+    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">NA</span>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {summary.entries.map(entry => {
+        const detailHref = buildDetailHref({
+          activeCategory,
+          row,
+          trackLabel,
+          entry,
+          returnHref: detailReturnHref,
+        });
+
+        return (
+          <div
+            key={`${entry.key}-${entry.dayLabel}-${entry.timingLabel}-${entry.rankLabel}`}
+            className="rounded-xl border border-transparent py-1"
+          >
+            <p className="font-mono text-[15px] font-black uppercase text-[#fff7ef]">
+              {entry.timingLabel || "NA"}
+            </p>
+            <p className="mt-1 text-[10px] font-black uppercase text-[#d9a36d]">
+              {entry.pointsLabel && entry.pointsLabel !== "--" ? entry.pointsLabel : `${summary.totalPoints || 0} pts`}
+            </p>
+            <Link
+              href={detailHref}
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#ff7a00]/35 bg-[#ff7a00]/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-[#ffb35c] transition-colors hover:border-[#ffb35c] hover:bg-[#ff7a00] hover:text-black"
+              title="Open track details"
+            >
+              <Info className="h-3.5 w-3.5" />
+              Details
+            </Link>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function LeaderboardSnapshotViewer({ respectVisibility = true, detailReturnHref = "" }) {
+  const searchParams = useSearchParams();
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [visibilityLoading, setVisibilityLoading] = useState(respectVisibility);
+  const [leaderboardVisible, setLeaderboardVisible] = useState(!respectVisibility);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [now, setNow] = useState(0);
+  const [error, setError] = useState("");
 
-  const loadSnapshot = async () => {
+  const loadVisibility = useCallback(async () => {
+    if (!respectVisibility) {
+      setLeaderboardVisible(true);
+      setVisibilityLoading(false);
+      return;
+    }
+
+    setVisibilityLoading(true);
+
     try {
-      setLoading(true);
-      setError("");
-      const response = await fetch(apiUrl, { cache: "no-store" });
-      const data = await response.json();
+      const visibility = await fetchLeaderboardVisibility();
+      setLeaderboardVisible(visibility.visible);
+    } catch (visibilityError) {
+      setLeaderboardVisible(true);
+    } finally {
+      setVisibilityLoading(false);
+    }
+  }, [respectVisibility]);
 
-      if (!response.ok || !data.ok) {
-        throw new Error(data?.error || "Unable to load leaderboard snapshot");
-      }
-
-      setSnapshot(data.snapshot);
-    } catch (err) {
-      setError(err?.message || "Unable to load leaderboard snapshot");
+  const loadSnapshot = useCallback(async () => {
+    if (respectVisibility && !leaderboardVisible) {
       setSnapshot(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const exportedSnapshot = await fetchLeaderboardSnapshot();
+      setSnapshot(exportedSnapshot);
+    } catch (loadError) {
+      setSnapshot(null);
+      setError(loadError?.message || "Waiting for synced leaderboard data from the app.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [leaderboardVisible, respectVisibility]);
 
   useEffect(() => {
-    const startTimer = setTimeout(() => {
-      void loadSnapshot();
-    }, 0);
-    const refreshTimer = setInterval(() => {
-      void loadSnapshot();
-    }, 15000);
-    const clockTimer = setInterval(() => setNow(Date.now()), 1000);
+    loadVisibility();
+  }, [loadVisibility]);
 
-    return () => {
-      clearTimeout(startTimer);
-      clearInterval(refreshTimer);
-      clearInterval(clockTimer);
-    };
-  }, []);
+  useEffect(() => {
+    if (visibilityLoading) {
+      return;
+    }
 
-  const categoryOptions = snapshot?.categoryOptions ?? EMPTY_ARRAY;
-  const results = snapshot?.results ?? EMPTY_ARRAY;
-  const disputes = snapshot?.disputes ?? EMPTY_ARRAY;
-  const firstAvailableCategory = getCategoryKey(categoryOptions[0]) || getCategoryKey(results[0]) || "";
-  const activeCategory = selectedCategory || firstAvailableCategory;
+    if (!leaderboardVisible) {
+      setSnapshot(null);
+      setLoading(false);
+      setError("");
+      return;
+    }
 
-  const selectedResult = useMemo(() => {
-    if (!snapshot) return null;
+    loadSnapshot();
+  }, [leaderboardVisible, loadSnapshot, visibilityLoading]);
 
-    const target = normalizeCategory(activeCategory);
+  const categories = useMemo(() => getCategoriesFromSnapshot(snapshot), [snapshot]);
+  const activeCategory = useMemo(() => {
+    if (!categories.length) {
+      return null;
+    }
+
+    return categories.find(category => category.key === selectedCategory) || categories[0];
+  }, [categories, selectedCategory]);
+  const rows = activeCategory?.rows || [];
+
+  useEffect(() => {
+    if (!categories.length) {
+      setSelectedCategory("");
+      return;
+    }
+
+    if (!selectedCategory || !categories.some(category => category.key === selectedCategory)) {
+      setSelectedCategory(categories[0].key);
+    }
+  }, [categories, selectedCategory]);
+
+  useEffect(() => {
+    if (!categories.length) {
+      return;
+    }
+
+    const categoryFromUrl = normalizeCategoryKey(searchParams.get("category") || searchParams.get("categoryKey") || "");
+    if (categoryFromUrl && categories.some(category => category.key === categoryFromUrl)) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [categories, searchParams]);
+
+  if (respectVisibility && visibilityLoading) {
     return (
-      results.find((item) => {
-        const candidateValues = [
-          item?.category,
-          item?.categoryKey,
-          item?.key,
-          item?.name,
-          item?.label,
-        ]
-          .filter(Boolean)
-          .map(normalizeCategory);
-        return candidateValues.includes(target);
-      }) || results[0] || null
+      <div className="rounded-[2rem] border border-[#2b1a0f] bg-black p-8 text-center text-[#ff9a2c]">
+        Checking leaderboard visibility...
+      </div>
     );
-  }, [activeCategory, results, snapshot]);
+  }
 
-  const selectedCategoryLabel = selectedResult
-    ? selectedResult.category || selectedResult.name || selectedResult.label || activeCategory || "Category"
-    : activeCategory || "Category";
-
-  const categoryTeams = snapshot?.teams || [];
-  const trackSummaries = selectedResult ? pickTrackSummaries(selectedResult) : [];
-  const dayEntries = selectedResult ? pickEntries(selectedResult) : [];
-  const categoryDisputes = (selectedResult?.disputes || disputes || []).filter(Boolean);
+  if (respectVisibility && !leaderboardVisible) {
+    return (
+      <div className="rounded-[2rem] border border-[#2b1a0f] bg-black p-6 text-center md:p-10">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.45em] text-[#ff9a2c]">Leaderboard</p>
+        <h3 className="font-heading text-3xl uppercase leading-none text-white md:text-5xl">
+          LIVE LEADERBOARD CLOSED
+        </h3>
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#c58f55] md:text-base">
+          Race Control has closed the live leaderboard for now. Please check back later.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="rounded-[2rem] border border-white/5 bg-black/60 p-5 md:p-8">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
-        <div>
-          <p className="text-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2">Live Snapshot</p>
-          <h3 className="text-3xl md:text-5xl font-heading uppercase leading-none">
-            {snapshot ? "Latest Saved Leaderboard" : "No Snapshot Yet"}
-          </h3>
-          <p className="mt-3 text-zinc-400 text-sm md:text-base max-w-3xl leading-relaxed">
-            {snapshot
-              ? `Source: ${snapshot.source} · Generated: ${snapshot.generatedAt}`
-              : "Waiting for the React Native app to post a snapshot to the website backend."}
-          </p>
+    <div className="bg-black">
+      {error ? (
+        <div className="mb-4 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4 text-[12px] font-black uppercase text-[#d9a36d]">
+          No synced leaderboard data found yet.
         </div>
+      ) : null}
 
-        <button
-          type="button"
-          onClick={loadSnapshot}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-white/10 bg-black/45 text-[#ffb35c] text-[10px] font-black uppercase tracking-[0.35em] hover:border-white/20 hover:bg-black/60 transition-colors w-fit"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Refresh Snapshot
-        </button>
-      </div>
+      {!activeCategory ? (
+        <div className="rounded-[18px] border border-[#2b1709] bg-[#101010] p-6 text-sm text-[#c58f55]">
+          {loading ? "Loading leaderboard..." : "No leaderboard data has been synced from the app yet."}
+        </div>
+      ) : (
+        <div className="bg-black">
+          <div className="mb-4 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Vehicle Category</p>
+                <p className="mt-1 font-mono text-[14px] font-black uppercase text-[#fff7ef]">
+                  {activeCategory?.label || "Leaderboard"}
+                </p>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-wrap lg:justify-end lg:overflow-visible lg:pb-0">
+                {categories.map(category => {
+                  const active = selectedCategory === category.key;
 
-      {loading && !snapshot ? (
-        <div className="rounded-[1.5rem] border border-white/5 bg-[#111826] p-6 text-zinc-400">
-          Loading leaderboard snapshot...
-        </div>
-      ) : error ? (
-        <div className="rounded-[1.5rem] border border-red-500/20 bg-red-500/10 p-6 text-red-200">
-          {error}
-        </div>
-      ) : snapshot ? (
-        <>
-          <div className="mb-6">
-            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-3">Categories</p>
-            <div className="flex flex-wrap gap-2">
-              {categoryOptions.length > 0
-                ? categoryOptions.map((item) => {
-                    const key = getCategoryKey(item);
-                    const label = getCategoryLabel(item);
-                    const active = normalizeCategory(activeCategory) === normalizeCategory(key || label);
+                  return (
+                    <button
+                      key={category.key}
+                      type="button"
+                      onClick={() => setSelectedCategory(category.key)}
+                      className={`shrink-0 rounded-full border px-4 py-2 font-mono text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+                        active
+                          ? "border-[#ff7a00] bg-[#ff7a00] text-black"
+                          : "border-[#2b1709] bg-black text-[#d9a36d] hover:border-[#ff7a00]/60 hover:text-[#fff7ef]"
+                      }`}
+                    >
+                      {category.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto bg-black">
+            <table className="w-full min-w-[1620px] border-separate border-spacing-y-3 text-left">
+            <thead>
+              <tr className="text-[12px] font-black uppercase text-[#d9a36d]">
+                <th className="w-[145px] rounded-l-[18px] border-y border-l border-[#2b1709] bg-[#101010] px-4 py-5">Position</th>
+                <th className="w-[145px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Sticker</th>
+                <th className="w-[230px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Driver</th>
+                <th className="w-[285px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Co-Driver</th>
+                <th className="w-[190px] border-y border-[#2b1709] bg-[#101010] px-4 py-5 text-center">Total</th>
+                {(activeCategory?.tracks || []).map((track, index) => {
+                  const isLastTrack = index === (activeCategory?.tracks || []).length - 1;
+
+                  return (
+                    <th
+                      key={track}
+                      className={`w-[280px] border-y border-[#2b1709] bg-[#101010] px-4 py-5 ${
+                        isLastTrack ? "rounded-r-[18px] border-r" : ""
+                      }`}
+                    >
+                      {track}
+                    </th>
+                  );
+                })}
+                {(activeCategory?.tracks || []).length === 0 ? (
+                  <th className="w-[280px] rounded-r-[18px] border-y border-r border-[#2b1709] bg-[#101010] px-4 py-5">Track Status</th>
+                ) : null}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIndex) => (
+                <tr key={row.vehicleKey}>
+                  <td className="rounded-l-[18px] border-y border-l border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <PositionCell position={rowIndex + 1} />
+                  </td>
+                  <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <span className="font-mono text-[17px] font-black text-[#fff7ef]">#{row.stickerNumber || "--"}</span>
+                  </td>
+                  <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.driverName}</p>
+                  </td>
+                  <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.coDriverName}</p>
+                  </td>
+                  <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <TotalCell total={row.totalPoints} />
+                  </td>
+                  {(activeCategory?.tracks || []).map((track, index) => {
+                    const summary = getTrackSummaryForLabel(row, track, index);
+                    const isLastTrack = index === (activeCategory?.tracks || []).length - 1;
+
                     return (
-                      <button
-                        key={key || label}
-                        type="button"
-                        onClick={() => setSelectedCategory(key || label)}
-                        className={`px-4 py-2 rounded-full border text-[10px] md:text-[11px] font-black uppercase tracking-[0.25em] transition-all ${
-                          active
-                            ? "bg-[#ffb35c] text-black border-[#ffb35c]"
-                            : "bg-[#111826] text-zinc-400 border-white/10 hover:border-[#ffb35c]/40 hover:text-white"
+                      <td
+                        key={`${row.vehicleKey}-${track}`}
+                        className={`border-l border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle text-left ${
+                          isLastTrack ? "rounded-r-[18px] border-r" : ""
                         }`}
                       >
-                        {label}
-                      </button>
-                    );
-                  })
-                : results.map((item) => {
-                    const label = getCategoryLabel(item);
-                    const active = normalizeCategory(activeCategory) === normalizeCategory(label);
-                    return (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => setSelectedCategory(label)}
-                        className={`px-4 py-2 rounded-full border text-[10px] md:text-[11px] font-black uppercase tracking-[0.25em] transition-all ${
-                          active
-                            ? "bg-[#ffb35c] text-black border-[#ffb35c]"
-                            : "bg-[#111826] text-zinc-400 border-white/10 hover:border-[#ffb35c]/40 hover:text-white"
-                        }`}
-                      >
-                        {label}
-                      </button>
+                        <TrackCell
+                          summary={summary}
+                          row={row}
+                          trackLabel={track}
+                          activeCategory={activeCategory}
+                          detailReturnHref={detailReturnHref}
+                        />
+                      </td>
                     );
                   })}
-            </div>
+                  {(activeCategory?.tracks || []).length === 0 ? (
+                    <td className="rounded-r-[18px] border-l border-y border-r border-[#2b1709] bg-[#151515] px-4 py-11 align-middle text-[13px] font-black uppercase text-[#d9a36d]">
+                      No track result synced
+                    </td>
+                  ) : null}
+                </tr>
+              ))}
+            </tbody>
+            </table>
           </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
-            <div className="rounded-[1.5rem] border border-white/5 bg-[#111826] p-5 md:p-6">
-              <div className="flex items-center justify-between gap-4 mb-5">
-                <div>
-                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">Selected Category</p>
-                  <h4 className="text-2xl md:text-4xl font-heading uppercase leading-none">{selectedCategoryLabel}</h4>
-                </div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.35em]">
-                  <Clock3 className="w-4 h-4" />
-                  Live Saved
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-                <div className="rounded-2xl border border-white/5 bg-black/50 p-4">
-                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">Total Vehicle Points</p>
-                  <p className="text-3xl md:text-4xl font-heading text-primary leading-none">
-                    {pickVehiclePoints(selectedResult)}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-white/5 bg-black/50 p-4">
-                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">Teams</p>
-                  <p className="text-3xl md:text-4xl font-heading leading-none">{categoryTeams.length}</p>
-                </div>
-                <div className="rounded-2xl border border-white/5 bg-black/50 p-4">
-                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-2">Disputes</p>
-                  <p className="text-3xl md:text-4xl font-heading leading-none">{categoryDisputes.length}</p>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Trophy className="w-5 h-5 text-primary" />
-                  <h5 className="text-xl md:text-2xl font-heading uppercase leading-none">Track-Wise Summary</h5>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {trackSummaries.length > 0 ? (
-                    trackSummaries.map((track, index) => {
-                      const trackLabel = track.track || track.name || track.label || `Track ${index + 1}`;
-                      const dayItems = pickEntries(track);
-                      return (
-                        <div key={`${trackLabel}-${index}`} className="rounded-2xl border border-white/5 bg-black/50 p-4">
-                          <div className="flex items-center justify-between gap-4 mb-4">
-                            <div>
-                              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Track</p>
-                              <h6 className="text-lg font-heading uppercase leading-none">{trackLabel}</h6>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Points</p>
-                              <p className="text-2xl font-heading text-primary leading-none">{getNumericValue(track.totalPoints || track.points)}</p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            {dayItems.length > 0 ? (
-                              dayItems.map((day, dayIndex) => (
-                                <div
-                                  key={`${trackLabel}-${dayIndex}`}
-                                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-xl border border-white/5 bg-[#111826] px-3 py-3"
-                                >
-                                  <p className="text-sm font-black uppercase tracking-[0.2em] text-white">
-                                    {day.day || day.label || day.round || `D${dayIndex + 1}`}
-                                  </p>
-                                  <p className="text-xs md:text-sm text-zinc-300">
-                                    {day.time || day.duration || day.result || day.hold || "NA"}
-                                  </p>
-                                  <p className="text-xs md:text-sm font-black uppercase tracking-[0.18em] text-primary">
-                                    {day.points ?? day.score ?? day.total ?? ""}
-                                    {day.position ? ` · ${day.position}` : ""}
-                                  </p>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="rounded-xl border border-white/5 bg-[#111826] px-3 py-3 text-zinc-500 text-sm">
-                                No day-wise entries available.
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="rounded-2xl border border-white/5 bg-black/50 p-4 text-zinc-400">
-                      No track summaries were included in the snapshot.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-primary" />
-                  <h5 className="text-xl md:text-2xl font-heading uppercase leading-none">Day-Wise Entries</h5>
-                </div>
-
-                <div className="overflow-x-auto rounded-2xl border border-white/5 bg-black/50">
-                  <table className="min-w-full text-left">
-                    <thead className="bg-[#111826]">
-                      <tr className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
-                        <th className="px-4 py-3">Entry</th>
-                        <th className="px-4 py-3">Day</th>
-                        <th className="px-4 py-3">Time / Status</th>
-                        <th className="px-4 py-3">Points</th>
-                        <th className="px-4 py-3">Position</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dayEntries.length > 0 ? (
-                        dayEntries.map((entry, index) => (
-                          <tr key={`day-entry-${index}`} className="border-t border-white/5 text-sm">
-                            <td className="px-4 py-3 text-white font-heading uppercase">{entry.name || entry.entry || entry.label || `Entry ${index + 1}`}</td>
-                            <td className="px-4 py-3 text-zinc-300">{entry.day || entry.round || entry.track || "NA"}</td>
-                            <td className="px-4 py-3 text-zinc-300">{entry.time || entry.status || entry.result || "NA"}</td>
-                            <td className="px-4 py-3 text-primary font-black uppercase">{entry.points ?? entry.score ?? entry.total ?? "NA"}</td>
-                            <td className="px-4 py-3 text-zinc-300">{entry.position || "NA"}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td className="px-4 py-4 text-zinc-500" colSpan={5}>
-                            No day-wise entries available for this category.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="rounded-[1.5rem] border border-white/5 bg-black/50 p-5 md:p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <ShieldAlert className="w-5 h-5 text-primary" />
-                  <h5 className="text-xl md:text-2xl font-heading uppercase leading-none">Disputed Holds</h5>
-                </div>
-
-                <div className="space-y-3">
-                  {categoryDisputes.length > 0 ? (
-                    categoryDisputes.map((dispute, index) => {
-                      const remaining = getDisputeRemainingSeconds(dispute, now);
-                      return (
-                        <div key={`dispute-${index}`} className="rounded-2xl border border-white/5 bg-[#111826] p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <p className="text-primary text-[10px] font-black uppercase tracking-[0.35em] mb-1">
-                                {dispute.category || selectedCategoryLabel}
-                              </p>
-                              <h6 className="text-lg font-heading uppercase leading-none">{dispute.team || dispute.teamName || dispute.title || "Dispute Hold"}</h6>
-                              <p className="mt-2 text-sm text-zinc-400">{dispute.reason || dispute.message || "Hold in progress"}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.35em] mb-1">Remaining</p>
-                              <p className="text-2xl font-heading text-white leading-none">
-                                {remaining === null ? "NA" : formatTimeParts(remaining)}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="rounded-2xl border border-white/5 bg-[#111826] p-4 text-zinc-500">
-                      No disputed holds are available in this snapshot.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-[1.5rem] border border-white/5 bg-black/50 p-5 md:p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-primary" />
-                  <h5 className="text-xl md:text-2xl font-heading uppercase leading-none">Teams</h5>
-                </div>
-
-                <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
-                  {categoryTeams.length > 0 ? (
-                    categoryTeams.map((team, index) => (
-                      <div key={`team-${index}`} className="rounded-xl border border-white/5 bg-[#111826] px-4 py-3">
-                        <p className="text-white font-heading uppercase leading-none">{team.name || team.teamName || team.driver || `Team ${index + 1}`}</p>
-                        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-zinc-500">
-                          {team.location || team.teamLocation || team.category || team.status || "Registered team"}
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="rounded-xl border border-white/5 bg-[#111826] px-4 py-3 text-zinc-500">
-                      No teams were included in this snapshot.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
+        </div>
+      )}
     </div>
   );
 }

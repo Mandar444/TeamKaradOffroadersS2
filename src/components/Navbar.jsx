@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight, Instagram } from "lucide-react";
@@ -48,20 +49,22 @@ export default function Navbar() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-[1600px] mx-auto px-4 md:px-10 flex items-center justify-between h-20 gap-4">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-10 flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-4 group shrink-0 min-w-max">
-            <img
+          <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-4 group shrink">
+            <Image
               src="/logo.png"
               alt="TKO"
-              className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg group-hover:scale-110 transition-transform"
+              width={48}
+              height={48}
+              className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain rounded-lg group-hover:scale-110 transition-transform shrink-0"
               onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <div className="flex flex-col min-w-max">
-              <span className="text-white font-heading text-base md:text-xl leading-none tracking-widest uppercase whitespace-nowrap block">
+            <div className="flex min-w-0 flex-col">
+              <span className="block truncate text-white font-heading text-sm sm:text-base md:text-xl leading-none tracking-widest uppercase">
                 Team Karad
               </span>
-              <span className="text-primary text-[8px] md:text-[10px] font-black tracking-[0.3em] uppercase leading-none mt-1 whitespace-nowrap block">
+              <span className="hidden sm:block truncate text-primary text-[8px] md:text-[10px] font-black tracking-[0.22em] md:tracking-[0.3em] uppercase leading-none mt-1">
                 Off-Roaders Motorsports
               </span>
             </div>
@@ -101,7 +104,8 @@ export default function Navbar() {
           {/* Mobile Toggle (Visible on all screens below LG) */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="xl:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="xl:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors shrink-0"
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

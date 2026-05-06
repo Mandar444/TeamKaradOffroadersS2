@@ -5,6 +5,7 @@ const interStack = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
 const rajdhaniStack = '"Arial Narrow", "Franklin Gothic Medium", "Segoe UI", ui-sans-serif, system-ui, sans-serif';
 
 export const metadata = {
+  metadataBase: new URL("https://teamkaradoffroaders.online"),
   title: "Team Karad Off-Roaders | India's Ultimate Off-Road Championship",
   description: "Official portal for Team Karad Off-Roaders Season 2. Experience the most thrilling off-roading rally in Karad, Maharashtra. Register now for the 2026 Season.",
   keywords: ["offroading Karad", "Karad offroaders", "Team Karad", "offroad championship India", "TKO Season 2", "4x4 Karad", "Mahindra Thar Karad", "Maruti Gypsy Offroad"],

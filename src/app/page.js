@@ -6,11 +6,10 @@ import CarCategories from "@/components/sections/Categories";
 import PastEvents from "@/components/sections/PastEvents";
 import Intro from "@/components/sections/Intro";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Instagram, MapPin, Mail } from "lucide-react";
-import Image from "next/image";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(false);
@@ -38,7 +37,6 @@ export default function Home() {
   location: "KARAD, MAHARASHTRA",
   categories: 8,
   maxParticipants: "160",
-  prizePool: "TBA",
   features: [
     "3 Full Days of Competition",
     "Professional Drivers & Co-Drivers",
@@ -71,35 +69,58 @@ export default function Home() {
           <PastEvents />
 
           {/* Call to Action Section */}
-          <section className="py-20 md:py-32 px-6 bg-primary/5">
+          <section className="py-16 sm:py-20 md:py-32 px-4 sm:px-6 bg-primary/5">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-6xl font-heading text-white mb-6 uppercase leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-heading text-white mb-6 uppercase leading-tight">
                 READY TO <span className="text-primary italic">CONQUER?</span>
               </h2>
               <p className="text-zinc-400 text-sm md:text-lg mb-10 max-w-xl mx-auto">
                 Limited seats available for the elite 160 entries. Register now before your lucky sticker number is taken.
               </p>
-              <Link 
-                href="/register" 
-                className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-12 text-sm md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
-              >
-                <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  href="/hotel-support"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "h-11 md:h-12 px-5 md:px-8 text-xs md:text-base font-bold rounded-none skew-x-[-12deg] border-primary/30 text-primary hover:bg-primary/10 inline-flex items-center justify-center w-full sm:w-auto"
+                  )}
+                >
+                  <span className="skew-x-[12deg] whitespace-nowrap uppercase">HOTEL SUPPORT</span>
+                </Link>
+                <Link
+                  href="/mechanic-support"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "h-11 md:h-12 px-5 md:px-8 text-xs md:text-base font-bold rounded-none skew-x-[-12deg] border-primary/30 text-primary hover:bg-primary/10 inline-flex items-center justify-center w-full sm:w-auto"
+                  )}
+                >
+                  <span className="skew-x-[12deg] whitespace-nowrap uppercase">MECHANIC SUPPORT</span>
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "h-14 md:h-16 px-6 md:px-12 text-sm md:text-xl font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full sm:w-auto"
+                  )}
+                >
+                  <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
+                </Link>
+              </div>
             </div>
           </section>
 
           {/* Footer */}
-          <footer className="py-16 px-4 border-t border-white/5 bg-black">
+          <footer className="py-14 sm:py-16 px-4 sm:px-6 border-t border-white/5 bg-black">
             <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
                 <div>
-                  <h4 className="font-heading text-white text-base md:text-lg mb-4">TEAM KARAD <span className="text-primary truncate">OFF-ROADERS</span></h4>
+                  <h4 className="font-heading text-white text-base md:text-lg mb-4">TEAM KARAD <span className="text-primary">OFF-ROADERS</span></h4>
                   <p className="text-zinc-600 text-xs md:text-sm leading-relaxed mb-4">India&apos;s most thrilling off-road championship. Born from dust, built for glory.</p>
                   <div className="space-y-2 text-xs text-zinc-500">
                     <p className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer" onClick={() => window.open('https://maps.app.goo.gl/UcCbnHEk2i14xePK7', '_blank')}>
                       <MapPin className="w-3 h-3 text-primary" /> Karad, Maharashtra
                     </p>
-                    <p className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = 'mailto:teamkaradoffroaders@gmail.com'}>
+                    <p className="flex items-center gap-2 break-all hover:text-white transition-colors cursor-pointer" onClick={() => window.location.href = 'mailto:teamkaradoffroaders@gmail.com'}>
                       <Mail className="w-3 h-3 text-primary" /> teamkaradoffroaders@gmail.com
                     </p>
                   </div>
