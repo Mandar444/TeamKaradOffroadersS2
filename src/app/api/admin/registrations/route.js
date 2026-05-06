@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
+import { CATEGORIES } from "@/config/pricing";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -14,6 +15,14 @@ export async function GET() {
     const regSheet = await getSheetByName("Registrations");
     const bookedSheet = await getSheetByName("Booked Numbers");
     
+    // Categorization Helper
+    const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
+    const catMap = {};
+    Object.keys(CATEGORIES).forEach(key => {
+      catMap[normalize(key)] = key;
+      catMap[normalize(CATEGORIES[key].name)] = key;
+    });
+
     const [regRows, bookedRows] = await Promise.all([
       regSheet.getRows(),
       bookedSheet.getRows()
@@ -26,6 +35,9 @@ export async function GET() {
         let displayStatus = row.get("status");
         if (displayStatus === "PENDING_UTR") displayStatus = "AWAITING_PAYMENT";
         
+        const rawCat = row.get("category");
+        const canonicalCat = catMap[normalize(rawCat)] || rawCat;
+
         return {
           reg_id: row.get("reg_id"),
         team_name: row.get("team_name"),
@@ -35,7 +47,7 @@ export async function GET() {
         codriver_name: row.get("codriver_name"),
         codriver_blood_group: row.get("codriver_blood_group"),
         codriver_phone: row.get("codriver_phone"),
-        category: row.get("category"),
+        category: canonicalCat,
         car_number: row.get("car_number"),
         vehicle_name: row.get("vehicle_name"),
         vehicle_model: row.get("vehicle_model"),
@@ -56,26 +68,31 @@ export async function GET() {
         const id = String(row.get("reg_id") || "").trim().toUpperCase();
         return row.get("status") === "HELD" && !masterIds.has(id);
       })
-      .map(row => ({
-        reg_id: row.get("reg_id"),
-        team_name: row.get("team_name"),
-        driver_name: row.get("driver_name"),
-        driver_blood_group: row.get("driver_blood_group"),
-        driver_phone: row.get("driver_phone"),
-        codriver_name: row.get("codriver_name"),
-        codriver_blood_group: row.get("codriver_blood_group"),
-        codriver_phone: row.get("codriver_phone"),
-        category: row.get("category"),
-        car_number: row.get("car_number"),
-        vehicle_name: row.get("vehicle_name"),
-        vehicle_model: row.get("vehicle_model"),
-        amount_paid: row.get("amount_paid"),
-        utr_number: "IN_PAYMENT_GATE", // Special marker
-        socials: row.get("socials"),
-        screenshot_link: null,
-        status: "STUCK_IN_DRAFT", // Admin can now see this
-        submitted_at: row.get("submitted_at") || new Date().toISOString(),
-      }));
+      .map(row => {
+        const rawCat = row.get("category");
+        const canonicalCat = catMap[normalize(rawCat)] || rawCat;
+        
+        return {
+          reg_id: row.get("reg_id"),
+          team_name: row.get("team_name"),
+          driver_name: row.get("driver_name"),
+          driver_blood_group: row.get("driver_blood_group"),
+          driver_phone: row.get("driver_phone"),
+          codriver_name: row.get("codriver_name"),
+          codriver_blood_group: row.get("codriver_blood_group"),
+          codriver_phone: row.get("codriver_phone"),
+          category: canonicalCat,
+          car_number: row.get("car_number"),
+          vehicle_name: row.get("vehicle_name"),
+          vehicle_model: row.get("vehicle_model"),
+          amount_paid: row.get("amount_paid"),
+          utr_number: "IN_PAYMENT_GATE", // Special marker
+          socials: row.get("socials"),
+          screenshot_link: null,
+          status: "STUCK_IN_DRAFT", // Admin can now see this
+          submitted_at: row.get("submitted_at") || new Date().toISOString(),
+        };
+      });
 
     const registrations = [...masterRegistrations, ...draftRegistrations];
 
