@@ -80,7 +80,7 @@ export async function GET(request) {
     const allTaken = Array.from(new Set([...holdNumbers, ...confirmedNumbers]));
     
     // DEBUG: Final consolidated taken set
-    console.log(`[NUMBERS] Category: ${category} (Norm: ${targetCatNormalized}), Found: ${allTaken.length} taken slots: [${allTaken.join(', ')}]`);
+    console.log(`[NUMBERS] Category: ${category} (Canonical: ${targetCanonical}), Found: ${allTaken.length} taken slots: [${allTaken.join(', ')}]`);
 
     return NextResponse.json(
       { booked: allTaken },
