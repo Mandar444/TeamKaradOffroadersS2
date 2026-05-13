@@ -8,6 +8,90 @@ export const LEADERBOARD_VISIBILITY_PATH = "/api/leaderboard-visibility";
 
 export const normalizeText = value => String(value || "").trim();
 
+export const normalizeTrackKey = value =>
+  normalizeText(value)
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+
+const getFirstTrackValue = (source, keys) => {
+  for (const key of keys) {
+    const value = source?.[key];
+
+    if (value !== null && value !== undefined && value !== "") {
+      return value;
+    }
+  }
+
+  return "";
+};
+
+export const normalizeTrackDescriptor = (track, fallbackLabel = "") => {
+  const source = track && typeof track === "object" && !Array.isArray(track) ? track : null;
+  const fallback = normalizeText(fallbackLabel);
+  const rawLabel = source
+    ? getFirstTrackValue(source, [
+        "trackLabel",
+        "track_label",
+        "trackName",
+        "track_name",
+        "label",
+        "name",
+        "title",
+        "displayName",
+        "display_name",
+      ])
+    : track;
+  const rawKey = source
+    ? getFirstTrackValue(source, ["key", "id", "trackId", "track_id", "value", "slug", "code"])
+    : rawLabel;
+  const label = normalizeText(rawLabel || fallback || rawKey || "Track");
+  const key = normalizeTrackKey(rawKey || label);
+  const maxPointsValue = source
+    ? getFirstTrackValue(source, ["maxPoints", "max_points", "possiblePoints", "possible_points", "totalPossiblePoints"])
+    : "";
+  const maxPoints = maxPointsValue !== "" && Number.isFinite(Number(maxPointsValue)) ? Number(maxPointsValue) : 100;
+
+  return {
+    key: key || normalizeTrackKey(label),
+    label,
+    maxPoints,
+  };
+};
+
+const isTrackEnabled = track => {
+  if (!track || typeof track !== "object" || Array.isArray(track)) {
+    return true;
+  }
+
+  return !(
+    track.active === false ||
+    track.enabled === false ||
+    track.isActive === false ||
+    track.is_active === false ||
+    track.removed === true ||
+    track.deleted === true ||
+    track.isDeleted === true ||
+    track.is_deleted === true
+  );
+};
+
+const addTrackDescriptor = (tracks, seenTracks, descriptor) => {
+  if (!descriptor?.label) {
+    return;
+  }
+
+  const keyIdentity = descriptor.key || normalizeTrackKey(descriptor.label);
+  const labelIdentity = normalizeTrackKey(descriptor.label);
+
+  if (seenTracks.has(keyIdentity) || seenTracks.has(labelIdentity)) {
+    return;
+  }
+
+  seenTracks.add(keyIdentity);
+  seenTracks.add(labelIdentity);
+  tracks.push(descriptor);
+};
+
 export const normalizeCategoryKey = value => {
   const normalized = String(value || "")
     .trim()
@@ -134,11 +218,16 @@ export const normalizeTrackEntry = entry => ({
   rankLabel: normalizeText(entry?.rankLabel || entry?.rank_label || ""),
 });
 
-export const normalizeTrackSummary = (summary, fallbackLabel = "") => ({
-  trackLabel: normalizeText(summary?.trackLabel || summary?.track_label || fallbackLabel || "Track"),
-  totalPoints: Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0),
-  entries: Array.isArray(summary?.entries) ? summary.entries.map(normalizeTrackEntry) : [],
-});
+export const normalizeTrackSummary = (summary, fallbackLabel = "") => {
+  const descriptor = normalizeTrackDescriptor(summary, fallbackLabel);
+
+  return {
+    trackKey: descriptor.key,
+    trackLabel: descriptor.label,
+    totalPoints: Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0),
+    entries: Array.isArray(summary?.entries) ? summary.entries.map(normalizeTrackEntry) : [],
+  };
+};
 
 export const hasDisputePayload = record =>
   Array.isArray(record?.dispute_details) ||
@@ -195,8 +284,12 @@ export const getTrackSummariesFromRow = row => {
     return row.trackSummaries.map(summary => normalizeTrackSummary(summary));
   }
 
+  if (row?.trackSummaries && typeof row.trackSummaries === "object") {
+    return Object.entries(row.trackSummaries).map(([trackKey, summary]) => normalizeTrackSummary(summary, trackKey));
+  }
+
   if (row?.trackMap && typeof row.trackMap === "object") {
-    return Object.values(row.trackMap).map(summary => normalizeTrackSummary(summary));
+    return Object.entries(row.trackMap).map(([trackKey, summary]) => normalizeTrackSummary(summary, trackKey));
   }
 
   return [];
@@ -221,37 +314,44 @@ export const normalizeRow = row => {
 
 export const normalizeCategory = category => {
   const rawRows = Array.isArray(category?.rows) ? category.rows : [];
-  const trackSet = new Set();
+  const rows = rawRows.map(normalizeRow);
+  const tracks = [];
+  const seenTracks = new Set();
+  const configuredTracks = Array.isArray(category?.tracks)
+    ? category.tracks
+    : Array.isArray(category?.trackOptions)
+      ? category.trackOptions
+      : Array.isArray(category?.activeTracks)
+        ? category.activeTracks
+        : [];
 
-  rawRows.forEach(row => {
-    if (Array.isArray(row?.trackSummaries)) {
-      row.trackSummaries.forEach(summary => {
-        const label = normalizeText(summary?.trackLabel || summary?.track_label);
-        if (label) {
-          trackSet.add(label);
-        }
-      });
-    }
-
-    if (row?.trackMap && typeof row.trackMap === "object") {
-      Object.values(row.trackMap).forEach(summary => {
-        const label = normalizeText(summary?.trackLabel || summary?.track_label);
-        if (label) {
-          trackSet.add(label);
-        }
-      });
-    }
+  configuredTracks.filter(Boolean).filter(isTrackEnabled).forEach(track => {
+    addTrackDescriptor(tracks, seenTracks, normalizeTrackDescriptor(track));
   });
 
-  const tracks = Array.isArray(category?.tracks) && category.tracks.length > 0
-    ? category.tracks.filter(Boolean).map(normalizeText)
-    : [...trackSet];
+  rows.forEach(row => {
+    row.trackSummaries.forEach(summary => {
+      addTrackDescriptor(tracks, seenTracks, normalizeTrackDescriptor(summary));
+    });
+  });
+
+  const explicitMaxPoints =
+    category?.maxPoints ??
+    category?.max_points ??
+    category?.totalPossiblePoints ??
+    category?.total_possible_points ??
+    category?.totalMaxPoints ??
+    category?.total_max_points;
+  const maxPoints = explicitMaxPoints !== "" && Number.isFinite(Number(explicitMaxPoints))
+    ? Number(explicitMaxPoints)
+    : tracks.reduce((total, track) => total + (Number.isFinite(Number(track.maxPoints)) ? Number(track.maxPoints) : 100), 0);
 
   return {
     key: normalizeCategoryKey(category?.key || category?.category || category?.label || ""),
     label: normalizeText(category?.label || category?.name || "") || formatCategoryLabel(category?.key || category?.category || category?.label || ""),
     tracks,
-    rows: rawRows.map(normalizeRow),
+    maxPoints,
+    rows,
   };
 };
 

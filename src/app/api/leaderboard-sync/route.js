@@ -52,10 +52,48 @@ const normalizeCategoryKey = value =>
 const getSnapshotCategoryKey = snapshot =>
   normalizeCategoryKey(
     snapshot?.focusCategory ||
+      snapshot?.categoryKey ||
+      snapshot?.category_key ||
+      snapshot?.category ||
       snapshot?.categoryOptions?.[0]?.key ||
       snapshot?.leaderboard?.categories?.[0]?.key ||
       ""
   );
+
+const getUniqueCategoryKeys = items =>
+  [...new Set(
+    (Array.isArray(items) ? items : [])
+      .map(item => normalizeCategoryKey(item?.category || item?.key || item?.category_key || item?.label || ""))
+      .filter(Boolean)
+  )];
+
+const isFocusedCategorySnapshot = snapshot => {
+  if (
+    normalizeCategoryKey(
+      snapshot?.focusCategory ||
+        snapshot?.categoryKey ||
+        snapshot?.category_key ||
+        snapshot?.category ||
+        ""
+    )
+  ) {
+    return true;
+  }
+
+  const leaderboardCategoryKeys = getUniqueCategoryKeys(snapshot?.leaderboard?.categories || []);
+  const dataCategoryKeys = [
+    ...getUniqueCategoryKeys(snapshot?.teams || []),
+    ...getUniqueCategoryKeys(snapshot?.results || []),
+    ...getUniqueCategoryKeys(snapshot?.disputes || []),
+  ];
+  const uniqueDataCategoryKeys = [...new Set(dataCategoryKeys)];
+
+  if (leaderboardCategoryKeys.length > 1 || uniqueDataCategoryKeys.length > 1) {
+    return false;
+  }
+
+  return leaderboardCategoryKeys.length === 1 || uniqueDataCategoryKeys.length === 1;
+};
 
 const filterSnapshotToCategory = (snapshot, focusCategory) => {
   const normalizedFocusCategory = normalizeCategoryKey(focusCategory);
@@ -93,6 +131,10 @@ const filterSnapshotToCategory = (snapshot, focusCategory) => {
 };
 
 const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
+  if (!isFocusedCategorySnapshot(incomingSnapshot)) {
+    return incomingSnapshot;
+  }
+
   const focusCategory = getSnapshotCategoryKey(incomingSnapshot);
 
   if (!focusCategory) {
