@@ -11,12 +11,17 @@ import {
   normalizeCategoryKey,
   normalizeResultIdentityKey,
   normalizeShortIdentityKey,
+  normalizeTrackKey,
 } from "@/lib/leaderboard-snapshot";
 
-function TotalCell({ total }) {
+function TotalCell({ total, maxPoints }) {
+  const totalLabel = Number.isFinite(Number(maxPoints)) && Number(maxPoints) > 0
+    ? `${total}/${maxPoints}`
+    : total;
+
   return (
     <div className="flex flex-col items-end leading-none">
-      <span className="font-mono text-[28px] font-black text-[#ff7a00] md:text-[32px]">{total}/700</span>
+      <span className="font-mono text-[28px] font-black text-[#ff7a00] md:text-[32px]">{totalLabel}</span>
       <span className="mt-2 text-[12px] font-black uppercase tracking-[0.08em] text-[#d9a36d]">PTS</span>
     </div>
   );
@@ -134,15 +139,20 @@ function PositionCell({ position }) {
   );
 }
 
-function getTrackSummaryForLabel(row, trackLabel, fallbackIndex) {
+function getTrackSummaryForTrack(row, track) {
   const summaries = row?.trackSummaries || [];
-  const normalizedTrackLabel = String(trackLabel || "").trim().toLowerCase();
+  const normalizedTrackKey = normalizeTrackKey(track?.key || "");
+  const normalizedTrackLabel = normalizeTrackKey(track?.label || track || "");
 
-  return (
-    summaries.find(summary => String(summary?.trackLabel || "").trim().toLowerCase() === normalizedTrackLabel) ||
-    summaries[fallbackIndex] ||
-    null
-  );
+  return summaries.find(summary => {
+    const summaryKey = normalizeTrackKey(summary?.trackKey || "");
+    const summaryLabel = normalizeTrackKey(summary?.trackLabel || "");
+
+    return (
+      (normalizedTrackKey && (summaryKey === normalizedTrackKey || summaryLabel === normalizedTrackKey)) ||
+      (normalizedTrackLabel && (summaryLabel === normalizedTrackLabel || summaryKey === normalizedTrackLabel))
+    );
+  }) || null;
 }
 
 function buildDetailHref({ activeCategory, row, trackLabel, entry, returnHref = "" }) {
@@ -328,6 +338,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     }
   }, [categories, searchParams]);
 
+  const tracks = activeCategory?.tracks || [];
+  const tableMinWidth = Math.max(1180, 995 + Math.max(tracks.length, 1) * 280);
+
   if (respectVisibility && visibilityLoading) {
     return (
       <div className="rounded-[2rem] border border-[#2b1a0f] bg-black p-8 text-center text-[#ff9a2c]">
@@ -396,7 +409,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
           </div>
 
           <div className="overflow-x-auto bg-black">
-            <table className="w-full min-w-[1620px] border-separate border-spacing-y-3 text-left">
+            <table className="w-full border-separate border-spacing-y-3 text-left" style={{ minWidth: `${tableMinWidth}px` }}>
             <thead>
               <tr className="text-[12px] font-black uppercase text-[#d9a36d]">
                 <th className="w-[145px] rounded-l-[18px] border-y border-l border-[#2b1709] bg-[#101010] px-4 py-5">Position</th>
@@ -404,21 +417,22 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                 <th className="w-[230px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Driver</th>
                 <th className="w-[285px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Co-Driver</th>
                 <th className="w-[190px] border-y border-[#2b1709] bg-[#101010] px-4 py-5 text-center">Total</th>
-                {(activeCategory?.tracks || []).map((track, index) => {
-                  const isLastTrack = index === (activeCategory?.tracks || []).length - 1;
+                {tracks.map((track, index) => {
+                  const isLastTrack = index === tracks.length - 1;
+                  const trackLabel = track?.label || String(track || "Track");
 
                   return (
                     <th
-                      key={track}
+                      key={track?.key || trackLabel}
                       className={`w-[280px] border-y border-[#2b1709] bg-[#101010] px-4 py-5 ${
                         isLastTrack ? "rounded-r-[18px] border-r" : ""
                       }`}
                     >
-                      {track}
+                      {trackLabel}
                     </th>
                   );
                 })}
-                {(activeCategory?.tracks || []).length === 0 ? (
+                {tracks.length === 0 ? (
                   <th className="w-[280px] rounded-r-[18px] border-y border-r border-[#2b1709] bg-[#101010] px-4 py-5">Track Status</th>
                 ) : null}
               </tr>
@@ -439,15 +453,16 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                     <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.coDriverName}</p>
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
-                    <TotalCell total={row.totalPoints} />
+                    <TotalCell total={row.totalPoints} maxPoints={activeCategory?.maxPoints} />
                   </td>
-                  {(activeCategory?.tracks || []).map((track, index) => {
-                    const summary = getTrackSummaryForLabel(row, track, index);
-                    const isLastTrack = index === (activeCategory?.tracks || []).length - 1;
+                  {tracks.map((track, index) => {
+                    const summary = getTrackSummaryForTrack(row, track);
+                    const isLastTrack = index === tracks.length - 1;
+                    const trackLabel = track?.label || String(track || "Track");
 
                     return (
                       <td
-                        key={`${row.vehicleKey}-${track}`}
+                        key={`${row.vehicleKey}-${track?.key || trackLabel}`}
                         className={`border-l border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle text-left ${
                           isLastTrack ? "rounded-r-[18px] border-r" : ""
                         }`}
@@ -455,14 +470,14 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                         <TrackCell
                           summary={summary}
                           row={row}
-                          trackLabel={track}
+                          trackLabel={trackLabel}
                           activeCategory={activeCategory}
                           detailReturnHref={detailReturnHref}
                         />
                       </td>
                     );
                   })}
-                  {(activeCategory?.tracks || []).length === 0 ? (
+                  {tracks.length === 0 ? (
                     <td className="rounded-r-[18px] border-l border-y border-r border-[#2b1709] bg-[#151515] px-4 py-11 align-middle text-[13px] font-black uppercase text-[#d9a36d]">
                       No track result synced
                     </td>
