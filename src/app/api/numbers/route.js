@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
-import { CATEGORIES } from "@/config/pricing";
+import { CATEGORIES, CATEGORY_PREFIXES } from "@/config/pricing";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -31,11 +31,14 @@ export async function GET(request) {
 
     const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
     
-    // Create a robust mapping from normalized category names/keys to the canonical keys
+    // Create a robust mapping from normalized category names/keys/prefixes to the canonical keys
     const catMap = {};
     Object.keys(CATEGORIES).forEach(key => {
       catMap[normalize(key)] = key;
       catMap[normalize(CATEGORIES[key].name)] = key;
+      // Add prefix if available
+      const prefix = CATEGORY_PREFIXES[key];
+      if (prefix) catMap[normalize(prefix)] = key;
     });
 
     const targetCanonical = catMap[normalize(category)];
@@ -80,7 +83,7 @@ export async function GET(request) {
     const allTaken = Array.from(new Set([...holdNumbers, ...confirmedNumbers]));
     
     // DEBUG: Final consolidated taken set
-    console.log(`[NUMBERS] Category: ${category} (Norm: ${targetCatNormalized}), Found: ${allTaken.length} taken slots: [${allTaken.join(', ')}]`);
+    console.log(`[NUMBERS] Category: ${category} (Canonical: ${targetCanonical}), Found: ${allTaken.length} taken slots: [${allTaken.join(', ')}]`);
 
     return NextResponse.json(
       { booked: allTaken },
