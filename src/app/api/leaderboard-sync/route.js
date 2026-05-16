@@ -6,6 +6,7 @@ import {
   upsertJsonToDrive,
   readJsonFromDrive,
 } from "@/lib/google-drive/client";
+import { readLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -244,6 +245,21 @@ export async function POST(request) {
 
 export async function GET() {
   try {
+    if (!(await isAdminSession())) {
+      const visibility = await readLeaderboardVisibility().catch(() => ({ visible: false }));
+
+      if (!visibility.visible) {
+        return NextResponse.json(
+          {
+            ok: false,
+            closed: true,
+            error: "Live leaderboard is closed",
+          },
+          { status: 403, headers: corsHeaders }
+        );
+      }
+    }
+
     const snapshot = hasDriveConfig()
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
       : await readLocalSnapshot();

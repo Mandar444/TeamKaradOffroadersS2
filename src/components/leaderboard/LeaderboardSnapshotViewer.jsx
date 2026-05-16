@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Info } from "lucide-react";
+import { Info, RefreshCw } from "lucide-react";
 import {
   fetchLeaderboardSnapshot,
   fetchLeaderboardVisibility,
@@ -246,6 +246,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   const [leaderboardVisible, setLeaderboardVisible] = useState(!respectVisibility);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadVisibility = useCallback(async () => {
     if (!respectVisibility) {
@@ -260,7 +261,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
       const visibility = await fetchLeaderboardVisibility();
       setLeaderboardVisible(visibility.visible);
     } catch (visibilityError) {
-      setLeaderboardVisible(true);
+      setLeaderboardVisible(false);
     } finally {
       setVisibilityLoading(false);
     }
@@ -286,6 +287,45 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
       setLoading(false);
     }
   }, [leaderboardVisible, respectVisibility]);
+
+  const refreshLeaderboard = useCallback(async () => {
+    setRefreshing(true);
+    setError("");
+
+    try {
+      let visible = true;
+
+      if (respectVisibility) {
+        try {
+          const visibility = await fetchLeaderboardVisibility();
+          visible = visibility.visible;
+          setLeaderboardVisible(visible);
+        } catch (visibilityError) {
+          visible = false;
+          setLeaderboardVisible(false);
+        }
+      } else {
+        setLeaderboardVisible(true);
+      }
+
+      if (!visible) {
+        setSnapshot(null);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const exportedSnapshot = await fetchLeaderboardSnapshot();
+      setSnapshot(exportedSnapshot);
+    } catch (loadError) {
+      setSnapshot(null);
+      setError(loadError?.message || "Waiting for synced leaderboard data from the app.");
+    } finally {
+      setVisibilityLoading(false);
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [respectVisibility]);
 
   useEffect(() => {
     loadVisibility();
@@ -359,12 +399,39 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#c58f55] md:text-base">
           Race Control has closed the live leaderboard for now. Please check back later.
         </p>
+        <button
+          type="button"
+          onClick={refreshLeaderboard}
+          disabled={refreshing}
+          className="mx-auto mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#ff7a00]/35 bg-[#ff7a00]/10 px-5 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-[#ffb35c] transition-colors hover:border-[#ffb35c] hover:bg-[#ff7a00] hover:text-black disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+          {refreshing ? "Refreshing" : "Refresh"}
+        </button>
       </div>
     );
   }
 
   return (
     <div className="bg-black">
+      <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Live Leaderboard</p>
+          <p className="mt-1 text-sm text-[#c58f55]">
+            {loading ? "Loading latest standings..." : "Latest synced standings"}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={refreshLeaderboard}
+          disabled={refreshing || visibilityLoading}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ff7a00]/35 bg-[#ff7a00]/10 px-4 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-[#ffb35c] transition-colors hover:border-[#ffb35c] hover:bg-[#ff7a00] hover:text-black disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+          {refreshing ? "Refreshing" : "Refresh"}
+        </button>
+      </div>
+
       {error ? (
         <div className="mb-4 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4 text-[12px] font-black uppercase text-[#d9a36d]">
           No synced leaderboard data found yet.

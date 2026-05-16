@@ -128,7 +128,18 @@ function LeaderboardDetailsContent() {
       setError("");
 
       try {
-        const visibility = await fetchLeaderboardVisibility();
+        let visibility = null;
+
+        try {
+          visibility = await fetchLeaderboardVisibility();
+        } catch (visibilityError) {
+          if (active) {
+            setLeaderboardVisible(false);
+            setSnapshot(null);
+          }
+          return;
+        }
+
         if (!visibility.visible) {
           if (active) {
             setLeaderboardVisible(false);
