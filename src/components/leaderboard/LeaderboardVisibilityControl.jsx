@@ -137,7 +137,7 @@ export default function LeaderboardVisibilityControl() {
             className="inline-flex h-14 items-center justify-center gap-3 rounded-2xl border border-white/10 bg-zinc-900 px-5 text-[10px] font-black uppercase tracking-[0.28em] text-zinc-300 transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            {statusLabel}
+            Refresh
           </button>
           <button
             type="button"
