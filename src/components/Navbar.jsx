@@ -9,12 +9,12 @@ import { Menu, X, ChevronRight, Instagram } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/about", label: "About Us" },
   { href: "/regulations", label: "Regulations" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/sponsors", label: "Sponsors" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "/teams", label: "Participants" },
+  { href: "/sponsors", label: "Sponsors" },
+  { href: "/about", label: "About Us" },
+  { href: "/gallery", label: "Gallery" },
 ];
 
 export default function Navbar() {

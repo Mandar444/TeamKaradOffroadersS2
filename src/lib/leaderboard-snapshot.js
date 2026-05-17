@@ -1,8 +1,6 @@
 export const EXPORT_PATHS = [
   "/api/leaderboard-sync",
   "/api/leaderboard",
-  "/leaderboard-export.json",
-  "/data/leaderboard-export.json",
 ];
 export const LEADERBOARD_VISIBILITY_PATH = "/api/leaderboard-visibility";
 

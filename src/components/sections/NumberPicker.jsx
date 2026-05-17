@@ -18,8 +18,8 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
         </div>
         <div className="flex gap-4 text-[10px] uppercase font-bold tracking-widest flex-wrap justify-center">
           <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-zinc-800 rounded" /> Available</div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-red-950 border border-red-900 rounded" /> Taken</div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-red-600 rounded" /> Selected</div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-red-600 rounded" /> Taken</div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-emerald-500 rounded" /> Selected</div>
         </div>
       </div>
 
@@ -27,8 +27,8 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
 
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
           {numbers.map((num) => {
-            const isTaken = takenNumbers.some(tn => Number(tn) === Number(num));
-            const isSelected = Number(selectedNumber) === Number(num);
+            const isTaken = takenNumbers.includes(num);
+            const isSelected = selectedNumber === num;
 
             return (
               <button
@@ -40,9 +40,9 @@ export default function NumberPicker({ category, selectedNumber, onSelect, taken
                   "h-12 flex items-center justify-center font-heading text-lg border transition-all duration-200",
                   "hover:scale-105 active:scale-95",
                   isSelected 
-                    ? "bg-red-600 text-white border-red-400 scale-110 z-10 shadow-[0_0_20px_rgba(220,38,38,0.5)] font-black" 
+                    ? "bg-emerald-500 text-black border-emerald-400 scale-110 z-10 shadow-[0_0_20px_rgba(16,185,129,0.5)] font-black" 
                     : isTaken
-                      ? "bg-red-950/40 text-red-900 border-red-900/50 cursor-not-allowed opacity-100 font-bold"
+                      ? "bg-red-600 text-white border-red-700 cursor-not-allowed opacity-100 shadow-inner font-bold"
                       : "bg-zinc-900/30 text-zinc-500 border-zinc-800 hover:border-zinc-500 hover:text-white"
                 )}
               >

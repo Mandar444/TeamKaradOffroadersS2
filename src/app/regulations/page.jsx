@@ -1,7 +1,14 @@
 "use client";
 
-import { ClipboardList } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, ClipboardList } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  penaltySummaryRows,
+  pointingSystemRows,
+  ruleBookIntro,
+  ruleBookSections,
+} from "@/data/rule-book";
 
 const expertColumns = [
   "Description",
@@ -420,7 +427,158 @@ function AccessoryTable({ title, rows }) {
   );
 }
 
+function RuleBookPanel() {
+  return (
+    <div className="space-y-8">
+      <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/70 shadow-2xl shadow-black/30">
+        <div className="border-b border-white/10 bg-[#ff8a00] px-5 py-6 text-black sm:px-8">
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] opacity-75">Official Rule Book</p>
+          <h2 className="mt-3 font-heading text-4xl uppercase italic leading-[0.9] tracking-tight sm:text-6xl md:text-7xl">
+            Team Karad Offroaders Season 2 - 2026
+          </h2>
+          <p className="mt-3 text-xs font-black uppercase tracking-[0.22em] opacity-80">
+            Penalty and Details Competition Rules
+          </p>
+        </div>
+        <div className="space-y-4 bg-black/55 p-5 sm:p-8">
+          {ruleBookIntro.map((paragraph) => (
+            <p key={paragraph} className="text-sm leading-7 text-zinc-300 sm:text-base">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/70 shadow-2xl shadow-black/30">
+        <div className="border-b border-white/10 bg-zinc-900 px-5 py-4 sm:px-8">
+          <p className="font-heading text-2xl uppercase italic tracking-tight text-[#ff8a00] sm:text-3xl">
+            Penalty Summary
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] border-collapse text-left">
+            <thead>
+              <tr className="bg-black text-[#ff8a00]">
+                {["Rule", "Penalty", "Details"].map((heading) => (
+                  <th
+                    key={heading}
+                    className="border-r border-white/10 px-4 py-4 font-heading text-xs uppercase tracking-[0.18em] last:border-r-0"
+                  >
+                    {heading}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {penaltySummaryRows.map(([rule, penalty, details]) => (
+                <tr key={rule} className="border-t border-white/10 transition-colors hover:bg-white/[0.03]">
+                  <th className="w-56 border-r border-white/10 bg-zinc-900/70 px-4 py-4 align-top font-heading text-xs uppercase tracking-[0.12em] text-white">
+                    {rule}
+                  </th>
+                  <td className="w-40 border-r border-white/10 px-4 py-4 align-top text-sm font-black uppercase text-[#ff8a00]">
+                    {penalty}
+                  </td>
+                  <td className="px-4 py-4 align-top text-sm leading-relaxed text-zinc-300">{details}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <RuleSection section={ruleBookSections[0]} />
+      <RuleSection section={ruleBookSections[1]} />
+      <RuleSection section={ruleBookSections[2]} />
+      <RuleSection section={ruleBookSections[3]} />
+
+      <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/70 shadow-2xl shadow-black/30">
+        <div className="border-b border-white/10 bg-[#ff8a00] px-5 py-4 text-black sm:px-8">
+          <p className="font-heading text-2xl uppercase italic tracking-tight sm:text-3xl">Pointing System</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[980px] border-collapse text-left">
+            <thead>
+              <tr className="bg-black text-[#ff8a00]">
+                {Array.from({ length: 5 }).flatMap((_, index) => [
+                  <th key={`position-${index}`} className="border-r border-white/10 px-4 py-4 font-heading text-xs uppercase tracking-[0.18em]">
+                    Position
+                  </th>,
+                  <th key={`points-${index}`} className="border-r border-white/10 px-4 py-4 font-heading text-xs uppercase tracking-[0.18em] last:border-r-0">
+                    Points
+                  </th>,
+                ])}
+              </tr>
+            </thead>
+            <tbody>
+              {pointingSystemRows.map((row) => (
+                <tr key={row.map(([position]) => position).join("-")} className="border-t border-white/10 transition-colors hover:bg-white/[0.03]">
+                  {row.flatMap(([position, points]) => [
+                    <td key={`${position}-position`} className="border-r border-white/10 bg-zinc-900/70 px-4 py-3 font-mono text-sm font-black text-white">
+                      {position}
+                    </td>,
+                    <td key={`${position}-points`} className="border-r border-white/10 px-4 py-3 font-mono text-sm font-black text-[#ff8a00] last:border-r-0">
+                      {points}
+                    </td>,
+                  ])}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="border-t border-white/10 bg-black/55 p-5 sm:p-8">
+          <RuleList items={ruleBookSections[4].items} />
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {ruleBookSections.slice(5).map((section) => (
+          <RuleSection key={section.title} section={section} compact />
+        ))}
+      </div>
+      <section className="rounded-[2rem] border border-[#ff8a00]/30 bg-[#ff8a00]/10 p-5 text-center sm:p-8">
+        <p className="font-heading text-2xl uppercase italic text-white sm:text-3xl">Thank you</p>
+        <p className="mt-2 text-xs font-black uppercase tracking-[0.26em] text-[#ff8a00]">
+          Team Karad Off-Roaders
+        </p>
+      </section>
+    </div>
+  );
+}
+
+function RuleSection({ section, compact = false }) {
+  return (
+    <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/70 shadow-2xl shadow-black/30">
+      <div className="border-b border-white/10 bg-zinc-900 px-5 py-4 sm:px-8">
+        <p className={`font-heading uppercase italic tracking-tight text-[#ff8a00] ${compact ? "text-2xl" : "text-3xl sm:text-4xl"}`}>
+          {section.title}
+        </p>
+      </div>
+      <div className="bg-black/55 p-5 sm:p-8">
+        <RuleList items={section.items} />
+      </div>
+    </section>
+  );
+}
+
+function RuleList({ items }) {
+  return (
+    <ol className="space-y-3">
+      {items.map((item, index) => (
+        <li key={item} className="flex gap-3 text-sm leading-7 text-zinc-300 sm:text-base">
+          <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff8a00] font-mono text-[11px] font-black text-black">
+            {index + 1}
+          </span>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export default function RegulationsPage() {
+  const [activeTab, setActiveTab] = useState("vehicle-specifications");
+  const isRuleBookTab = activeTab === "rule-book";
+
   return (
     <main className="min-h-screen bg-black px-4 pb-20 pt-24 text-white sm:px-6 md:pt-32">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(255,138,0,0.18),transparent_62%)]" />
@@ -428,22 +586,37 @@ export default function RegulationsPage() {
         <div className="mb-10 max-w-4xl">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.5em] text-[#ff8a00]">Regulations</p>
           <h1 className="font-heading text-5xl uppercase leading-none tracking-tight sm:text-7xl md:text-8xl">
-            Vehicle <span className="text-[#ff8a00] italic">Specifications</span>
+            {isRuleBookTab ? (
+              <span className="text-[#ff8a00] italic">Rulebook</span>
+            ) : (
+              <>
+                Vehicle <span className="text-[#ff8a00] italic">Specifications</span>
+              </>
+            )}
           </h1>
           <p className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-            Team Karad Offroaders Season 2 - 2026 specification tables reproduced from the official PDF.
+            {isRuleBookTab
+              ? "Team Karad Offroaders Season 2 - 2026 penalty and details competition rules."
+              : "Team Karad Offroaders Season 2 - 2026 specification tables reproduced from the official PDF."}
           </p>
         </div>
 
-        <Tabs defaultValue="vehicle-specifications" className="space-y-8">
-          <div className="overflow-x-auto pb-2">
-            <TabsList className="h-auto rounded-full border border-white/10 bg-zinc-900/70 p-1">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <div className="overflow-x-auto pb-3">
+            <TabsList className="h-auto min-w-max gap-2 rounded-[1.5rem] border border-[#ff8a00]/30 bg-zinc-950/95 p-2 shadow-[0_0_35px_rgba(255,138,0,0.12)]">
               <TabsTrigger
                 value="vehicle-specifications"
-                className="gap-2 rounded-full px-5 py-3 font-heading text-[10px] uppercase tracking-[0.2em] data-[state=active]:bg-[#ff8a00] data-[state=active]:text-black"
+                className="gap-3 rounded-2xl border border-transparent px-5 py-4 font-heading text-[11px] uppercase tracking-[0.2em] text-zinc-300 transition-all hover:border-[#ff8a00]/30 hover:text-white data-[state=active]:border-[#ffb25a] data-[state=active]:bg-[#ff8a00] data-[state=active]:text-black data-[state=active]:shadow-[0_0_28px_rgba(255,138,0,0.35)] sm:px-7 sm:text-sm"
               >
-                <ClipboardList className="h-4 w-4" />
+                <ClipboardList className="h-5 w-5" />
                 Vehicle Specifications
+              </TabsTrigger>
+              <TabsTrigger
+                value="rule-book"
+                className="gap-3 rounded-2xl border border-transparent px-5 py-4 font-heading text-[11px] uppercase tracking-[0.2em] text-zinc-300 transition-all hover:border-[#ff8a00]/30 hover:text-white data-[state=active]:border-[#ffb25a] data-[state=active]:bg-[#ff8a00] data-[state=active]:text-black data-[state=active]:shadow-[0_0_28px_rgba(255,138,0,0.35)] sm:px-7 sm:text-sm"
+              >
+                <BookOpen className="h-5 w-5" />
+                Rule Book
               </TabsTrigger>
             </TabsList>
           </div>
@@ -494,6 +667,10 @@ export default function RegulationsPage() {
               <AccessoryTable title="Mandatory for all classes" rows={mandatoryRows} />
               <AccessoryTable title="Recommended for all classes" rows={recommendedRows} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="rule-book" className="space-y-10">
+            <RuleBookPanel />
           </TabsContent>
         </Tabs>
       </div>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { cookies } from "next/headers";
 import path from "path";
+import { readLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -95,6 +96,21 @@ export async function POST(request) {
 
 export async function GET() {
   try {
+    if (!(await isAdminSession())) {
+      const visibility = await readLeaderboardVisibility().catch(() => ({ visible: false }));
+
+      if (!visibility.visible) {
+        return NextResponse.json(
+          {
+            ok: false,
+            closed: true,
+            error: "Live leaderboard is closed",
+          },
+          { status: 403, headers: corsHeaders }
+        );
+      }
+    }
+
     const snapshot = await readLocalSnapshot();
 
     return NextResponse.json(snapshot, {
