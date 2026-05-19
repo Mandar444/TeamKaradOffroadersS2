@@ -14,8 +14,7 @@ function patchFile(filePath, replacers, marker) {
   let nextSource = source;
   for (const [search, replacement] of replacers) {
     if (!nextSource.includes(search)) {
-      console.warn(`[Warning] Could not find patch target in ${filePath}. Skipping this specific patch chunk.`);
-      continue;
+      throw new Error(`Expected to find patch target in ${filePath}`);
     }
     nextSource = nextSource.replace(search, replacement);
   }

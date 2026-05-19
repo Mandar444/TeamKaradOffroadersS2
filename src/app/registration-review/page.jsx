@@ -123,7 +123,7 @@ export default function ReviewPage() {
                      </div>
                      <div>
                         <p className="text-zinc-500 text-[9px] uppercase font-bold mb-1">Sticker No.</p>
-                        <p className="text-red-500 font-heading text-3xl leading-none">#{data.carNumber}</p>
+                        <p className="text-primary font-heading text-3xl leading-none">#{data.carNumber}</p>
                      </div>
                   </div>
                </div>

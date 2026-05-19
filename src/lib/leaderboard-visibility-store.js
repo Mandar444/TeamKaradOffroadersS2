@@ -1,0 +1,118 @@
+import { mkdir, readFile, stat, writeFile } from "fs/promises";
+import os from "os";
+import path from "path";
+import {
+  readJsonFromDrive,
+  upsertJsonToDrive,
+} from "@/lib/google-drive/client";
+
+const VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || "leaderboard-visibility.json";
+const VISIBILITY_DIR = path.join(process.cwd(), "public", "data");
+const VISIBILITY_FILE = path.join(VISIBILITY_DIR, "leaderboard-visibility.json");
+const FALLBACK_VISIBILITY_DIR = path.join(os.tmpdir(), "team-karad-offroaders");
+const FALLBACK_VISIBILITY_FILE = path.join(FALLBACK_VISIBILITY_DIR, "leaderboard-visibility.json");
+
+const hasDriveConfig = () =>
+  Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
+
+const normalizeVisibility = (data, fallbackUpdatedAt = null) => ({
+  visible: data?.visible !== false,
+  updatedAt: data?.updatedAt || fallbackUpdatedAt,
+});
+
+const getTimestamp = visibility => {
+  const timestamp = Date.parse(visibility?.updatedAt || "");
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+async function readVisibilityFile(filePath) {
+  const [raw, fileStat] = await Promise.all([
+    readFile(filePath, "utf8"),
+    stat(filePath).catch(() => null),
+  ]);
+  const data = JSON.parse(raw);
+
+  return normalizeVisibility(data, fileStat?.mtime?.toISOString?.() || null);
+}
+
+async function readLocalVisibility() {
+  const candidates = [];
+
+  for (const filePath of [FALLBACK_VISIBILITY_FILE, VISIBILITY_FILE]) {
+    try {
+      candidates.push(await readVisibilityFile(filePath));
+    } catch (error) {
+      if (error?.code !== "ENOENT") {
+        console.warn("[LEADERBOARD] Visibility cache read failed:", error?.message || error);
+      }
+    }
+  }
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  return candidates.sort((a, b) => getTimestamp(b) - getTimestamp(a))[0];
+}
+
+async function tryWriteVisibilityFile(dirPath, filePath, payload) {
+  try {
+    await mkdir(dirPath, { recursive: true });
+    await writeFile(filePath, JSON.stringify(payload, null, 2), "utf8");
+    return true;
+  } catch (error) {
+    console.warn("[LEADERBOARD] Visibility cache write failed:", error?.message || error);
+    return false;
+  }
+}
+
+async function cacheVisibilityLocally(payload) {
+  const results = await Promise.all([
+    tryWriteVisibilityFile(FALLBACK_VISIBILITY_DIR, FALLBACK_VISIBILITY_FILE, payload),
+    tryWriteVisibilityFile(VISIBILITY_DIR, VISIBILITY_FILE, payload),
+  ]);
+
+  return results.some(Boolean);
+}
+
+export async function readLeaderboardVisibility() {
+  if (hasDriveConfig()) {
+    try {
+      return normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME));
+    } catch (error) {
+      console.warn("[LEADERBOARD] Drive visibility read failed:", error?.message || error);
+    }
+  }
+
+  return (await readLocalVisibility()) || {
+    visible: false,
+    updatedAt: null,
+  };
+}
+
+export async function writeLeaderboardVisibility(visible) {
+  const payload = {
+    visible,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (hasDriveConfig()) {
+    try {
+      await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
+    } catch (error) {
+      console.warn("[LEADERBOARD] Drive visibility write failed:", error?.message || error);
+      throw new Error("Unable to persist leaderboard visibility. Please try again.");
+    }
+
+    await cacheVisibilityLocally(payload);
+    return payload;
+  }
+
+  const cachedLocally = await cacheVisibilityLocally(payload);
+
+  if (!cachedLocally) {
+    throw new Error("Unable to persist leaderboard visibility locally.");
+  }
+
+  return payload;
+}
