@@ -129,8 +129,24 @@ export async function POST(request) {
     let file = null;
 
     if (hasDriveConfig()) {
-      const payload = JSON.stringify(snapshot, null, 2);
-      file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+      try {
+        const payload = JSON.stringify(snapshot, null, 2);
+        file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+      } catch (driveError) {
+        if (IS_VERCEL) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Unable to persist leaderboard data to Google Drive. Check Drive credentials and folder permissions.",
+              detail: driveError?.message || null,
+              cachedLocally,
+            },
+            { status: 500, headers: corsHeaders }
+          );
+        }
+
+        throw driveError;
+      }
     } else if (IS_VERCEL) {
       return NextResponse.json(
         {
@@ -224,8 +240,24 @@ export async function DELETE() {
     let file = null;
 
     if (hasDriveConfig()) {
-      const payload = JSON.stringify(snapshot, null, 2);
-      file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+      try {
+        const payload = JSON.stringify(snapshot, null, 2);
+        file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+      } catch (driveError) {
+        if (IS_VERCEL) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Unable to persist leaderboard reset to Google Drive. Check Drive credentials and folder permissions.",
+              detail: driveError?.message || null,
+              cachedLocally,
+            },
+            { status: 500, headers: corsHeaders }
+          );
+        }
+
+        throw driveError;
+      }
     } else if (IS_VERCEL) {
       return NextResponse.json(
         {

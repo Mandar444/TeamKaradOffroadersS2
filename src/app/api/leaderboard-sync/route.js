@@ -262,6 +262,7 @@ export async function POST(request) {
             {
               ok: false,
               error: "Unable to persist leaderboard data to Google Drive. Check Drive credentials and folder permissions.",
+              detail: driveError?.message || null,
               cachedLocally,
             },
             { status: 500, headers: corsHeaders }
@@ -372,6 +373,7 @@ export async function DELETE() {
             {
               ok: false,
               error: "Unable to persist leaderboard reset to Google Drive. Check Drive credentials and folder permissions.",
+              detail: driveError?.message || null,
               cachedLocally,
             },
             { status: 500, headers: corsHeaders }

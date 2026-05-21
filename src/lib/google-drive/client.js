@@ -39,6 +39,7 @@ export async function uploadToDrive(file, fileName) {
       requestBody: fileMetadata,
       media: media,
       fields: 'id, webViewLink, webContentLink',
+      supportsAllDrives: true,
     });
 
     console.log(`[DRIVE] Upload Successful. File ID: ${response.data.id}`);
@@ -50,7 +51,8 @@ export async function uploadToDrive(file, fileName) {
           requestBody: {
               role: 'reader',
               type: 'anyone',
-          }
+          },
+          supportsAllDrives: true,
       });
       console.log(`[DRIVE] Permissions updated for: ${response.data.id}`);
     } catch (permError) {
@@ -79,6 +81,8 @@ async function findDriveFileByName(fileName) {
     fields: 'files(id, name, modifiedTime)',
     orderBy: 'modifiedTime desc',
     pageSize: 1,
+    includeItemsFromAllDrives: true,
+    supportsAllDrives: true,
   });
 
   return response.data.files?.[0] || null;
@@ -100,6 +104,7 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
       fileId: existingFile.id,
       media,
       fields: 'id, webViewLink, webContentLink',
+      supportsAllDrives: true,
     });
 
     try {
@@ -109,6 +114,7 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
           role: 'reader',
           type: 'anyone',
         },
+        supportsAllDrives: true,
       });
     } catch (permError) {
       console.warn('[DRIVE] Warning: Could not update public permissions for leaderboard JSON:', permError.message);
@@ -126,6 +132,7 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
     requestBody: fileMetadata,
     media,
     fields: 'id, webViewLink, webContentLink',
+    supportsAllDrives: true,
   });
 
   try {
@@ -135,6 +142,7 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
         role: 'reader',
         type: 'anyone',
       },
+      supportsAllDrives: true,
     });
   } catch (permError) {
     console.warn('[DRIVE] Warning: Could not set public permissions for leaderboard JSON:', permError.message);
@@ -158,6 +166,7 @@ export async function readJsonFromDrive(fileName = LEADERBOARD_FILE_NAME) {
     {
       fileId: existingFile.id,
       alt: 'media',
+      supportsAllDrives: true,
     },
     {
       responseType: 'arraybuffer',
