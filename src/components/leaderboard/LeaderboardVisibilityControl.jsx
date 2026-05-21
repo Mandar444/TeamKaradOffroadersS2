@@ -11,6 +11,7 @@ export default function LeaderboardVisibilityControl() {
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [error, setError] = useState("");
+  const [locked, setLocked] = useState(false);
 
   const loadVisibility = useCallback(async () => {
     setLoading(true);
@@ -26,6 +27,7 @@ export default function LeaderboardVisibilityControl() {
 
       setVisible(data?.visible !== false);
       setUpdatedAt(data?.updatedAt || null);
+      setLocked(data?.locked === true);
     } catch (loadError) {
       setError(loadError?.message || "Unable to load visibility");
     } finally {
@@ -55,6 +57,7 @@ export default function LeaderboardVisibilityControl() {
 
       setVisible(data?.visible !== false);
       setUpdatedAt(data?.updatedAt || null);
+      setLocked(data?.locked === true);
     } catch (saveError) {
       setError(saveError?.message || "Unable to update visibility");
     } finally {
@@ -87,7 +90,6 @@ export default function LeaderboardVisibilityControl() {
     }
   };
 
-  const statusLabel = visible ? "Visible on public site" : "Hidden from public site";
   const nextVisible = !visible;
 
   return (
@@ -104,6 +106,11 @@ export default function LeaderboardVisibilityControl() {
             This switch controls whether visitors can see the live leaderboard on teamkaradoffroaders.online.
             Admins can still view this console.
           </p>
+          {locked ? (
+            <p className="mt-3 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
+              Controlled by LEADERBOARD_VISIBLE flag
+            </p>
+          ) : null}
           {updatedAt ? (
             <p className="mt-3 text-[10px] font-black uppercase tracking-[0.24em] text-zinc-600">
               Last updated: {new Date(updatedAt).toLocaleString()}
@@ -120,7 +127,7 @@ export default function LeaderboardVisibilityControl() {
           <button
             type="button"
             onClick={() => updateVisibility(nextVisible)}
-            disabled={loading || saving || resetting}
+            disabled={loading || saving || resetting || locked}
             className={`inline-flex h-14 items-center justify-center gap-3 rounded-2xl px-6 text-[10px] font-black uppercase tracking-[0.28em] transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
               visible
                 ? "border border-red-500/25 bg-red-500/10 text-red-300 hover:bg-red-500 hover:text-white"
@@ -128,7 +135,7 @@ export default function LeaderboardVisibilityControl() {
             }`}
           >
             {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            {saving ? "Updating" : visible ? "Hide Live Leaderboard" : "Show Live Leaderboard"}
+            {locked ? "Flag Controlled" : saving ? "Updating" : visible ? "Hide Live Leaderboard" : "Show Live Leaderboard"}
           </button>
           <button
             type="button"

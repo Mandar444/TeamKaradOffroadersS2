@@ -15,9 +15,45 @@ const FALLBACK_VISIBILITY_FILE = path.join(FALLBACK_VISIBILITY_DIR, "leaderboard
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
 
-const normalizeVisibility = (data, fallbackUpdatedAt = null) => ({
+const parseVisibilityFlag = value => {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  const normalizedValue = String(value).trim().toLowerCase();
+
+  if (["1", "true", "yes", "show", "shown", "visible"].includes(normalizedValue)) {
+    return true;
+  }
+
+  if (["0", "false", "no", "hide", "hidden", "closed"].includes(normalizedValue)) {
+    return false;
+  }
+
+  console.warn(`[LEADERBOARD] Ignoring invalid LEADERBOARD_VISIBLE flag: ${value}`);
+  return null;
+};
+
+const getVisibilityFlag = () => {
+  const visible = parseVisibilityFlag(process.env.LEADERBOARD_VISIBLE);
+
+  if (visible === null) {
+    return null;
+  }
+
+  return {
+    visible,
+    updatedAt: null,
+    source: "flag",
+    locked: true,
+  };
+};
+
+const normalizeVisibility = (data, fallbackUpdatedAt = null, source = "storage") => ({
   visible: data?.visible !== false,
   updatedAt: data?.updatedAt || fallbackUpdatedAt,
+  source: data?.source || source,
+  locked: data?.locked === true,
 });
 
 const getTimestamp = visibility => {
@@ -76,21 +112,44 @@ async function cacheVisibilityLocally(payload) {
 }
 
 export async function readLeaderboardVisibility() {
+  const flagVisibility = getVisibilityFlag();
+
+  if (flagVisibility) {
+    return flagVisibility;
+  }
+
+  const candidates = [];
+
   if (hasDriveConfig()) {
     try {
-      return normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME));
+      candidates.push(normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME)));
     } catch (error) {
       console.warn("[LEADERBOARD] Drive visibility read failed:", error?.message || error);
     }
   }
 
-  return (await readLocalVisibility()) || {
+  const localVisibility = await readLocalVisibility();
+  if (localVisibility) {
+    candidates.push(localVisibility);
+  }
+
+  if (candidates.length) {
+    return candidates.sort((a, b) => getTimestamp(b) - getTimestamp(a))[0];
+  }
+
+  return {
     visible: false,
     updatedAt: null,
   };
 }
 
 export async function writeLeaderboardVisibility(visible) {
+  const flagVisibility = getVisibilityFlag();
+
+  if (flagVisibility) {
+    return flagVisibility;
+  }
+
   const payload = {
     visible,
     updatedAt: new Date().toISOString(),
@@ -101,7 +160,13 @@ export async function writeLeaderboardVisibility(visible) {
       await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
     } catch (error) {
       console.warn("[LEADERBOARD] Drive visibility write failed:", error?.message || error);
-      throw new Error("Unable to persist leaderboard visibility. Please try again.");
+      const cachedLocally = await cacheVisibilityLocally(payload);
+
+      if (!cachedLocally) {
+        throw new Error("Unable to persist leaderboard visibility. Please try again.");
+      }
+
+      return payload;
     }
 
     await cacheVisibilityLocally(payload);
