@@ -7,6 +7,9 @@ const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY
   : undefined;
 const DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID; // Optional folder ID
 const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || 'leaderboard-export.json';
+const LEADERBOARD_FILE_ID = process.env.GOOGLE_LEADERBOARD_FILE_ID;
+const LEADERBOARD_VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || 'leaderboard-visibility.json';
+const LEADERBOARD_VISIBILITY_FILE_ID = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_ID;
 
 const auth = new JWT({
   email: GOOGLE_CLIENT_EMAIL,
@@ -15,6 +18,18 @@ const auth = new JWT({
 });
 
 const drive = google.drive({ version: 'v3', auth });
+
+function getConfiguredFileId(fileName) {
+  if (fileName === LEADERBOARD_FILE_NAME) {
+    return LEADERBOARD_FILE_ID;
+  }
+
+  if (fileName === LEADERBOARD_VISIBILITY_FILE_NAME) {
+    return LEADERBOARD_VISIBILITY_FILE_ID;
+  }
+
+  return null;
+}
 
 export async function uploadToDrive(file, fileName) {
   try {
@@ -93,7 +108,8 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
     throw new Error('Missing Google Drive Credentials in environment.');
   }
 
-  const existingFile = await findDriveFileByName(fileName);
+  const configuredFileId = getConfiguredFileId(fileName);
+  const existingFile = configuredFileId ? { id: configuredFileId } : await findDriveFileByName(fileName);
   const media = {
     mimeType: 'application/json',
     body: jsonContent,
@@ -156,7 +172,8 @@ export async function readJsonFromDrive(fileName = LEADERBOARD_FILE_NAME) {
     throw new Error('Missing Google Drive Credentials in environment.');
   }
 
-  const existingFile = await findDriveFileByName(fileName);
+  const configuredFileId = getConfiguredFileId(fileName);
+  const existingFile = configuredFileId ? { id: configuredFileId } : await findDriveFileByName(fileName);
 
   if (!existingFile?.id) {
     throw new Error('Leaderboard export file not found in Drive.');
