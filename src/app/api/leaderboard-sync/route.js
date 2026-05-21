@@ -227,6 +227,13 @@ function createUsableResponse(extra = {}) {
   );
 }
 
+const withEndpointStatus = snapshot => ({
+  ok: true,
+  usable: true,
+  acceptsPost: true,
+  ...(snapshot || createEmptySnapshot()),
+});
+
 export async function POST(request) {
   try {
     const incomingSnapshot = await readOptionalJsonBody(request);
@@ -319,13 +326,13 @@ export async function GET() {
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
       : await readLocalSnapshot();
 
-    return NextResponse.json(snapshot, {
+    return NextResponse.json(withEndpointStatus(snapshot), {
       headers: corsHeaders,
     });
   } catch (error) {
     try {
       const snapshot = await readLocalSnapshot();
-      return NextResponse.json(snapshot, {
+      return NextResponse.json(withEndpointStatus(snapshot), {
         headers: corsHeaders,
       });
     } catch (localError) {
