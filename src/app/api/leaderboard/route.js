@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-API-Key",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-API-Key, Accept, Origin",
+  "Access-Control-Max-Age": "86400",
   "Cache-Control": "no-store",
 };
 
@@ -77,9 +78,38 @@ async function readLocalSnapshot() {
   throw new Error("Leaderboard export file not found locally");
 }
 
+async function readOptionalJsonBody(request) {
+  const rawBody = await request.text();
+
+  if (!rawBody.trim()) {
+    return null;
+  }
+
+  return JSON.parse(rawBody);
+}
+
+const isEmptyObject = value =>
+  value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
+
+function createUsableResponse(extra = {}) {
+  return NextResponse.json(
+    {
+      ok: true,
+      usable: true,
+      acceptsPost: true,
+      ...extra,
+    },
+    { headers: corsHeaders }
+  );
+}
+
 export async function POST(request) {
   try {
-    const snapshot = await request.json();
+    const snapshot = await readOptionalJsonBody(request);
+
+    if (snapshot === null || isEmptyObject(snapshot)) {
+      return createUsableResponse({ skipped: true });
+    }
 
     if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
       return NextResponse.json(
@@ -228,6 +258,13 @@ export async function DELETE() {
 }
 
 export function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+}
+
+export function HEAD() {
   return new NextResponse(null, {
     status: 204,
     headers: corsHeaders,
