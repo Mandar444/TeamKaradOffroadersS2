@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-API-Key",
   "Cache-Control": "no-store",
 };
 
@@ -22,6 +22,7 @@ const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || "leade
 const LOCAL_EXPORT_DIR = path.join(process.cwd(), "public", "data");
 const LOCAL_EXPORT_FILE = path.join(LOCAL_EXPORT_DIR, "leaderboard-export.json");
 const LOCAL_ROOT_EXPORT_FILE = path.join(process.cwd(), "public", "leaderboard-export.json");
+const IS_VERCEL = process.env.VERCEL === "1";
 
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
@@ -208,7 +209,7 @@ export async function POST(request) {
       ? mergeSnapshotCategory(existingSnapshot, incomingSnapshot)
       : incomingSnapshot;
 
-    const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await saveLocalSnapshot(snapshot), true);
+    const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
     let file = null;
     if (hasDriveConfig()) {
@@ -216,8 +217,30 @@ export async function POST(request) {
         const payload = JSON.stringify(snapshot, null, 2);
         file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
       } catch (driveError) {
-        console.warn("[LEADERBOARD] Drive sync failed, keeping local snapshot:", driveError.message);
+        console.warn("[LEADERBOARD] Drive sync failed:", driveError.message);
+
+        if (IS_VERCEL) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Unable to persist leaderboard data to Google Drive. Check Drive credentials and folder permissions.",
+              cachedLocally,
+            },
+            { status: 500, headers: corsHeaders }
+          );
+        }
       }
+    } else if (IS_VERCEL) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Google Drive credentials are required to persist leaderboard data on Vercel.",
+          cachedLocally,
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    } else if (!cachedLocally) {
+      throw new Error("Unable to save leaderboard snapshot locally.");
     }
 
     return NextResponse.json(
@@ -226,6 +249,7 @@ export async function POST(request) {
         savedTo: file?.webViewLink || "/leaderboard-export.json",
         generatedAt: snapshot?.generatedAt || null,
         cachedLocally,
+        persistedToDrive: Boolean(file?.id),
       },
       { headers: corsHeaders }
     );
@@ -295,7 +319,7 @@ export async function DELETE() {
 
   try {
     const snapshot = createEmptySnapshot();
-    const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await saveLocalSnapshot(snapshot), true);
+    const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
     let file = null;
     if (hasDriveConfig()) {
@@ -303,8 +327,30 @@ export async function DELETE() {
         const payload = JSON.stringify(snapshot, null, 2);
         file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
       } catch (driveError) {
-        console.warn("[LEADERBOARD] Drive reset failed, keeping local reset snapshot:", driveError.message);
+        console.warn("[LEADERBOARD] Drive reset failed:", driveError.message);
+
+        if (IS_VERCEL) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Unable to persist leaderboard reset to Google Drive. Check Drive credentials and folder permissions.",
+              cachedLocally,
+            },
+            { status: 500, headers: corsHeaders }
+          );
+        }
       }
+    } else if (IS_VERCEL) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Google Drive credentials are required to reset leaderboard data on Vercel.",
+          cachedLocally,
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    } else if (!cachedLocally) {
+      throw new Error("Unable to reset leaderboard snapshot locally.");
     }
 
     return NextResponse.json(
@@ -314,6 +360,7 @@ export async function DELETE() {
         savedTo: file?.webViewLink || "/leaderboard-export.json",
         generatedAt: null,
         cachedLocally,
+        persistedToDrive: Boolean(file?.id),
       },
       { headers: corsHeaders }
     );

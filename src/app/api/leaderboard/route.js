@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { cookies } from "next/headers";
 import path from "path";
+import {
+  readJsonFromDrive,
+  upsertJsonToDrive,
+} from "@/lib/google-drive/client";
 import { readLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
 
 export const runtime = "nodejs";
@@ -10,13 +14,18 @@ export const dynamic = "force-dynamic";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-API-Key",
   "Cache-Control": "no-store",
 };
 
 const LOCAL_EXPORT_DIR = path.join(process.cwd(), "public", "data");
 const LOCAL_EXPORT_FILE = path.join(LOCAL_EXPORT_DIR, "leaderboard-export.json");
 const LOCAL_ROOT_EXPORT_FILE = path.join(process.cwd(), "public", "leaderboard-export.json");
+const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || "leaderboard-export.json";
+const IS_VERCEL = process.env.VERCEL === "1";
+
+const hasDriveConfig = () =>
+  Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
 
 const createEmptySnapshot = () => ({
   generatedAt: null,
@@ -41,6 +50,16 @@ async function saveLocalSnapshot(snapshot) {
   const payload = JSON.stringify(snapshot, null, 2);
   await writeFile(LOCAL_EXPORT_FILE, payload, "utf8");
   await writeFile(LOCAL_ROOT_EXPORT_FILE, payload, "utf8");
+}
+
+async function trySaveLocalSnapshot(snapshot) {
+  try {
+    await saveLocalSnapshot(snapshot);
+    return true;
+  } catch (error) {
+    console.warn("[LEADERBOARD] Local snapshot cache failed:", error?.message || error);
+    return false;
+  }
 }
 
 async function readLocalSnapshot() {
@@ -69,14 +88,32 @@ export async function POST(request) {
       );
     }
 
-    await saveLocalSnapshot(snapshot);
+    const cachedLocally = await trySaveLocalSnapshot(snapshot);
+    let file = null;
+
+    if (hasDriveConfig()) {
+      const payload = JSON.stringify(snapshot, null, 2);
+      file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+    } else if (IS_VERCEL) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Google Drive credentials are required to persist leaderboard data on Vercel.",
+          cachedLocally,
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    } else if (!cachedLocally) {
+      throw new Error("Unable to save leaderboard snapshot locally.");
+    }
 
     return NextResponse.json(
       {
         ok: true,
-        savedTo: "/leaderboard-export.json",
+        savedTo: file?.webViewLink || "/leaderboard-export.json",
         generatedAt: snapshot?.generatedAt || null,
-        cachedLocally: true,
+        cachedLocally,
+        persistedToDrive: Boolean(file?.id),
       },
       { headers: corsHeaders }
     );
@@ -111,22 +148,31 @@ export async function GET() {
       }
     }
 
-    const snapshot = await readLocalSnapshot();
+    const snapshot = hasDriveConfig()
+      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
+      : await readLocalSnapshot();
 
     return NextResponse.json(snapshot, {
       headers: corsHeaders,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: error?.message || "Leaderboard export file not found",
-      },
-      {
-        status: 404,
+    try {
+      const snapshot = await readLocalSnapshot();
+      return NextResponse.json(snapshot, {
         headers: corsHeaders,
-      }
-    );
+      });
+    } catch (localError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: localError?.message || error?.message || "Leaderboard export file not found",
+        },
+        {
+          status: 404,
+          headers: corsHeaders,
+        }
+      );
+    }
   }
 }
 
@@ -137,15 +183,33 @@ export async function DELETE() {
 
   try {
     const snapshot = createEmptySnapshot();
-    await saveLocalSnapshot(snapshot);
+    const cachedLocally = await trySaveLocalSnapshot(snapshot);
+    let file = null;
+
+    if (hasDriveConfig()) {
+      const payload = JSON.stringify(snapshot, null, 2);
+      file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+    } else if (IS_VERCEL) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Google Drive credentials are required to reset leaderboard data on Vercel.",
+          cachedLocally,
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    } else if (!cachedLocally) {
+      throw new Error("Unable to reset leaderboard snapshot locally.");
+    }
 
     return NextResponse.json(
       {
         ok: true,
         reset: true,
-        savedTo: "/leaderboard-export.json",
+        savedTo: file?.webViewLink || "/leaderboard-export.json",
         generatedAt: null,
-        cachedLocally: true,
+        cachedLocally,
+        persistedToDrive: Boolean(file?.id),
       },
       { headers: corsHeaders }
     );
