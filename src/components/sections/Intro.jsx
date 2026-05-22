@@ -8,16 +8,9 @@ import { Power } from "lucide-react";
 export default function Intro({ onComplete }) {
   const [started, setStarted] = useState(false);
   const [showAnimatedLogo, setShowAnimatedLogo] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isVibrating, setIsVibrating] = useState(false);
   const revSound = useRef(null);
   const popSound = useRef(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   const handleStart = () => {
     setStarted(true);
@@ -51,16 +44,8 @@ export default function Intro({ onComplete }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden cursor-none">
+    <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden">
       <style>{`.tko-floating-ctas{display:none!important}`}</style>
-      {/* Custom Cursor */}
-      <motion.div
-        animate={{ x: mousePos.x - 20, y: mousePos.y - 20 }}
-        transition={{ type: "spring", damping: 30, stiffness: 250, mass: 0.5 }}
-        className="fixed top-0 left-0 w-10 h-10 border border-primary/50 rounded-full z-[110] pointer-events-none flex items-center justify-center"
-      >
-        <div className="w-1 h-1 bg-primary rounded-full shadow-[0_0_10px_oklch(0.7_0.2_60)]" />
-      </motion.div>
 
       {/* Audio elements */}
       <audio ref={revSound} src="/engine-rev.mp3" preload="auto" />

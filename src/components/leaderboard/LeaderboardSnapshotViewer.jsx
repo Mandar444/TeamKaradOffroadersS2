@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Info, RefreshCw } from "lucide-react";
@@ -240,6 +240,12 @@ function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref 
 
 export default function LeaderboardSnapshotViewer({ respectVisibility = true, detailReturnHref = "" }) {
   const searchParams = useSearchParams();
+  const tableScrollRef = useRef(null);
+  const dragScrollRef = useRef({
+    isDragging: false,
+    startX: 0,
+    scrollLeft: 0,
+  });
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibilityLoading, setVisibilityLoading] = useState(respectVisibility);
@@ -380,6 +386,42 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
 
   const tracks = activeCategory?.tracks || [];
   const tableMinWidth = Math.max(1410, 1225 + Math.max(tracks.length, 1) * 280);
+  const startTableDrag = useCallback((event) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const container = tableScrollRef.current;
+    if (!container) {
+      return;
+    }
+
+    dragScrollRef.current = {
+      isDragging: true,
+      startX: event.pageX - container.offsetLeft,
+      scrollLeft: container.scrollLeft,
+    };
+    container.classList.add("cursor-grabbing", "select-none");
+  }, []);
+
+  const moveTableDrag = useCallback((event) => {
+    const container = tableScrollRef.current;
+    const dragState = dragScrollRef.current;
+
+    if (!container || !dragState.isDragging) {
+      return;
+    }
+
+    event.preventDefault();
+    const x = event.pageX - container.offsetLeft;
+    container.scrollLeft = dragState.scrollLeft - (x - dragState.startX);
+  }, []);
+
+  const stopTableDrag = useCallback(() => {
+    const container = tableScrollRef.current;
+    dragScrollRef.current.isDragging = false;
+    container?.classList.remove("cursor-grabbing", "select-none");
+  }, []);
 
   if (respectVisibility && visibilityLoading) {
     return (
@@ -475,7 +517,14 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-black">
+          <div
+            ref={tableScrollRef}
+            onMouseDown={startTableDrag}
+            onMouseMove={moveTableDrag}
+            onMouseUp={stopTableDrag}
+            onMouseLeave={stopTableDrag}
+            className="overflow-x-auto bg-black cursor-grab"
+          >
             <table className="w-full border-separate border-spacing-y-3 text-left" style={{ minWidth: `${tableMinWidth}px` }}>
             <thead>
               <tr className="text-[12px] font-black uppercase text-[#d9a36d]">
