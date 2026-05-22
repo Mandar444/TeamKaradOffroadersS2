@@ -623,13 +623,13 @@ export default function RegulationsPage() {
 
           <TabsContent value="vehicle-specifications" className="space-y-10">
             <SpecTable
-              title="TEAM KARAD OFFROADERS SEASON 2 - 2026 EXPERT, MODIFIED, EXTREME CLASS CATEGORIZATION"
+              title="TEAM KARAD OFFROADERS SEASON 2 - 2026 EXPERT, MODIFIED, OPEN CLASS CATEGORIZATION"
               columns={expertColumns}
               groups={[
                 { label: "Description", span: 1 },
                 { label: "Expert Class", span: 2 },
                 { label: "Modified Class", span: 2 },
-                { label: "Extreme", span: 1 },
+                { label: "Open", span: 1 },
               ]}
               rows={expertRows}
             />

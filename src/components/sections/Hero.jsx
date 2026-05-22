@@ -246,7 +246,7 @@ export default function Hero() {
     ["SUV Jimny", "12,000", "10,000", "7,000"],
     ["SUV Modified", "15,000", "12,000", "10,000"],
     ["NDMS Category", "10,000", "7,000", "5,000"],
-    ["Extreme Category", "25,000", "20,000", "15,000"],
+    ["Open Category", "25,000", "20,000", "15,000"],
     ["Ladies Category", "Trophy", "Trophy", "Trophy"],
   ];
   const prizeGifts = ["Tyre Set", "Rim Sets", "Locker", "Many More Gifts"];

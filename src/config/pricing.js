@@ -1,6 +1,6 @@
 export const CATEGORIES = {
-  EXTREME: {
-    name: "Extreme",
+  OPEN: {
+    name: "Open",
     fee: 14999,
     lateFee: 17999,
     description: "On top of the line - Ultimate performance class",
@@ -128,7 +128,7 @@ export const PRICING_CONFIG = {
 };
 
 export const CATEGORY_PREFIXES = {
-  EXTREME: "EX",
+  OPEN: "OP",
   DIESEL_MODIFIED: "DM",
   PETROL_MODIFIED: "PM",
   DIESEL_EXPERT: "DE",

@@ -128,7 +128,7 @@ const TEAM_MEMBERS = [
   },
   {
     name: "Rohan Jadhav",
-    role: "CORE MEMBER",
+    role: "CORE MEMBER & DEVELOPER",
     image: "/images/team/rohan_jadhav_1.png",
   },
   {

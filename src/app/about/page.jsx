@@ -16,7 +16,7 @@ const milestones = [
 ];
 
 const values = [
-  { icon: Target, title: "Technical Excellence", desc: "Constant pushing of vehicle engineering and driving performance on extreme, specially designed tracks." },
+  { icon: Target, title: "Technical Excellence", desc: "Constant pushing of vehicle engineering and driving performance on open, specially designed tracks." },
   { icon: ShieldCheck, title: "Social Responsibility", desc: "Using our 4x4 expertise to assist in road accidents, floods, and natural calamities where others cannot reach." },
   { icon: Users, title: "Passionate Community", desc: "A brotherhood of skilled drivers, mechanics, and off-road specialists sharing a deep bond with the terrain." },
   { icon: Globe, title: "Adventure Culture", desc: "Growing the off-road culture in Western Maharashtra and India while promoting responsible off-roading." },
@@ -100,7 +100,7 @@ export default function AboutPage() {
              <div className="space-y-6 text-zinc-400 text-base sm:text-lg leading-relaxed">
                 <p>
                   Our team consists of skilled drivers, co-drivers, mechanics, and off-road specialists 
-                  who share a deep interest in adventure, vehicle engineering, and extreme terrain driving.
+                  who share a deep interest in adventure, vehicle engineering, and open terrain driving.
                 </p>
                  <p>
                    From mud tracks and rocky climbs to riverbeds and lethal obstacle courses, we constantly 

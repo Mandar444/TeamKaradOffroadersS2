@@ -379,7 +379,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   }, [categories, searchParams]);
 
   const tracks = activeCategory?.tracks || [];
-  const tableMinWidth = Math.max(1180, 995 + Math.max(tracks.length, 1) * 280);
+  const tableMinWidth = Math.max(1410, 1225 + Math.max(tracks.length, 1) * 280);
 
   if (respectVisibility && visibilityLoading) {
     return (
@@ -481,6 +481,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
               <tr className="text-[12px] font-black uppercase text-[#d9a36d]">
                 <th className="w-[145px] rounded-l-[18px] border-y border-l border-[#2b1709] bg-[#101010] px-4 py-5">Position</th>
                 <th className="w-[145px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Sticker</th>
+                <th className="w-[230px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Team</th>
                 <th className="w-[230px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Driver</th>
                 <th className="w-[285px] border-y border-[#2b1709] bg-[#101010] px-4 py-5">Co-Driver</th>
                 <th className="w-[190px] border-y border-[#2b1709] bg-[#101010] px-4 py-5 text-center">Total</th>
@@ -512,6 +513,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <span className="font-mono text-[17px] font-black text-[#fff7ef]">#{row.stickerNumber || "--"}</span>
+                  </td>
+                  <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
+                    <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.teamName}</p>
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.driverName}</p>

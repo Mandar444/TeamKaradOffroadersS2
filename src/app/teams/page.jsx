@@ -20,7 +20,7 @@ const CATEGORY_STYLES = {
   "SUV_MODIFIED": "from-zinc-600 to-zinc-900",
   "JIMNY_SUV": "from-green-500 to-green-700",
   "STOCK_NDMS": "from-emerald-500 to-teal-600",
-  "EXTREME": "from-purple-600 to-red-600",
+  "OPEN": "from-purple-600 to-red-600",
   "LADIES": "from-pink-500 to-rose-600"
 };
 
@@ -35,7 +35,7 @@ export default function TeamsPage() {
     { car_number: 7, team_name: "Sahyadri Warriors", driver_name: "Mandar Karad", codriver_name: "Akshay Patil", category: "DIESEL_MODIFIED", vehicle_name: "Mahindra Thar", vehicle_model: "CRDe 2024", driver_blood_group: "O+", codriver_blood_group: "A+", socials: "@mandarkarad" },
     { car_number: 24, team_name: "Thunder Bolts", driver_name: "Rohan Deshmukh", codriver_name: "Vikram Jadhav", category: "PETROL_MODIFIED", vehicle_name: "Maruti Gypsy", vehicle_model: "King 1.3", driver_blood_group: "B+", codriver_blood_group: "AB+", socials: "@thunderracing" },
     { car_number: 99, team_name: "Mud Raiders", driver_name: "Amit Patil", codriver_name: "Sagar Shinde", category: "STOCK_NDMS", vehicle_name: "Force Gurkha", vehicle_model: "5-Door 2024", driver_blood_group: "O-", codriver_blood_group: "O+", socials: "@mudraiders" },
-    { car_number: 1, team_name: "Apex Raptors", driver_name: "Suresh Gupta", codriver_name: "Sameer Khan", category: "EXTREME", vehicle_name: "Custom Monster", vehicle_model: "2024 Build", driver_blood_group: "A+", codriver_blood_group: "B+", socials: "@apexraptors" },
+    { car_number: 1, team_name: "Apex Raptors", driver_name: "Suresh Gupta", codriver_name: "Sameer Khan", category: "OPEN", vehicle_name: "Custom Monster", vehicle_model: "2024 Build", driver_blood_group: "A+", codriver_blood_group: "B+", socials: "@apexraptors" },
   ];
 
   useEffect(() => {

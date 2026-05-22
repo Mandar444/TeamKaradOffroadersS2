@@ -301,6 +301,7 @@ export const normalizeRow = row => {
       row?.vehicleKey ||
       `${normalizeText(row?.stickerNumber || row?.sticker || "")}-${normalizeText(row?.driverName || row?.driver || "")}`,
     stickerNumber: normalizeText(row?.stickerNumber || row?.sticker || "--").replace(/^#/, ""),
+    teamName: normalizeText(row?.teamName || row?.team_name || row?.team || "--"),
     driverName: normalizeText(row?.driverName || row?.driver || "--"),
     coDriverName: normalizeText(row?.coDriverName || row?.coDriver || "--"),
     totalPoints: Number.isFinite(Number(row?.totalPoints)) ? Number(row.totalPoints) : Number(row?.total || 0),

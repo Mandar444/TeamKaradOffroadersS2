@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Zap, Gauge, Trophy, Star, Shield, Car, Settings } from "lucide-react";
 
 const icons = {
-  EXTREME: Zap,
+  OPEN: Zap,
   DIESEL_MODIFIED: Gauge,
   PETROL_MODIFIED: Gauge,
   DIESEL_EXPERT: Trophy,
