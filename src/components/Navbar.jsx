@@ -9,6 +9,7 @@ import { Menu, X, ChevronRight, Instagram } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/partners", label: "Partners" },
   { href: "/regulations", label: "Event Regulatory" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/teams", label: "Participants" },

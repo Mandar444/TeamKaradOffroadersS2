@@ -18,7 +18,7 @@ const SPONSORS = [
   { src: "/images/sponsors/sponsor-new-07.jpeg", alt: "YST Tyres logo" },
   { src: "/images/sponsors/sponsor-new-09.jpeg", alt: "Sri Maruthi Tyres logo" },
   { src: "/images/sponsors/sponsor-new-10.jpeg", alt: "LAMDA logo" },
-  { src: "/images/sponsors/sponsor-logo-01.png", alt: "Sponsor logo 01" },
+  { src: "/images/sponsors/mapro-logo.jpg", alt: "Mapro logo" },
   { src: "/images/sponsors/sponsor-logo-02.png", alt: "Sponsor logo 02" },
   { src: "/images/sponsors/sponsor-logo-03.png", alt: "Sponsor logo 03" },
   { src: "/images/sponsors/sponsor-logo-04.png", alt: "Sponsor logo 04" },
