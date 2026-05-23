@@ -96,6 +96,10 @@ export const normalizeCategoryKey = value => {
     .toUpperCase()
     .replace(/\s+/g, "_");
 
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY") {
+    return "EXTREME";
+  }
+
   if (normalized === "LADIES" || normalized === "LADIES_CATEGORY") {
     return "LADIES_CATEGORY";
   }
@@ -172,7 +176,7 @@ export const normalizeResultIdentityKey = item => {
   return [
     normalizeCategoryKey(source?.category || ""),
     normalizeText(source?.track_name || source?.trackName || "").toLowerCase(),
-    normalizeText(source?.sticker_number || source?.stickerNumber || "").toLowerCase(),
+    normalizeText(source?.sticker_number || source?.stickerNumber || source?.car_number || source?.carNumber || "").toLowerCase(),
     normalizeText(source?.driver_name || source?.driverName || "").toLowerCase(),
     dayIdentityKey,
   ].join("|");
@@ -185,7 +189,7 @@ export const normalizeShortIdentityKey = item => {
   return [
     normalizeCategoryKey(source?.category || ""),
     normalizeText(source?.track_name || source?.trackName || "").toLowerCase(),
-    normalizeText(source?.sticker_number || source?.stickerNumber || "").toLowerCase(),
+    normalizeText(source?.sticker_number || source?.stickerNumber || source?.car_number || source?.carNumber || "").toLowerCase(),
     normalizeText(source?.driver_name || source?.driverName || "").toLowerCase(),
     normalizeDayKey(
       source?.selected_day_id ||
@@ -232,6 +236,10 @@ export const hasDisputePayload = record =>
   Array.isArray(record?.disputeDetails) ||
   (record?.dispute_resolutions && typeof record.dispute_resolutions === "object") ||
   (record?.disputeResolutions && typeof record.disputeResolutions === "object") ||
+  (record?.dispute_signatures && typeof record.dispute_signatures === "object") ||
+  (record?.disputeSignatures && typeof record.disputeSignatures === "object") ||
+  Array.isArray(record?.dispute_signed_by) ||
+  Array.isArray(record?.disputeSignedBy) ||
   Boolean(record?.dispute_resolution_status || record?.disputeResolutionStatus);
 
 export const mergeDetailRecords = (existing, incoming) => {
@@ -254,6 +262,10 @@ export const mergeDetailRecords = (existing, incoming) => {
       disputeResolutionStatus: incoming.disputeResolutionStatus ?? existing.disputeResolutionStatus,
       dispute_resolution_label: incoming.dispute_resolution_label ?? existing.dispute_resolution_label,
       disputeResolutionLabel: incoming.disputeResolutionLabel ?? existing.disputeResolutionLabel,
+      dispute_signatures: incoming.dispute_signatures ?? existing.dispute_signatures,
+      disputeSignatures: incoming.disputeSignatures ?? existing.disputeSignatures,
+      dispute_signed_by: incoming.dispute_signed_by ?? existing.dispute_signed_by,
+      disputeSignedBy: incoming.disputeSignedBy ?? existing.disputeSignedBy,
       __sourceType: existing.__sourceType || incoming.__sourceType,
     };
   }
@@ -270,6 +282,10 @@ export const mergeDetailRecords = (existing, incoming) => {
       disputeResolutionStatus: existing.disputeResolutionStatus ?? incoming.disputeResolutionStatus,
       dispute_resolution_label: existing.dispute_resolution_label ?? incoming.dispute_resolution_label,
       disputeResolutionLabel: existing.disputeResolutionLabel ?? incoming.disputeResolutionLabel,
+      dispute_signatures: existing.dispute_signatures ?? incoming.dispute_signatures,
+      disputeSignatures: existing.disputeSignatures ?? incoming.disputeSignatures,
+      dispute_signed_by: existing.dispute_signed_by ?? incoming.dispute_signed_by,
+      disputeSignedBy: existing.disputeSignedBy ?? incoming.disputeSignedBy,
       __sourceType: incoming.__sourceType || existing.__sourceType,
     };
   }
@@ -299,8 +315,8 @@ export const normalizeRow = row => {
   return {
     vehicleKey:
       row?.vehicleKey ||
-      `${normalizeText(row?.stickerNumber || row?.sticker || "")}-${normalizeText(row?.driverName || row?.driver || "")}`,
-    stickerNumber: normalizeText(row?.stickerNumber || row?.sticker || "--").replace(/^#/, ""),
+      `${normalizeText(row?.stickerNumber || row?.sticker || row?.car_number || row?.carNumber || "")}-${normalizeText(row?.driverName || row?.driver || "")}`,
+    stickerNumber: normalizeText(row?.stickerNumber || row?.sticker || row?.car_number || row?.carNumber || "--").replace(/^#/, ""),
     teamName: normalizeText(row?.teamName || row?.team_name || row?.team || "--"),
     driverName: normalizeText(row?.driverName || row?.driver || "--"),
     coDriverName: normalizeText(row?.coDriverName || row?.coDriver || "--"),
@@ -423,6 +439,15 @@ export const getFirstDefinedValue = (...values) => {
   return 0;
 };
 
+export const getNumericValue = value => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  const matchedValue = String(value || "").match(/-?\d+/);
+  return matchedValue ? Number(matchedValue[0]) : null;
+};
+
 export const getLateStartStatusLabel = record => {
   const status = record?.late_start_status || record?.lateStartStatus;
 
@@ -434,6 +459,30 @@ export const getLateStartStatusLabel = record => {
   return count > 0 ? "Yes" : "No";
 };
 
+export const getLateStartPenaltyPointsValue = record => {
+  const mode = normalizeText(record?.late_start_mode || record?.lateStartMode).toLowerCase();
+  const status = normalizeText(record?.late_start_status || record?.lateStartStatus).toLowerCase();
+  const hasLateStartPenalty = mode === "late_start" || status === "late start";
+
+  if (!hasLateStartPenalty) {
+    return 0;
+  }
+
+  const points = getNumericValue(record?.late_start_penalty_points ?? record?.lateStartPenaltyPoints);
+  return points === null ? 0 : Math.min(100, Math.max(0, points));
+};
+
+export const getLateStartPenaltyDisplay = record => {
+  const penaltyPoints = getLateStartPenaltyPointsValue(record);
+
+  if (penaltyPoints > 0) {
+    return `${penaltyPoints} pts`;
+  }
+
+  const penaltyTime = getFirstDefinedValue(record?.late_start_penalty_time, record?.lateStartPenaltyTime);
+  return penaltyTime ? `${penaltyTime} sec` : "--";
+};
+
 export const isDnsResult = record =>
   getBooleanFlagValue(record?.is_dns ?? record?.isDNS ?? record?.isDns);
 
@@ -442,10 +491,39 @@ export const isDnfResult = record => {
     return true;
   }
 
+  if (getDnfBreakdownLabel(record)) {
+    return true;
+  }
+
   const totalTime = String(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay || "")
     .trim()
     .toUpperCase();
   return totalTime.startsWith("DNF");
+};
+
+export const getDnfBreakdownLabel = record => {
+  const dnfReasonFields = [
+    { label: "Wrong Course", keys: ["wrong_course_selected", "wrongCourseSelected"] },
+    { label: "4th Attempt", keys: ["fourth_attempt_selected", "fourthAttemptSelected"] },
+    { label: "Time Over", keys: ["time_over_selected", "timeOverSelected"] },
+    { label: "Vehicle Out of the Track", keys: ["vehicle_out_of_track_selected", "vehicleOutOfTrackSelected"] },
+    { label: "Vehicle Breakdown", keys: ["vehicle_breakdown_selected", "vehicleBreakdownSelected"] },
+  ];
+  const matchedReason = dnfReasonFields.find(reason => reason.keys.some(key => getBooleanFlagValue(record?.[key])));
+
+  if (matchedReason?.label) {
+    return matchedReason.label;
+  }
+
+  const storedLabel = normalizeText(
+    record?.total_time ||
+      record?.totalTimeDisplay ||
+      record?.performance_time ||
+      record?.performanceTimeDisplay ||
+      ""
+  );
+  const storedReasonMatch = storedLabel.match(/^DNF\s*-\s*(.+)$/i);
+  return storedReasonMatch ? storedReasonMatch[1].trim() : "";
 };
 
 export const getDisputeResolutionLabel = record => {
@@ -622,7 +700,7 @@ export const buildPenaltyRows = record => [
   {
     label: "Late Start",
     count: getFirstDefinedValue(record?.late_start_count, record?.lateStartCount),
-    penalty: getFirstDefinedValue(record?.late_start_penalty_time, record?.lateStartPenaltyTime),
+    penalty: getLateStartPenaltyDisplay(record),
     note: getLateStartStatusLabel(record),
   },
   {
@@ -653,6 +731,7 @@ export const buildResultFlagItems = record => [
   { label: "4th Attempt", value: getYesNoLabel(record?.fourth_attempt_selected ?? record?.fourthAttemptSelected) },
   { label: "Time Over", value: getYesNoLabel(record?.time_over_selected ?? record?.timeOverSelected) },
   { label: "Vehicle Out of the Track", value: getYesNoLabel(record?.vehicle_out_of_track_selected ?? record?.vehicleOutOfTrackSelected) },
+  { label: "Vehicle Breakdown", value: getYesNoLabel(record?.vehicle_breakdown_selected ?? record?.vehicleBreakdownSelected) },
   { label: "DNF Selection", value: getRecordValue(record, ["dnf_selection", "dnfSelection"]) },
   { label: "DNF Points", value: getRecordValue(record, ["dnf_points", "dnfPoints"], 0) },
 ];
@@ -672,7 +751,7 @@ export const buildDetailSections = record => [
       { label: "Status", value: record?.late_start_status || record?.lateStartStatus },
       { label: "Mode", value: record?.late_start_mode || record?.lateStartMode },
       { label: "Count", value: record?.late_start_count || record?.lateStartCount },
-      { label: "Penalty Time", value: record?.late_start_penalty_time || record?.lateStartPenaltyTime },
+      { label: "Penalty Points", value: getLateStartPenaltyDisplay(record) },
     ],
   },
   {
@@ -696,6 +775,11 @@ const DISPUTE_PARTY_LABEL_BY_KEY = DISPUTE_PARTY_OPTIONS.reduce((acc, item) => {
   acc[item.key] = item.label;
   return acc;
 }, {});
+
+const DISPUTE_SIGNATURE_OPTIONS = [
+  { key: "driver", label: "Driver" },
+  { key: "coDriver", label: "Co-driver" },
+];
 
 const DISPUTE_DETAIL_INPUTLESS_KEYS = new Set(["byTeam", "byOpponent"]);
 
@@ -753,6 +837,61 @@ export const getDisputeDetailEntries = source => {
 export const getDisputePartyKeysWithDetails = record => {
   const partyKeys = [...new Set(getDisputeDetailEntries(record).map(entry => entry.partyKey).filter(Boolean))];
   return partyKeys.length ? partyKeys : DISPUTE_PARTY_OPTIONS.map(party => party.key);
+};
+
+export const getDisputeSignedByLabels = (record, partyKey = "byTeam") => {
+  if (partyKey !== "byTeam") {
+    return [];
+  }
+
+  const rawSignatures = safeParseJsonValue(record?.disputeSignatures ?? record?.dispute_signatures ?? {});
+  const rawSignedBy = safeParseJsonValue(record?.disputeSignedBy ?? record?.dispute_signed_by ?? []);
+  const byTeamSignature =
+    rawSignatures?.byTeam ||
+    rawSignatures?.by_team ||
+    rawSignatures?.team ||
+    rawSignatures ||
+    {};
+  const signedByMap = {};
+
+  if (byTeamSignature && typeof byTeamSignature === "object" && !Array.isArray(byTeamSignature)) {
+    signedByMap.driver = Boolean(byTeamSignature.driver);
+    signedByMap.coDriver = Boolean(
+      byTeamSignature.coDriver || byTeamSignature.co_driver || byTeamSignature.codriver
+    );
+  }
+
+  const signedByList = Array.isArray(rawSignedBy)
+    ? rawSignedBy
+    : typeof rawSignedBy === "string"
+      ? rawSignedBy.split(",")
+      : [];
+
+  signedByList.forEach(value => {
+    const normalizedValue = normalizeText(value).toLowerCase().replace(/[\s_-]+/g, "");
+
+    if (normalizedValue === "driver") {
+      signedByMap.driver = true;
+    }
+
+    if (normalizedValue === "codriver") {
+      signedByMap.coDriver = true;
+    }
+  });
+
+  return DISPUTE_SIGNATURE_OPTIONS.filter(option => Boolean(signedByMap[option.key])).map(option => option.label);
+};
+
+export const buildDisputeSignatureItems = (record, partyKey = "byTeam", shouldShowUnsigned = true) => {
+  const signedByLabels = getDisputeSignedByLabels(record, partyKey);
+
+  if (signedByLabels.length) {
+    return [{ label: "Dispute Signed In By", value: signedByLabels.join(", ") }];
+  }
+
+  return partyKey === "byTeam" && shouldShowUnsigned
+    ? [{ label: "Dispute Signed In By", value: "Not signed" }]
+    : [];
 };
 
 export const getDisputeResolutionLabelForStatus = status => {
@@ -844,12 +983,14 @@ export const appendDisputeResolutionSection = record => {
     };
     const resolution = disputeResolutions[partyKey] || {};
     const detailItems = buildDisputeDetailItems(record, partyKey);
+    const hasPartyDispute = Boolean(resolution.status || resolution.label || detailItems.length);
     const statusLabel = resolution.label || (detailItems.length ? "Pending" : "No Dispute Raised");
 
     return {
       title: `Dispute Resolution - ${party.label}`,
       items: [
         { label: "Status", value: statusLabel },
+        ...buildDisputeSignatureItems(record, partyKey, hasPartyDispute),
         ...(resolution.penaltyDecisionLabel && resolution.penaltyDecisionLabel !== statusLabel
           ? [{ label: "TKO Decision", value: resolution.penaltyDecisionLabel }]
           : []),
@@ -881,7 +1022,10 @@ export const appendDisputeDetailsSection = record => {
 
       return {
         title: `Dispute Details - ${party.label}`,
-        items: disputeDetailItems,
+        items: [
+          ...buildDisputeSignatureItems(record, partyKey),
+          ...disputeDetailItems,
+        ],
       };
     })
     .filter(Boolean);
@@ -892,7 +1036,8 @@ export const buildRawRecordItems = record => [
   { label: "Total Penalties", value: record?.total_penalties_time || record?.totalPenaltiesTime },
   { label: "Total Time", value: record?.total_time || record?.totalTimeDisplay },
   { label: "Late Start Status", value: record?.late_start_status || record?.lateStartStatus },
-  { label: "Late Start Penalty", value: record?.late_start_penalty_time || record?.lateStartPenaltyTime },
+  { label: "Late Start Penalty", value: getLateStartPenaltyDisplay(record) },
+  { label: "DNF Reason", value: getDnfBreakdownLabel(record) },
   { label: "DNF Points", value: record?.dnf_points ?? record?.dnfPoints },
 ];
 

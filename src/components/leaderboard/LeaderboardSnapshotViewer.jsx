@@ -179,6 +179,7 @@ function buildDetailHref({ activeCategory, row, trackLabel, entry, returnHref = 
   params.set("categoryKey", activeCategory?.key || "");
   params.set("track", trackLabel || "Track");
   params.set("sticker", row?.stickerNumber || "");
+  params.set("team", row?.teamName || "");
   params.set("driver", row?.driverName || "");
   params.set("day", entry?.dayLabel || "");
   params.set("timing", entry?.timingLabel || "");

@@ -46,11 +46,22 @@ async function isAdminSession() {
   return cookieStore.get("admin_session")?.value === "true";
 }
 
-const normalizeCategoryKey = value =>
-  String(value || "")
+const normalizeCategoryKey = value => {
+  const normalized = String(value || "")
     .trim()
     .toUpperCase()
     .replace(/\s+/g, "_");
+
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY") {
+    return "EXTREME";
+  }
+
+  if (normalized === "LADIES" || normalized === "LADIES_CATEGORY") {
+    return "LADIES_CATEGORY";
+  }
+
+  return normalized;
+};
 
 const getSnapshotCategoryKey = snapshot =>
   normalizeCategoryKey(

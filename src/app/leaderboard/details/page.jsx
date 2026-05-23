@@ -43,7 +43,7 @@ function PenaltyBreakdownTable({ rows }) {
     <div className="mt-4 overflow-x-auto">
       <div className="min-w-[700px] space-y-2">
         <div className="grid min-h-7 grid-cols-[minmax(260px,2.8fr)_minmax(100px,0.9fr)_minmax(170px,1.4fr)_minmax(110px,1fr)] items-center">
-          {["Penalty", "Count", "Penalty Time", "Status"].map((label, index) => (
+          {["Penalty", "Count", "Penalty Value", "Status"].map((label, index) => (
             <div
               key={label}
               className={`border-l border-[#2a1a0f] px-3.5 py-1.5 text-center font-mono text-[8px] font-black uppercase text-[#ff7a00] ${
@@ -180,6 +180,7 @@ function LeaderboardDetailsContent() {
   const categoryLabel = getRecordValue(record, ["category"], searchParams.get("category") || "Leaderboard");
   const trackLabel = getRecordValue(record, ["track_name", "trackName"], searchParams.get("track") || "Track");
   const stickerNumber = getRecordValue(record, ["sticker_number", "stickerNumber"], searchParams.get("sticker") || "--");
+  const teamName = getRecordValue(record, ["team_name", "teamName", "team"], searchParams.get("team") || "--");
   const driverName = getRecordValue(record, ["driver_name", "driverName"], searchParams.get("driver") || "--");
   const entry = {
     dayLabel: searchParams.get("day") || getRecordValue(record, ["selected_day_label", "selectedDayLabel"], "--"),
@@ -212,7 +213,7 @@ function LeaderboardDetailsContent() {
             <p className="mt-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-[#e1ad7a]">
               {!loading && !leaderboardVisible
                 ? "Race Control has closed the live leaderboard for now."
-                : `${categoryLabel} | #${formatDetailValue(stickerNumber)} | ${formatDetailValue(driverName)}`}
+                : `${categoryLabel} | #${formatDetailValue(stickerNumber)} | ${formatDetailValue(teamName)} | ${formatDetailValue(driverName)}`}
             </p>
           </div>
           <Link
