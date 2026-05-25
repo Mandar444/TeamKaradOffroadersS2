@@ -7,6 +7,9 @@ import {
 } from "@/lib/google-drive/client";
 
 const VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || "leaderboard-visibility.json";
+const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || "leaderboard-export.json";
+const HAS_DEDICATED_VISIBILITY_FILE = Boolean(process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_ID);
+const EMBEDDED_VISIBILITY_KEY = "publicVisibility";
 const VISIBILITY_DIR = path.join(process.cwd(), "public", "data");
 const VISIBILITY_FILE = path.join(VISIBILITY_DIR, "leaderboard-visibility.json");
 const FALLBACK_VISIBILITY_DIR = path.join(os.tmpdir(), "team-karad-offroaders");
@@ -112,6 +115,33 @@ async function cacheVisibilityLocally(payload) {
   return results.some(Boolean);
 }
 
+async function readEmbeddedDriveVisibility() {
+  const snapshot = await readJsonFromDrive(LEADERBOARD_FILE_NAME);
+  const visibility = snapshot?.[EMBEDDED_VISIBILITY_KEY];
+
+  if (typeof visibility?.visible !== "boolean") {
+    return null;
+  }
+
+  return normalizeVisibility(visibility, null, "leaderboard-export");
+}
+
+async function writeEmbeddedDriveVisibility(payload) {
+  const snapshot = await readJsonFromDrive(LEADERBOARD_FILE_NAME);
+
+  await upsertJsonToDrive(
+    LEADERBOARD_FILE_NAME,
+    JSON.stringify(
+      {
+        ...snapshot,
+        [EMBEDDED_VISIBILITY_KEY]: payload,
+      },
+      null,
+      2
+    )
+  );
+}
+
 export async function readLeaderboardVisibility() {
   const flagVisibility = getVisibilityFlag();
 
@@ -120,28 +150,43 @@ export async function readLeaderboardVisibility() {
   }
 
   if (hasDriveConfig()) {
+    const sharedCandidates = [];
+
     try {
-      const driveVisibility = normalizeVisibility(
-        await readJsonFromDrive(VISIBILITY_FILE_NAME),
-        null,
-        "drive"
-      );
-      await cacheVisibilityLocally(driveVisibility);
-      return driveVisibility;
-    } catch (error) {
-      console.warn("[LEADERBOARD] Drive visibility read failed:", error?.message || error);
-
-      const localVisibility = await readLocalVisibility();
-      if (localVisibility?.visible === false) {
-        return localVisibility;
+      const embeddedVisibility = await readEmbeddedDriveVisibility();
+      if (embeddedVisibility) {
+        sharedCandidates.push(embeddedVisibility);
       }
-
-      return {
-        visible: false,
-        updatedAt: null,
-        source: "drive-unavailable",
-      };
+    } catch (error) {
+      console.warn("[LEADERBOARD] Embedded visibility read failed:", error?.message || error);
     }
+
+    try {
+      sharedCandidates.push(
+        normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME), null, "visibility-file")
+      );
+    } catch (error) {
+      if (HAS_DEDICATED_VISIBILITY_FILE || !sharedCandidates.length) {
+        console.warn("[LEADERBOARD] Dedicated visibility read failed:", error?.message || error);
+      }
+    }
+
+    if (sharedCandidates.length) {
+      const sharedVisibility = sharedCandidates.sort((a, b) => getTimestamp(b) - getTimestamp(a))[0];
+      await cacheVisibilityLocally(sharedVisibility);
+      return sharedVisibility;
+    }
+
+    const localVisibility = await readLocalVisibility();
+    if (localVisibility?.visible === false) {
+      return localVisibility;
+    }
+
+    return {
+      visible: false,
+      updatedAt: null,
+      source: "drive-unavailable",
+    };
   }
 
   if (IS_VERCEL) {
@@ -181,11 +226,25 @@ export async function writeLeaderboardVisibility(visible) {
 
   if (hasDriveConfig()) {
     try {
-      await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
-    } catch (error) {
-      console.warn("[LEADERBOARD] Drive visibility write failed:", error?.message || error);
-      await cacheVisibilityLocally({ ...payload, visible: false });
-      throw new Error("Unable to persist leaderboard visibility to shared storage. Public leaderboard remains closed until visibility can be verified.");
+      if (HAS_DEDICATED_VISIBILITY_FILE) {
+        await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
+      } else {
+        await writeEmbeddedDriveVisibility(payload);
+      }
+    } catch (primaryError) {
+      console.warn("[LEADERBOARD] Primary visibility write failed:", primaryError?.message || primaryError);
+
+      try {
+        if (HAS_DEDICATED_VISIBILITY_FILE) {
+          await writeEmbeddedDriveVisibility(payload);
+        } else {
+          await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
+        }
+      } catch (fallbackError) {
+        console.warn("[LEADERBOARD] Fallback visibility write failed:", fallbackError?.message || fallbackError);
+        await cacheVisibilityLocally({ ...payload, visible: false });
+        throw new Error("Unable to save leaderboard visibility. Please verify Google Drive access and try again.");
+      }
     }
 
     await cacheVisibilityLocally(payload);
@@ -199,4 +258,19 @@ export async function writeLeaderboardVisibility(visible) {
   }
 
   return payload;
+}
+
+export async function preserveLeaderboardVisibility(snapshot) {
+  const visibility = await readLeaderboardVisibility().catch(() => ({
+    visible: false,
+    updatedAt: null,
+  }));
+
+  return {
+    ...snapshot,
+    [EMBEDDED_VISIBILITY_KEY]: {
+      visible: visibility.visible === true,
+      updatedAt: visibility.updatedAt || null,
+    },
+  };
 }

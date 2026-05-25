@@ -6,7 +6,10 @@ import {
   readJsonFromDrive,
   upsertJsonToDrive,
 } from "@/lib/google-drive/client";
-import { readLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
+import {
+  preserveLeaderboardVisibility,
+  readLeaderboardVisibility,
+} from "@/lib/leaderboard-visibility-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -112,19 +115,20 @@ const withEndpointStatus = snapshot => ({
 
 export async function POST(request) {
   try {
-    const snapshot = await readOptionalJsonBody(request);
+    const incomingSnapshot = await readOptionalJsonBody(request);
 
-    if (snapshot === null || isEmptyObject(snapshot)) {
+    if (incomingSnapshot === null || isEmptyObject(incomingSnapshot)) {
       return createUsableResponse({ skipped: true });
     }
 
-    if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    if (!incomingSnapshot || typeof incomingSnapshot !== "object" || Array.isArray(incomingSnapshot)) {
       return NextResponse.json(
         { ok: false, error: "Invalid leaderboard payload" },
         { status: 400, headers: corsHeaders }
       );
     }
 
+    const snapshot = await preserveLeaderboardVisibility(incomingSnapshot);
     const cachedLocally = await trySaveLocalSnapshot(snapshot);
     let file = null;
 
@@ -235,7 +239,7 @@ export async function DELETE() {
   }
 
   try {
-    const snapshot = createEmptySnapshot();
+    const snapshot = await preserveLeaderboardVisibility(createEmptySnapshot());
     const cachedLocally = await trySaveLocalSnapshot(snapshot);
     let file = null;
 

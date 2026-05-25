@@ -6,7 +6,10 @@ import {
   upsertJsonToDrive,
   readJsonFromDrive,
 } from "@/lib/google-drive/client";
-import { readLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
+import {
+  preserveLeaderboardVisibility,
+  readLeaderboardVisibility,
+} from "@/lib/leaderboard-visibility-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -254,9 +257,10 @@ export async function POST(request) {
     }
 
     const existingSnapshot = hasDriveConfig() ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null) : await readLocalSnapshot().catch(() => null);
-    const snapshot = existingSnapshot
+    const mergedSnapshot = existingSnapshot
       ? mergeSnapshotCategory(existingSnapshot, incomingSnapshot)
       : incomingSnapshot;
+    const snapshot = await preserveLeaderboardVisibility(mergedSnapshot);
 
     const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
@@ -368,7 +372,7 @@ export async function DELETE() {
   }
 
   try {
-    const snapshot = createEmptySnapshot();
+    const snapshot = await preserveLeaderboardVisibility(createEmptySnapshot());
     const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
     let file = null;
