@@ -185,22 +185,22 @@ export async function POST(request) {
 }
 
 export async function GET() {
-  try {
-    if (!(await isAdminSession())) {
-      const visibility = await readLeaderboardVisibility().catch(() => ({ visible: false }));
+  if (!(await isAdminSession())) {
+    const visibility = await readLeaderboardVisibility().catch(() => ({ visible: false }));
 
-      if (!visibility.visible) {
-        return NextResponse.json(
-          {
-            ok: false,
-            closed: true,
-            error: "Live leaderboard is closed",
-          },
-          { status: 403, headers: corsHeaders }
-        );
-      }
+    if (!visibility.visible) {
+      return NextResponse.json(
+        {
+          ok: false,
+          closed: true,
+          error: "Live leaderboard is closed",
+        },
+        { status: 403, headers: corsHeaders }
+      );
     }
+  }
 
+  try {
     const snapshot = hasDriveConfig()
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
       : await readLocalSnapshot();

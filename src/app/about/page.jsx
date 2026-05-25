@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRef } from "react";
-import Link from "next/link";
+import RegistrationLink from "@/components/RegistrationLink";
 import { Target, Shield, Users, Activity, ShieldCheck, Globe, Mail, MapPin, Clock, Send, Instagram, Facebook, Youtube } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -276,12 +276,12 @@ export default function AboutPage() {
                <p className="text-zinc-300 text-base sm:text-xl max-w-xl mx-auto mb-12 font-medium">
                  Ready to test your limits? Join the Season 2 expansion and become part of India&apos;s most thrilling off-road community.
                </p>
-               <Link
+               <RegistrationLink
                   href="/register"
                   className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base border-none"
                >
                   <span className="whitespace-nowrap">REGISTER NOW</span>
-               </Link>
+               </RegistrationLink>
             </div>
          </motion.div>
       </section>

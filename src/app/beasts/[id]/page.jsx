@@ -6,6 +6,7 @@ import { Gauge, Fuel, Cog, Zap, ShieldCheck, Trophy, Info, ChevronLeft, LayoutGr
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import RegistrationLink from "@/components/RegistrationLink";
 
 const beastData = {
     "stallion": {
@@ -302,9 +303,9 @@ export default function BeastDetailPage() {
       <section className="py-20 px-6">
          <div className="max-w-4xl mx-auto p-12 bg-primary/5 border border-primary/10 rounded-[3rem] text-center">
              <h2 className="text-4xl font-heading text-white uppercase italic mb-8">BUILD YOUR OWN <span className="text-primary"> LEGEND?</span></h2>
-             <Link href="/register" className="inline-flex h-16 px-12 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-all text-sm">
+             <RegistrationLink href="/register" className="inline-flex h-16 px-12 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-all text-sm">
                 JOIN SEASON 2 GRID
-             </Link>
+             </RegistrationLink>
          </div>
       </section>
     </div>

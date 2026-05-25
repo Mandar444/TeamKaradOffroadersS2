@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Instagram, MapPin, Mail } from "lucide-react";
+import RegistrationLink from "@/components/RegistrationLink";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(false);
@@ -96,7 +97,7 @@ export default function Home() {
                 >
                   <span className="skew-x-[12deg] whitespace-nowrap uppercase">MECHANIC SUPPORT</span>
                 </Link>
-                <Link
+                <RegistrationLink
                   href="/register"
                   className={cn(
                     buttonVariants({ size: "lg" }),
@@ -104,7 +105,7 @@ export default function Home() {
                   )}
                 >
                   <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
-                </Link>
+                </RegistrationLink>
               </div>
             </div>
           </section>
@@ -155,7 +156,7 @@ export default function Home() {
                       <Instagram className="w-5 h-5" />
                       <span className="text-sm">5,000+ Followers</span>
                     </a>
-                    <Link href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-[.3em] uppercase">REGISTER NOW</Link>
+                    <RegistrationLink href="/register" className="text-primary hover:text-white transition-colors font-bold text-sm tracking-[.3em] uppercase">REGISTER NOW</RegistrationLink>
                   </div>
                 </div>
               </div>

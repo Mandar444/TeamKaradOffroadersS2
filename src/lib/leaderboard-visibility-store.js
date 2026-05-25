@@ -11,6 +11,7 @@ const VISIBILITY_DIR = path.join(process.cwd(), "public", "data");
 const VISIBILITY_FILE = path.join(VISIBILITY_DIR, "leaderboard-visibility.json");
 const FALLBACK_VISIBILITY_DIR = path.join(os.tmpdir(), "team-karad-offroaders");
 const FALLBACK_VISIBILITY_FILE = path.join(FALLBACK_VISIBILITY_DIR, "leaderboard-visibility.json");
+const IS_VERCEL = process.env.VERCEL === "1";
 
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
@@ -118,23 +119,42 @@ export async function readLeaderboardVisibility() {
     return flagVisibility;
   }
 
-  const candidates = [];
-
   if (hasDriveConfig()) {
     try {
-      candidates.push(normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME)));
+      const driveVisibility = normalizeVisibility(
+        await readJsonFromDrive(VISIBILITY_FILE_NAME),
+        null,
+        "drive"
+      );
+      await cacheVisibilityLocally(driveVisibility);
+      return driveVisibility;
     } catch (error) {
       console.warn("[LEADERBOARD] Drive visibility read failed:", error?.message || error);
+
+      const localVisibility = await readLocalVisibility();
+      if (localVisibility?.visible === false) {
+        return localVisibility;
+      }
+
+      return {
+        visible: false,
+        updatedAt: null,
+        source: "drive-unavailable",
+      };
     }
+  }
+
+  if (IS_VERCEL) {
+    return {
+      visible: false,
+      updatedAt: null,
+      source: "shared-storage-unavailable",
+    };
   }
 
   const localVisibility = await readLocalVisibility();
   if (localVisibility) {
-    candidates.push(localVisibility);
-  }
-
-  if (candidates.length) {
-    return candidates.sort((a, b) => getTimestamp(b) - getTimestamp(a))[0];
+    return localVisibility;
   }
 
   return {
@@ -155,18 +175,17 @@ export async function writeLeaderboardVisibility(visible) {
     updatedAt: new Date().toISOString(),
   };
 
+  if (IS_VERCEL && !hasDriveConfig()) {
+    throw new Error("Google Drive credentials are required to change public leaderboard visibility on Vercel. Public leaderboard remains closed.");
+  }
+
   if (hasDriveConfig()) {
     try {
       await upsertJsonToDrive(VISIBILITY_FILE_NAME, JSON.stringify(payload, null, 2));
     } catch (error) {
       console.warn("[LEADERBOARD] Drive visibility write failed:", error?.message || error);
-      const cachedLocally = await cacheVisibilityLocally(payload);
-
-      if (!cachedLocally) {
-        throw new Error("Unable to persist leaderboard visibility. Please try again.");
-      }
-
-      return payload;
+      await cacheVisibilityLocally({ ...payload, visible: false });
+      throw new Error("Unable to persist leaderboard visibility to shared storage. Public leaderboard remains closed until visibility can be verified.");
     }
 
     await cacheVisibilityLocally(payload);

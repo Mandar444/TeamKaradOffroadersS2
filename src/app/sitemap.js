@@ -1,3 +1,7 @@
+import { isRegistrationOpen } from "@/lib/registration-deadline";
+
+export const dynamic = "force-dynamic";
+
 export default function sitemap() {
   const baseUrl = "https://teamkaradoffroaders.online"; // Replace with your actual domain if different
 
@@ -38,12 +42,12 @@ export default function sitemap() {
       changeFrequency: "daily",
       priority: 0.9,
     },
-    {
+    ...(isRegistrationOpen() ? [{
       url: `${baseUrl}/register`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
-    },
+    }] : []),
     {
       url: `${baseUrl}/leaderboard`,
       lastModified: new Date(),

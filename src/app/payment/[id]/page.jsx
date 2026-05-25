@@ -10,11 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { CheckCircle2, ChevronRight, Copy, AlertCircle, ShieldCheck, Phone, Zap } from "lucide-react";
+import { useRegistrationDeadline } from "@/lib/use-registration-deadline";
 
 
 export default function PaymentPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { isRegistrationOpen } = useRegistrationDeadline();
   const [utr, setUtr] = useState("");
   const [loading, setLoading] = useState(false);
   const [regData, setRegData] = useState(null);
@@ -90,9 +92,11 @@ export default function PaymentPage() {
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-heading text-white mb-2">Ops! Payment Link Expired</h2>
           <p className="text-zinc-500 mb-6">{error}</p>
-          <Button onClick={() => router.push("/register")} className="w-full bg-primary text-black font-bold">
-            BACK TO REGISTRATION
-          </Button>
+          {isRegistrationOpen && (
+            <Button onClick={() => router.push("/register")} className="w-full bg-primary text-black font-bold">
+              BACK TO REGISTRATION
+            </Button>
+          )}
         </Card>
       </div>
     );

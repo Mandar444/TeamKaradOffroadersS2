@@ -255,14 +255,16 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadVisibility = useCallback(async () => {
+  const loadVisibility = useCallback(async ({ silent = false } = {}) => {
     if (!respectVisibility) {
       setLeaderboardVisible(true);
       setVisibilityLoading(false);
       return;
     }
 
-    setVisibilityLoading(true);
+    if (!silent) {
+      setVisibilityLoading(true);
+    }
 
     try {
       const visibility = await fetchLeaderboardVisibility();
@@ -270,7 +272,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     } catch (visibilityError) {
       setLeaderboardVisible(false);
     } finally {
-      setVisibilityLoading(false);
+      if (!silent) {
+        setVisibilityLoading(false);
+      }
     }
   }, [respectVisibility]);
 
@@ -337,6 +341,18 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   useEffect(() => {
     loadVisibility();
   }, [loadVisibility]);
+
+  useEffect(() => {
+    if (!respectVisibility) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      loadVisibility({ silent: true });
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [loadVisibility, respectVisibility]);
 
   useEffect(() => {
     if (visibilityLoading) {

@@ -171,6 +171,24 @@ function LeaderboardDetailsContent() {
     };
   }, []);
 
+  useEffect(() => {
+    const intervalId = window.setInterval(async () => {
+      try {
+        const visibility = await fetchLeaderboardVisibility();
+
+        if (!visibility.visible) {
+          setLeaderboardVisible(false);
+          setSnapshot(null);
+        }
+      } catch (visibilityError) {
+        setLeaderboardVisible(false);
+        setSnapshot(null);
+      }
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   const detailIndex = useMemo(() => buildLeaderboardDetailIndex(snapshot), [snapshot]);
   const record = useMemo(() => detailIndex.get(key) || detailIndex.get(shortKey) || null, [detailIndex, key, shortKey]);
   const backCategoryKey = requestedCategoryKey || normalizeCategoryKey(record?.category || searchParams.get("category") || "");

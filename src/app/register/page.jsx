@@ -45,6 +45,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { CATEGORIES, MAX_CAR_NUMBER } from "@/config/pricing";
 import NumberPicker from "@/components/sections/NumberPicker";
 import { cn } from "@/lib/utils";
+import RegistrationClosedNotice from "@/components/RegistrationClosedNotice";
+import { useRegistrationDeadline } from "@/lib/use-registration-deadline";
 
 const formSchema = z.object({
   category: z.string().min(1, "Please select a category"),
@@ -74,6 +76,7 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { isDeadlineReady, isRegistrationOpen } = useRegistrationDeadline();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [takenNumbers, setTakenNumbers] = useState([]);
@@ -103,6 +106,10 @@ export default function RegisterPage() {
   const selectedNumber = watch("carNumber");
 
   useEffect(() => {
+    if (!isRegistrationOpen) {
+      return;
+    }
+
     const fetchStats = async () => {
       try {
         const [numRes, countRes] = await Promise.all([
@@ -119,9 +126,13 @@ export default function RegisterPage() {
       }
     };
     fetchStats();
-  }, [selectedCategory]);
+  }, [isRegistrationOpen, selectedCategory]);
 
   const onSubmit = async (values) => {
+    if (!isRegistrationOpen) {
+      return;
+    }
+
     setLoading(true);
     try {
       // Transition to transient staging (no DB record yet)
@@ -134,6 +145,14 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  if (!isDeadlineReady) {
+    return null;
+  }
+
+  if (!isRegistrationOpen) {
+    return <RegistrationClosedNotice />;
+  }
 
   return (
     <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-16 md:pb-20 relative overflow-hidden">

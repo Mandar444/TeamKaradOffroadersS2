@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Trophy, Users, Calendar, MapPin } from "lucide-react";
+import RegistrationLink from "@/components/RegistrationLink";
 
 function RealisticTrophyIcon({ className = "" }) {
   return (
@@ -342,12 +343,12 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
-              <Link 
+              <RegistrationLink
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
                 <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
-              </Link>
+              </RegistrationLink>
             <Link 
               href="/teams" 
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold border-zinc-700 hover:bg-white/5 transition-colors w-full sm:w-auto flex items-center justify-center")}

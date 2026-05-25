@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight, Instagram } from "lucide-react";
+import RegistrationLink from "@/components/RegistrationLink";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -94,12 +95,12 @@ export default function Navbar() {
             >
               <Instagram className="w-5 h-5" />
             </a>
-            <Link
+            <RegistrationLink
               href="/register"
               className="ml-2 px-5 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,165,0,0.2)] whitespace-nowrap shrink-0 flex items-center justify-center border-none"
             >
               REGISTER NOW
-            </Link>
+            </RegistrationLink>
           </div>
 
           {/* Mobile Toggle (Visible on all screens below LG) */}
@@ -151,12 +152,12 @@ export default function Navbar() {
                 transition={{ delay: NAV_LINKS.length * 0.05 }}
                 className="pt-6 space-y-4"
               >
-                <Link
+                <RegistrationLink
                   href="/register"
                   className="flex h-16 w-full items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm border-none"
                 >
                   <span className="whitespace-nowrap uppercase">REGISTER NOW</span>
-                </Link>
+                </RegistrationLink>
                 <a
                   href="https://www.instagram.com/teamkaradoffroaders/"
                   target="_blank"

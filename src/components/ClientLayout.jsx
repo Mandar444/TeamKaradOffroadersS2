@@ -6,9 +6,12 @@ import SmoothScroll from "@/components/SmoothScroll";
 import { motion } from "framer-motion";
 import { Tent, Wrench, Zap } from "lucide-react";
 import Link from "next/link";
+import RegistrationCountdown from "@/components/RegistrationCountdown";
+import { useRegistrationDeadline } from "@/lib/use-registration-deadline";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
+  const { isRegistrationOpen, remainingMs } = useRegistrationDeadline();
   const isAdminPage = pathname?.startsWith("/admin");
   const isVerifyPage = pathname?.startsWith("/verify");
   const isLeaderboardDetailsPage = pathname?.startsWith("/leaderboard/details");
@@ -34,21 +37,26 @@ export default function ClientLayout({ children }) {
       {/* Global Floating Register CTA */}
       {!hideLayout && !isRegistrationFlow && (
         <div className="tko-floating-ctas">
-          <motion.div
-            initial={{ scale: 0, opacity: 0, x: 50 }}
-            animate={{ scale: 1, opacity: 1, x: 0 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="fixed bottom-4 right-4 z-[100] group sm:bottom-6 sm:right-6 lg:bottom-8 lg:right-8"
-          >
-            <Link
-              href="/register"
-              className="flex items-center justify-center gap-2 bg-[#ff8a00] text-black px-4 py-3 sm:px-5 sm:py-4 rounded-full font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] text-[10px] sm:text-xs md:text-sm shadow-[0_10px_40px_rgba(255,138,0,0.35)] hover:bg-[#ff9a1a] hover:shadow-[0_15px_50px_rgba(255,138,0,0.55)] transition-all max-w-[calc(100vw-2rem)] sm:max-w-none"
-            >
-              <span>REGISTER NOW</span>
-              <Zap className="w-5 h-5 fill-black text-black" />
-            </Link>
-          </motion.div>
+          {isRegistrationOpen && (
+            <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end gap-3 sm:bottom-6 sm:right-6 lg:bottom-8 lg:right-8">
+              <RegistrationCountdown remainingMs={remainingMs} />
+              <motion.div
+                initial={{ scale: 0, opacity: 0, x: 50 }}
+                animate={{ scale: 1, opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group"
+              >
+                <Link
+                  href="/register"
+                  className="flex items-center justify-center gap-2 bg-[#ff8a00] text-black px-4 py-3 sm:px-5 sm:py-4 rounded-full font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] text-[10px] sm:text-xs md:text-sm shadow-[0_10px_40px_rgba(255,138,0,0.35)] hover:bg-[#ff9a1a] hover:shadow-[0_15px_50px_rgba(255,138,0,0.55)] transition-all max-w-[calc(100vw-2rem)] sm:max-w-none"
+                >
+                  <span>REGISTER NOW</span>
+                  <Zap className="w-5 h-5 fill-black text-black" />
+                </Link>
+              </motion.div>
+            </div>
+          )}
 
           <div className="fixed bottom-20 left-4 z-[100] flex w-fit max-w-[calc(100vw-7rem)] flex-col gap-2 sm:bottom-24 sm:left-6 sm:max-w-[min(22rem,calc(100vw-9rem))] sm:gap-3 lg:bottom-28">
             {!isHotelSupportPage && (
