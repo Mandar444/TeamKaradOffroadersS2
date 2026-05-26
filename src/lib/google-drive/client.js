@@ -10,8 +10,9 @@ const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || 'leade
 const LEADERBOARD_FILE_ID = process.env.GOOGLE_LEADERBOARD_FILE_ID;
 const LEADERBOARD_VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || 'leaderboard-visibility.json';
 const LEADERBOARD_VISIBILITY_FILE_ID = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_ID;
-const LEADERBOARD_RESET_FILE_NAME = process.env.GOOGLE_LEADERBOARD_RESET_FILE_NAME || 'leaderboard-reset.json';
-const LEADERBOARD_RESET_FILE_ID = process.env.GOOGLE_LEADERBOARD_RESET_FILE_ID;
+const LEGACY_RESET_FILE_NAME = process.env.GOOGLE_LEADERBOARD_RESET_FILE_NAME || 'leaderboard-reset.json';
+const RESET_VERSION_PROPERTY = 'liveDataResetVersion';
+const RESET_AT_PROPERTY = 'liveDataResetAt';
 
 const auth = new JWT({
   email: GOOGLE_CLIENT_EMAIL,
@@ -28,10 +29,6 @@ function getConfiguredFileId(fileName) {
 
   if (fileName === LEADERBOARD_VISIBILITY_FILE_NAME) {
     return LEADERBOARD_VISIBILITY_FILE_ID;
-  }
-
-  if (fileName === LEADERBOARD_RESET_FILE_NAME) {
-    return LEADERBOARD_RESET_FILE_ID;
   }
 
   return null;
@@ -91,39 +88,174 @@ export async function uploadToDrive(file, fileName) {
   }
 }
 
-async function findDriveFileByName(fileName) {
+async function listDriveFilesByName(fileName) {
   const queryParts = [`name = '${fileName.replace(/'/g, "\\'")}'`, 'trashed = false'];
   if (DRIVE_FOLDER_ID) {
     queryParts.unshift(`'${DRIVE_FOLDER_ID}' in parents`);
   }
 
-  const response = await drive.files.list({
-    q: queryParts.join(' and '),
-    fields: 'files(id, name, modifiedTime)',
-    orderBy: 'modifiedTime desc',
-    pageSize: 1,
-    includeItemsFromAllDrives: true,
+  const files = [];
+  let pageToken = null;
+
+  do {
+    const response = await drive.files.list({
+      q: queryParts.join(' and '),
+      fields: 'nextPageToken, files(id, name, modifiedTime, size)',
+      orderBy: 'modifiedTime desc',
+      pageSize: 1000,
+      pageToken: pageToken || undefined,
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+    });
+
+    files.push(...(response.data.files || []));
+    pageToken = response.data.nextPageToken || null;
+  } while (pageToken);
+
+  return files;
+}
+
+async function findDriveFileByName(fileName) {
+  return (await listDriveFilesByName(fileName))[0] || null;
+}
+
+async function getDriveFile(fileName) {
+  const configuredFileId = getConfiguredFileId(fileName);
+  return configuredFileId ? { id: configuredFileId } : findDriveFileByName(fileName);
+}
+
+async function readDriveAppProperties(fileId) {
+  const response = await drive.files.get({
+    fileId,
+    fields: 'appProperties',
     supportsAllDrives: true,
   });
 
-  return response.data.files?.[0] || null;
+  return response.data.appProperties || {};
 }
 
-export async function upsertJsonToDrive(fileName, jsonContent) {
+const getResetProperties = resetMarker =>
+  resetMarker
+    ? {
+        [RESET_VERSION_PROPERTY]: String(resetMarker.version),
+        [RESET_AT_PROPERTY]: String(resetMarker.resetAt),
+      }
+    : null;
+
+export async function readLeaderboardResetMarkerFromDrive() {
   if (!GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
     throw new Error('Missing Google Drive Credentials in environment.');
   }
 
-  const configuredFileId = getConfiguredFileId(fileName);
-  const existingFile = configuredFileId ? { id: configuredFileId } : await findDriveFileByName(fileName);
+  const existingFile = await getDriveFile(LEADERBOARD_FILE_NAME);
+
+  if (!existingFile?.id) {
+    return null;
+  }
+
+  const appProperties = await readDriveAppProperties(existingFile.id);
+  if (!appProperties[RESET_VERSION_PROPERTY] || !appProperties[RESET_AT_PROPERTY]) {
+    return null;
+  }
+
+  return {
+    version: appProperties[RESET_VERSION_PROPERTY],
+    resetAt: appProperties[RESET_AT_PROPERTY],
+  };
+}
+
+async function deleteRetainedLeaderboardRevisions(fileId) {
+  const metadataResponse = await drive.files.get({
+    fileId,
+    fields: 'headRevisionId',
+    supportsAllDrives: true,
+  });
+  const revisionsResponse = await drive.revisions.list({
+    fileId,
+    fields: 'revisions(id, keepForever)',
+    pageSize: 1000,
+  });
+  const headRevisionId = metadataResponse.data.headRevisionId;
+  const retainedRevisions = (revisionsResponse.data.revisions || []).filter(
+    revision => revision.keepForever === true && revision.id !== headRevisionId
+  );
+
+  for (const revision of retainedRevisions) {
+    await drive.revisions.delete({
+      fileId,
+      revisionId: revision.id,
+    });
+  }
+
+  return retainedRevisions.length;
+}
+
+export async function clearObsoleteLeaderboardDriveData(activeFileId) {
+  if (!GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+    throw new Error('Missing Google Drive Credentials in environment.');
+  }
+
+  const [exportFiles, legacyResetFiles] = await Promise.all([
+    listDriveFilesByName(LEADERBOARD_FILE_NAME),
+    listDriveFilesByName(LEGACY_RESET_FILE_NAME),
+  ]);
+  const filesToDelete = new Map();
+
+  [...exportFiles, ...legacyResetFiles].forEach(file => {
+    if (file?.id && file.id !== activeFileId) {
+      filesToDelete.set(file.id, file);
+    }
+  });
+
+  let deletedFiles = 0;
+  const warnings = [];
+  for (const file of filesToDelete.values()) {
+    try {
+      await drive.files.delete({
+        fileId: file.id,
+        supportsAllDrives: true,
+      });
+      deletedFiles += 1;
+    } catch (error) {
+      warnings.push(`Unable to delete obsolete file ${file.name || file.id}: ${error.message}`);
+    }
+  }
+
+  let deletedRevisions = 0;
+  if (activeFileId) {
+    try {
+      deletedRevisions = await deleteRetainedLeaderboardRevisions(activeFileId);
+    } catch (error) {
+      warnings.push(`Unable to delete retained export revisions: ${error.message}`);
+    }
+  }
+
+  return {
+    deletedFiles,
+    deletedRevisions,
+    warnings,
+  };
+}
+
+export async function upsertJsonToDrive(fileName, jsonContent, { resetMarker = null } = {}) {
+  if (!GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+    throw new Error('Missing Google Drive Credentials in environment.');
+  }
+
+  const existingFile = await getDriveFile(fileName);
   const media = {
     mimeType: 'application/json',
     body: jsonContent,
   };
+  const resetProperties = getResetProperties(resetMarker);
 
   if (existingFile?.id) {
+    const requestBody = resetProperties
+      ? { appProperties: { ...(await readDriveAppProperties(existingFile.id)), ...resetProperties } }
+      : undefined;
     const response = await drive.files.update({
       fileId: existingFile.id,
+      requestBody,
       media,
       fields: 'id, webViewLink, webContentLink',
       supportsAllDrives: true,
@@ -148,6 +280,7 @@ export async function upsertJsonToDrive(fileName, jsonContent) {
   const fileMetadata = {
     name: fileName,
     parents: DRIVE_FOLDER_ID ? [DRIVE_FOLDER_ID] : [],
+    ...(resetProperties ? { appProperties: resetProperties } : {}),
   };
 
   const response = await drive.files.create({
@@ -178,8 +311,7 @@ export async function readJsonFromDrive(fileName = LEADERBOARD_FILE_NAME) {
     throw new Error('Missing Google Drive Credentials in environment.');
   }
 
-  const configuredFileId = getConfiguredFileId(fileName);
-  const existingFile = configuredFileId ? { id: configuredFileId } : await findDriveFileByName(fileName);
+  const existingFile = await getDriveFile(fileName);
 
   if (!existingFile?.id) {
     throw new Error('Leaderboard export file not found in Drive.');

@@ -3,8 +3,10 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { cookies } from "next/headers";
 import path from "path";
 import {
+  clearObsoleteLeaderboardDriveData,
   upsertJsonToDrive,
   readJsonFromDrive,
+  readLeaderboardResetMarkerFromDrive,
 } from "@/lib/google-drive/client";
 import {
   preserveLeaderboardVisibility,
@@ -12,10 +14,10 @@ import {
 } from "@/lib/leaderboard-visibility-store";
 import {
   applyLeaderboardResetMarker,
+  createLeaderboardResetMarker,
   isLeaderboardSnapshotCurrent,
   isSameLeaderboardResetMarker,
   readLeaderboardResetMarker,
-  writeLeaderboardResetMarker,
 } from "@/lib/leaderboard-reset-store";
 
 export const runtime = "nodejs";
@@ -255,13 +257,16 @@ const withEndpointStatus = snapshot => ({
   ...(snapshot || createEmptySnapshot()),
 });
 
-async function getCurrentSnapshot(snapshot) {
-  const resetMarker = await readLeaderboardResetMarker();
+async function getResetMarker(snapshot) {
+  return hasDriveConfig()
+    ? readLeaderboardResetMarkerFromDrive()
+    : readLeaderboardResetMarker(snapshot);
+}
 
-  return isLeaderboardSnapshotCurrent(snapshot, resetMarker)
+const getCurrentSnapshot = (snapshot, resetMarker) =>
+  isLeaderboardSnapshotCurrent(snapshot, resetMarker)
     ? snapshot
     : applyLeaderboardResetMarker(createEmptySnapshot(), resetMarker);
-}
 
 export async function POST(request) {
   try {
@@ -271,14 +276,19 @@ export async function POST(request) {
       return createUsableResponse({ skipped: true });
     }
 
-    const resetMarker = await readLeaderboardResetMarker();
-    const storedSnapshot = hasDriveConfig() ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null) : await readLocalSnapshot().catch(() => null);
-    const existingSnapshot = isLeaderboardSnapshotCurrent(storedSnapshot, resetMarker) ? storedSnapshot : null;
-    const mergedSnapshot = existingSnapshot
-      ? mergeSnapshotCategory(existingSnapshot, incomingSnapshot)
+    const existingSnapshot = hasDriveConfig()
+      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
+      : await readLocalSnapshot().catch(() => null);
+    const resetMarker = await getResetMarker(existingSnapshot);
+    const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
+    const mergedSnapshot = currentExistingSnapshot
+      ? mergeSnapshotCategory(currentExistingSnapshot, incomingSnapshot)
       : incomingSnapshot;
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
-    const latestResetMarker = await readLeaderboardResetMarker();
+    const latestSnapshot = hasDriveConfig()
+      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
+      : await readLocalSnapshot().catch(() => null);
+    const latestResetMarker = await getResetMarker(latestSnapshot);
 
     if (!isSameLeaderboardResetMarker(resetMarker, latestResetMarker)) {
       return NextResponse.json(
@@ -367,32 +377,25 @@ export async function GET() {
   }
 
   try {
-    const storedSnapshot = hasDriveConfig()
+    const snapshot = hasDriveConfig()
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
       : await readLocalSnapshot();
-    const snapshot = await getCurrentSnapshot(storedSnapshot);
+    const currentSnapshot = getCurrentSnapshot(snapshot, await getResetMarker(snapshot));
 
-    return NextResponse.json(withEndpointStatus(snapshot), {
+    return NextResponse.json(withEndpointStatus(currentSnapshot), {
       headers: corsHeaders,
     });
   } catch (error) {
-    try {
-      const snapshot = await getCurrentSnapshot(await readLocalSnapshot());
-      return NextResponse.json(withEndpointStatus(snapshot), {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: error?.message || "Leaderboard export file not found",
+      },
+      {
+        status: hasDriveConfig() ? 503 : 404,
         headers: corsHeaders,
-      });
-    } catch (localError) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: localError?.message || error?.message || "Leaderboard export file not found",
-        },
-        {
-          status: 404,
-          headers: corsHeaders,
-        }
-      );
-    }
+      }
+    );
   }
 }
 
@@ -402,15 +405,22 @@ export async function DELETE() {
   }
 
   try {
-    const resetMarker = await writeLeaderboardResetMarker();
+    const resetMarker = createLeaderboardResetMarker();
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(createEmptySnapshot()), resetMarker);
     const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
     let file = null;
+    let cleanup = null;
     if (hasDriveConfig()) {
       try {
         const payload = JSON.stringify(snapshot, null, 2);
-        file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
+        file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload, { resetMarker });
+        try {
+          cleanup = await clearObsoleteLeaderboardDriveData(file?.id);
+        } catch (cleanupError) {
+          console.warn("[LEADERBOARD] Drive cleanup failed:", cleanupError.message);
+          cleanup = { error: cleanupError.message };
+        }
       } catch (driveError) {
         console.warn("[LEADERBOARD] Drive reset failed:", driveError.message);
 
@@ -425,6 +435,8 @@ export async function DELETE() {
             { status: 500, headers: corsHeaders }
           );
         }
+
+        throw driveError;
       }
     } else if (IS_VERCEL) {
       return NextResponse.json(
@@ -447,6 +459,7 @@ export async function DELETE() {
         generatedAt: null,
         cachedLocally,
         persistedToDrive: Boolean(file?.id),
+        cleanup,
       },
       { headers: corsHeaders }
     );
