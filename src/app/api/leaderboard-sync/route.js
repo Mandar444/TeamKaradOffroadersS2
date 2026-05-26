@@ -10,6 +10,13 @@ import {
   preserveLeaderboardVisibility,
   readLeaderboardVisibility,
 } from "@/lib/leaderboard-visibility-store";
+import {
+  applyLeaderboardResetMarker,
+  isLeaderboardSnapshotCurrent,
+  isSameLeaderboardResetMarker,
+  readLeaderboardResetMarker,
+  writeLeaderboardResetMarker,
+} from "@/lib/leaderboard-reset-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -248,6 +255,14 @@ const withEndpointStatus = snapshot => ({
   ...(snapshot || createEmptySnapshot()),
 });
 
+async function getCurrentSnapshot(snapshot) {
+  const resetMarker = await readLeaderboardResetMarker();
+
+  return isLeaderboardSnapshotCurrent(snapshot, resetMarker)
+    ? snapshot
+    : applyLeaderboardResetMarker(createEmptySnapshot(), resetMarker);
+}
+
 export async function POST(request) {
   try {
     const incomingSnapshot = await readOptionalJsonBody(request);
@@ -256,11 +271,25 @@ export async function POST(request) {
       return createUsableResponse({ skipped: true });
     }
 
-    const existingSnapshot = hasDriveConfig() ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null) : await readLocalSnapshot().catch(() => null);
+    const resetMarker = await readLeaderboardResetMarker();
+    const storedSnapshot = hasDriveConfig() ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null) : await readLocalSnapshot().catch(() => null);
+    const existingSnapshot = isLeaderboardSnapshotCurrent(storedSnapshot, resetMarker) ? storedSnapshot : null;
     const mergedSnapshot = existingSnapshot
       ? mergeSnapshotCategory(existingSnapshot, incomingSnapshot)
       : incomingSnapshot;
-    const snapshot = await preserveLeaderboardVisibility(mergedSnapshot);
+    const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
+    const latestResetMarker = await readLeaderboardResetMarker();
+
+    if (!isSameLeaderboardResetMarker(resetMarker, latestResetMarker)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          stale: true,
+          error: "Leaderboard was reset while sync was in progress. Sync the latest data again.",
+        },
+        { status: 409, headers: corsHeaders }
+      );
+    }
 
     const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
@@ -338,16 +367,17 @@ export async function GET() {
   }
 
   try {
-    const snapshot = hasDriveConfig()
+    const storedSnapshot = hasDriveConfig()
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
       : await readLocalSnapshot();
+    const snapshot = await getCurrentSnapshot(storedSnapshot);
 
     return NextResponse.json(withEndpointStatus(snapshot), {
       headers: corsHeaders,
     });
   } catch (error) {
     try {
-      const snapshot = await readLocalSnapshot();
+      const snapshot = await getCurrentSnapshot(await readLocalSnapshot());
       return NextResponse.json(withEndpointStatus(snapshot), {
         headers: corsHeaders,
       });
@@ -372,7 +402,8 @@ export async function DELETE() {
   }
 
   try {
-    const snapshot = await preserveLeaderboardVisibility(createEmptySnapshot());
+    const resetMarker = await writeLeaderboardResetMarker();
+    const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(createEmptySnapshot()), resetMarker);
     const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
 
     let file = null;

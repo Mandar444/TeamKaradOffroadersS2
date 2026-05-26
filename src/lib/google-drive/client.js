@@ -10,6 +10,8 @@ const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || 'leade
 const LEADERBOARD_FILE_ID = process.env.GOOGLE_LEADERBOARD_FILE_ID;
 const LEADERBOARD_VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || 'leaderboard-visibility.json';
 const LEADERBOARD_VISIBILITY_FILE_ID = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_ID;
+const LEADERBOARD_RESET_FILE_NAME = process.env.GOOGLE_LEADERBOARD_RESET_FILE_NAME || 'leaderboard-reset.json';
+const LEADERBOARD_RESET_FILE_ID = process.env.GOOGLE_LEADERBOARD_RESET_FILE_ID;
 
 const auth = new JWT({
   email: GOOGLE_CLIENT_EMAIL,
@@ -26,6 +28,10 @@ function getConfiguredFileId(fileName) {
 
   if (fileName === LEADERBOARD_VISIBILITY_FILE_NAME) {
     return LEADERBOARD_VISIBILITY_FILE_ID;
+  }
+
+  if (fileName === LEADERBOARD_RESET_FILE_NAME) {
+    return LEADERBOARD_RESET_FILE_ID;
   }
 
   return null;
