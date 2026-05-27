@@ -15,6 +15,24 @@ function buildTeamId(team) {
   ].join("|");
 }
 
+function applyPublishedTeamCorrection(team) {
+  const isRaviBhallaDieselModifiedEntry =
+    normalizeValue(team.team_name) === "sahyadri offroaders" &&
+    normalizeValue(team.driver_name) === "ravi bhalla" &&
+    team.category === "DIESEL_MODIFIED" &&
+    String(team.car_number).trim() === "1";
+
+  if (!isRaviBhallaDieselModifiedEntry) {
+    return team;
+  }
+
+  return {
+    ...team,
+    category: "STOCK_NDMS",
+    car_number: "10",
+  };
+}
+
 export async function GET() {
   try {
     await initSheets();
@@ -43,7 +61,7 @@ export async function GET() {
         const rawCat = row.get("category");
         const canonicalCat = catMap[normalize(rawCat)] || rawCat;
         
-        return {
+        return applyPublishedTeamCorrection({
           team_name: row.get("team_name"),
           driver_name: row.get("driver_name"),
           driver_blood_group: row.get("driver_blood_group"),
@@ -55,7 +73,7 @@ export async function GET() {
           vehicle_model: row.get("vehicle_model"),
           socials: row.get("socials"),
           status: "CONFIRMED", 
-        };
+        });
       });
 
     const uniqueTeams = [];
