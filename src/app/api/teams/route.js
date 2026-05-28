@@ -53,7 +53,7 @@ const PUBLISHED_TEAM_ENTRIES = [
     driver_blood_group: "",
     codriver_name: "***",
     codriver_blood_group: "",
-    car_number: "916",
+    car_number: "6",
     category: "STOCK_NDMS",
     vehicle_name: "",
     vehicle_model: "Stock NDMS",
