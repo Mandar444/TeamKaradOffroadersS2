@@ -964,6 +964,19 @@
       "updated_at": "2026-05-21 16:05:56"
     },
     {
+      "team_name": "Crossovver",
+      "car_number": "416",
+      "category": "DIESEL_EXPERT",
+      "driver_name": "Jayesh Makhija",
+      "driver_blood_group": "O-ve",
+      "codriver_name": "Rahul Ahuja",
+      "codriver_blood_group": "B+ve",
+      "vehicle_name": "Mahindra",
+      "vehicle_model": "Bolero Diesel Expert",
+      "socials": "",
+      "status": "ACTIVE"
+    },
+    {
       "id": 61,
       "team_name": "Petrol Expert Trail Blazers 01",
       "driver_name": "Aarav Patil",
@@ -2162,6 +2175,19 @@
       "status": "ACTIVE",
       "created_at": "2026-05-21 16:05:57",
       "updated_at": "2026-05-21 16:05:57"
+    },
+    {
+      "team_name": "PMW",
+      "car_number": "916",
+      "category": "STOCK_NDMS",
+      "driver_name": "Mahesh Birmane",
+      "driver_blood_group": "",
+      "codriver_name": "***",
+      "codriver_blood_group": "",
+      "vehicle_name": "",
+      "vehicle_model": "Stock NDMS",
+      "socials": "",
+      "status": "ACTIVE"
     },
     {
       "id": 136,
@@ -3796,6 +3822,89 @@
             "teamName": "Diesel Expert Canyon Crew 15",
             "driverName": "Parth Sathe",
             "coDriverName": "Shreyas Inamdar",
+            "totalPoints": 0,
+            "totalTimingMs": null,
+            "trackMap": {
+              "krishna": {
+                "trackLabel": "KRISHNA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "koyana": {
+                "trackLabel": "KOYANA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "godavari": {
+                "trackLabel": "GODAVARI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "ganga": {
+                "trackLabel": "GANGA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "yamuna": {
+                "trackLabel": "YAMUNA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "saraswati": {
+                "trackLabel": "SARASWATI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "chandrabhaga": {
+                "trackLabel": "CHANDRABHAGA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            },
+            "trackSummaries": [
+              {
+                "trackLabel": "KRISHNA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "KOYANA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "GODAVARI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "GANGA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "YAMUNA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "SARASWATI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "CHANDRABHAGA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            ]
+          },
+          {
+            "vehicleKey": "DIESEL_EXPERT|416",
+            "stickerNumber": "416",
+            "teamName": "Crossovver",
+            "driverName": "Jayesh Makhija",
+            "coDriverName": "Rahul Ahuja",
             "totalPoints": 0,
             "totalTimingMs": null,
             "trackMap": {
@@ -12634,6 +12743,89 @@
             "teamName": "Stock NDMS Canyon Crew 15",
             "driverName": "Parth Sathe",
             "coDriverName": "Shreyas Inamdar",
+            "totalPoints": 0,
+            "totalTimingMs": null,
+            "trackMap": {
+              "k2": {
+                "trackLabel": "K2",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "everest": {
+                "trackLabel": "EVEREST",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "sahyadri": {
+                "trackLabel": "SAHYADRI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "himalaya": {
+                "trackLabel": "HIMALAYA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "kalasubai": {
+                "trackLabel": "KALASUBAI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "valmiki": {
+                "trackLabel": "VALMIKI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "satpuda": {
+                "trackLabel": "SATPUDA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            },
+            "trackSummaries": [
+              {
+                "trackLabel": "K2",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "EVEREST",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "SAHYADRI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "HIMALAYA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "KALASUBAI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "VALMIKI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "SATPUDA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            ]
+          },
+          {
+            "vehicleKey": "STOCK_NDMS|916",
+            "stickerNumber": "916",
+            "teamName": "PMW",
+            "driverName": "Mahesh Birmane",
+            "coDriverName": "***",
             "totalPoints": 0,
             "totalTimingMs": null,
             "trackMap": {

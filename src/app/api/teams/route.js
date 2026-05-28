@@ -33,6 +33,35 @@ function applyPublishedTeamCorrection(team) {
   };
 }
 
+const PUBLISHED_TEAM_ENTRIES = [
+  {
+    team_name: "Crossovver",
+    driver_name: "Jayesh Makhija",
+    driver_blood_group: "O-ve",
+    codriver_name: "Rahul Ahuja",
+    codriver_blood_group: "B+ve",
+    car_number: "416",
+    category: "DIESEL_EXPERT",
+    vehicle_name: "Mahindra",
+    vehicle_model: "Bolero Diesel Expert",
+    socials: "",
+    status: "CONFIRMED",
+  },
+  {
+    team_name: "PMW",
+    driver_name: "Mahesh Birmane",
+    driver_blood_group: "",
+    codriver_name: "***",
+    codriver_blood_group: "",
+    car_number: "916",
+    category: "STOCK_NDMS",
+    vehicle_name: "",
+    vehicle_model: "Stock NDMS",
+    socials: "",
+    status: "CONFIRMED",
+  },
+];
+
 export async function GET() {
   try {
     await initSheets();
@@ -79,7 +108,7 @@ export async function GET() {
     const uniqueTeams = [];
     const seenIds = new Set();
 
-    for (const team of confirmedTeams) {
+    for (const team of [...confirmedTeams, ...PUBLISHED_TEAM_ENTRIES]) {
       const recordId = buildTeamId(team);
       if (seenIds.has(recordId)) {
         continue;
