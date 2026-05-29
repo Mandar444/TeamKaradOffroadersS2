@@ -12,6 +12,11 @@ import {
   readLeaderboardResetMarkerFromDrive,
   upsertJsonToDrive,
 } from "@/lib/google-drive/client";
+import {
+  hasLeaderboardSheetsConfig,
+  readLeaderboardSnapshotFromSheets,
+  writeLeaderboardSnapshotToSheets,
+} from "@/lib/leaderboard-sheets-store";
 import { preserveLeaderboardVisibility } from "@/lib/leaderboard-visibility-store";
 import {
   applyLeaderboardResetMarker,
@@ -31,6 +36,24 @@ const IS_VERCEL = process.env.VERCEL === "1";
 
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
+
+const hasSheetsConfig = hasLeaderboardSheetsConfig;
+
+const getStorageMode = () => {
+  if (hasSheetsConfig()) {
+    return "google-sheets";
+  }
+
+  if (hasDriveConfig()) {
+    return "google-drive";
+  }
+
+  if (IS_VERCEL) {
+    return "temporary-vercel-fallback";
+  }
+
+  return "local-files";
+};
 
 const createEmptySnapshot = () => ({
   generatedAt: null,
@@ -83,7 +106,7 @@ async function readLocalSnapshot() {
 }
 
 async function getResetMarker(snapshot) {
-  return hasDriveConfig()
+  return hasDriveConfig() && !hasSheetsConfig()
     ? readLeaderboardResetMarkerFromDrive()
     : readLeaderboardResetMarker(snapshot);
 }
@@ -92,6 +115,36 @@ const getCurrentSnapshot = (snapshot, resetMarker) =>
   isLeaderboardSnapshotCurrent(snapshot, resetMarker)
     ? snapshot
     : applyLeaderboardResetMarker(createEmptySnapshot(), resetMarker);
+
+async function readSharedSnapshot({ optional = false } = {}) {
+  const attempts = [];
+
+  if (hasSheetsConfig()) {
+    attempts.push(() => readLeaderboardSnapshotFromSheets());
+  }
+
+  if (hasDriveConfig()) {
+    attempts.push(() => readJsonFromDrive(LEADERBOARD_FILE_NAME));
+  }
+
+  attempts.push(() => readLocalSnapshot());
+
+  for (const attempt of attempts) {
+    try {
+      return await attempt();
+    } catch (error) {
+      if (!optional) {
+        console.warn("[LEADERBOARD CSV] Snapshot storage read failed:", error?.message || error);
+      }
+    }
+  }
+
+  if (optional) {
+    return null;
+  }
+
+  throw new Error("Leaderboard export file not found");
+}
 
 async function readUploadPayload(request) {
   const contentType = request.headers.get("content-type") || "";
@@ -146,17 +199,25 @@ export async function POST(request) {
       );
     }
 
-    const existingSnapshot = hasDriveConfig()
-      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
-      : await readLocalSnapshot();
+    if (IS_VERCEL && !hasSheetsConfig() && !hasDriveConfig()) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Persistent Google Sheets or Google Drive storage is required on Vercel to preserve multiple leaderboard categories.",
+          detail: "Configure GOOGLE_SHEET_ID, GOOGLE_CLIENT_EMAIL, and GOOGLE_PRIVATE_KEY.",
+          storageMode: getStorageMode(),
+        },
+        { status: 500 }
+      );
+    }
+
+    const existingSnapshot = await readSharedSnapshot({ optional: true });
     const resetMarker = await getResetMarker(existingSnapshot);
     const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
     const categorySnapshot = buildLeaderboardSnapshotFromCsv(csvText, categoryKey);
     const mergedSnapshot = mergeLeaderboardCategorySnapshot(currentExistingSnapshot, categorySnapshot);
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
-    const latestSnapshot = hasDriveConfig()
-      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
-      : await readLocalSnapshot();
+    const latestSnapshot = await readSharedSnapshot({ optional: true });
     const latestResetMarker = await getResetMarker(latestSnapshot);
 
     if (!isSameLeaderboardResetMarker(resetMarker, latestResetMarker)) {
@@ -173,7 +234,25 @@ export async function POST(request) {
     const cachedLocally = await trySaveLocalSnapshot(snapshot);
     let file = null;
 
-    if (hasDriveConfig()) {
+    if (hasSheetsConfig()) {
+      try {
+        file = await writeLeaderboardSnapshotToSheets(snapshot);
+      } catch (sheetsError) {
+        if (IS_VERCEL) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Unable to persist CSV leaderboard data to Google Sheets.",
+              detail: sheetsError?.message || null,
+              cachedLocally,
+            },
+            { status: 500 }
+          );
+        }
+
+        throw sheetsError;
+      }
+    } else if (hasDriveConfig()) {
       try {
         const payload = JSON.stringify(snapshot, null, 2);
         file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
@@ -192,15 +271,6 @@ export async function POST(request) {
 
         throw driveError;
       }
-    } else if (IS_VERCEL) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Google Drive credentials are required to persist CSV leaderboard data on Vercel.",
-          cachedLocally,
-        },
-        { status: 500 }
-      );
     } else if (!cachedLocally) {
       throw new Error("Unable to save CSV leaderboard snapshot locally.");
     }
@@ -216,7 +286,9 @@ export async function POST(request) {
       savedTo: file?.webViewLink || "/leaderboard-export.json",
       generatedAt: snapshot.generatedAt,
       cachedLocally,
-      persistedToDrive: Boolean(file?.id),
+      persistedToSheets: hasSheetsConfig() && Boolean(file?.id),
+      persistedToDrive: !hasSheetsConfig() && Boolean(file?.id),
+      storageMode: getStorageMode(),
     });
   } catch (error) {
     return NextResponse.json(

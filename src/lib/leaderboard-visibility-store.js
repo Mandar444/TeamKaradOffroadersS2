@@ -5,6 +5,11 @@ import {
   readJsonFromDrive,
   upsertJsonToDrive,
 } from "@/lib/google-drive/client";
+import {
+  hasLeaderboardSheetsConfig,
+  readLeaderboardSnapshotFromSheets,
+  writeLeaderboardSnapshotToSheets,
+} from "@/lib/leaderboard-sheets-store";
 
 const VISIBILITY_FILE_NAME = process.env.GOOGLE_LEADERBOARD_VISIBILITY_FILE_NAME || "leaderboard-visibility.json";
 const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || "leaderboard-export.json";
@@ -18,6 +23,8 @@ const IS_VERCEL = process.env.VERCEL === "1";
 
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
+
+const hasSheetsConfig = hasLeaderboardSheetsConfig;
 
 const parseVisibilityFlag = value => {
   if (value == null || value === "") {
@@ -142,6 +149,37 @@ async function writeEmbeddedDriveVisibility(payload) {
   );
 }
 
+async function readEmbeddedSheetsVisibility() {
+  const snapshot = await readLeaderboardSnapshotFromSheets();
+  const visibility = snapshot?.[EMBEDDED_VISIBILITY_KEY];
+
+  if (typeof visibility?.visible !== "boolean") {
+    return null;
+  }
+
+  return normalizeVisibility(visibility, null, "leaderboard-sheet");
+}
+
+async function writeEmbeddedSheetsVisibility(payload) {
+  const snapshot = await readLeaderboardSnapshotFromSheets().catch(() => ({
+    generatedAt: null,
+    source: "leaderboard-visibility",
+    schemaVersion: 1,
+    teams: [],
+    results: [],
+    disputes: [],
+    categoryOptions: [],
+    leaderboard: {
+      categories: [],
+    },
+  }));
+
+  await writeLeaderboardSnapshotToSheets({
+    ...snapshot,
+    [EMBEDDED_VISIBILITY_KEY]: payload,
+  });
+}
+
 export async function readLeaderboardVisibility() {
   const flagVisibility = getVisibilityFlag();
 
@@ -149,25 +187,38 @@ export async function readLeaderboardVisibility() {
     return flagVisibility;
   }
 
-  if (hasDriveConfig()) {
+  if (hasSheetsConfig() || hasDriveConfig()) {
     const sharedCandidates = [];
 
-    try {
+    if (hasSheetsConfig()) {
+      try {
+        const embeddedSheetsVisibility = await readEmbeddedSheetsVisibility();
+        if (embeddedSheetsVisibility) {
+          sharedCandidates.push(embeddedSheetsVisibility);
+        }
+      } catch (error) {
+        console.warn("[LEADERBOARD] Embedded Sheets visibility read failed:", error?.message || error);
+      }
+    }
+
+    if (hasDriveConfig()) {
+      try {
       const embeddedVisibility = await readEmbeddedDriveVisibility();
       if (embeddedVisibility) {
         sharedCandidates.push(embeddedVisibility);
       }
-    } catch (error) {
-      console.warn("[LEADERBOARD] Embedded visibility read failed:", error?.message || error);
-    }
+      } catch (error) {
+        console.warn("[LEADERBOARD] Embedded visibility read failed:", error?.message || error);
+      }
 
-    try {
-      sharedCandidates.push(
-        normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME), null, "visibility-file")
-      );
-    } catch (error) {
-      if (HAS_DEDICATED_VISIBILITY_FILE || !sharedCandidates.length) {
-        console.warn("[LEADERBOARD] Dedicated visibility read failed:", error?.message || error);
+      try {
+        sharedCandidates.push(
+          normalizeVisibility(await readJsonFromDrive(VISIBILITY_FILE_NAME), null, "visibility-file")
+        );
+      } catch (error) {
+        if (HAS_DEDICATED_VISIBILITY_FILE || !sharedCandidates.length) {
+          console.warn("[LEADERBOARD] Dedicated visibility read failed:", error?.message || error);
+        }
       }
     }
 
@@ -220,8 +271,23 @@ export async function writeLeaderboardVisibility(visible) {
     updatedAt: new Date().toISOString(),
   };
 
-  if (IS_VERCEL && !hasDriveConfig()) {
-    throw new Error("Google Drive credentials are required to change public leaderboard visibility on Vercel. Public leaderboard remains closed.");
+  if (IS_VERCEL && !hasSheetsConfig() && !hasDriveConfig()) {
+    throw new Error("Google Sheets or Google Drive credentials are required to change public leaderboard visibility on Vercel. Public leaderboard remains closed.");
+  }
+
+  if (hasSheetsConfig()) {
+    try {
+      await writeEmbeddedSheetsVisibility(payload);
+      await cacheVisibilityLocally(payload);
+      return payload;
+    } catch (primaryError) {
+      console.warn("[LEADERBOARD] Sheets visibility write failed:", primaryError?.message || primaryError);
+
+      if (!hasDriveConfig()) {
+        await cacheVisibilityLocally({ ...payload, visible: false });
+        throw new Error("Unable to save leaderboard visibility to Google Sheets. Please verify spreadsheet sharing and try again.");
+      }
+    }
   }
 
   if (hasDriveConfig()) {
