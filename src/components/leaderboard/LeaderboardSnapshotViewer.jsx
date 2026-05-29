@@ -411,6 +411,63 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   const rows = activeCategory?.rows || [];
   const uploadedCategoryCount = categories.length;
 
+  const selectCategory = useCallback((categoryKey) => {
+    const nextCategory = categories.find(category => category.key === categoryKey);
+
+    if (!nextCategory) {
+      return;
+    }
+
+    setSelectedCategory(nextCategory.key);
+
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("categoryKey", nextCategory.key);
+      url.searchParams.set("category", nextCategory.label || nextCategory.key);
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+  }, [categories]);
+
+  const focusCategoryTab = categoryKey => {
+    window.requestAnimationFrame(() => {
+      document.getElementById(`leaderboard-category-tab-${categoryKey}`)?.focus();
+    });
+  };
+
+  const handleCategoryTabKeyDown = useCallback((event, categoryKey) => {
+    if (categories.length <= 1) {
+      return;
+    }
+
+    const currentIndex = categories.findIndex(category => category.key === categoryKey);
+
+    if (currentIndex < 0) {
+      return;
+    }
+
+    let nextCategory = null;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextCategory = categories[(currentIndex + 1) % categories.length];
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
+    } else if (event.key === "Home") {
+      nextCategory = categories[0];
+    } else if (event.key === "End") {
+      nextCategory = categories[categories.length - 1];
+    } else if (event.key === "Enter" || event.key === " ") {
+      nextCategory = categories[currentIndex];
+    }
+
+    if (!nextCategory) {
+      return;
+    }
+
+    event.preventDefault();
+    selectCategory(nextCategory.key);
+    focusCategoryTab(nextCategory.key);
+  }, [categories, selectCategory]);
+
   useEffect(() => {
     if (!categories.length) {
       setSelectedCategory("");
@@ -552,7 +609,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                 className="grid auto-cols-[minmax(160px,1fr)] grid-flow-col gap-2 overflow-x-auto pb-1 sm:auto-cols-[minmax(190px,1fr)] lg:grid-flow-row lg:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] lg:overflow-visible lg:pb-0"
               >
                 {categories.map(category => {
-                  const active = selectedCategory === category.key;
+                  const active = activeCategory?.key === category.key;
 
                   return (
                     <button
@@ -562,7 +619,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                       id={`leaderboard-category-tab-${category.key}`}
                       aria-selected={active}
                       aria-controls={`leaderboard-category-panel-${category.key}`}
-                      onClick={() => setSelectedCategory(category.key)}
+                      tabIndex={active ? 0 : -1}
+                      onClick={() => selectCategory(category.key)}
+                      onKeyDown={event => handleCategoryTabKeyDown(event, category.key)}
                       className={`flex min-h-14 min-w-0 flex-col justify-center rounded-[14px] border px-4 py-3 text-left font-mono uppercase transition-colors ${
                         active
                           ? "border-[#ff7a00] bg-[#ff7a00] text-black"
