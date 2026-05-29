@@ -2178,7 +2178,7 @@
     },
     {
       "team_name": "PMW",
-      "car_number": "916",
+      "car_number": "6",
       "category": "STOCK_NDMS",
       "driver_name": "Mahesh Birmane",
       "driver_blood_group": "",
@@ -11576,6 +11576,89 @@
         ],
         "rows": [
           {
+            "vehicleKey": "STOCK_NDMS|6",
+            "stickerNumber": "6",
+            "teamName": "PMW",
+            "driverName": "Mahesh Birmane",
+            "coDriverName": "***",
+            "totalPoints": 0,
+            "totalTimingMs": null,
+            "trackMap": {
+              "k2": {
+                "trackLabel": "K2",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "everest": {
+                "trackLabel": "EVEREST",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "sahyadri": {
+                "trackLabel": "SAHYADRI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "himalaya": {
+                "trackLabel": "HIMALAYA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "kalasubai": {
+                "trackLabel": "KALASUBAI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "valmiki": {
+                "trackLabel": "VALMIKI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              "satpuda": {
+                "trackLabel": "SATPUDA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            },
+            "trackSummaries": [
+              {
+                "trackLabel": "K2",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "EVEREST",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "SAHYADRI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "HIMALAYA",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "KALASUBAI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "VALMIKI",
+                "totalPoints": 0,
+                "entries": []
+              },
+              {
+                "trackLabel": "SATPUDA",
+                "totalPoints": 0,
+                "entries": []
+              }
+            ]
+          },
+          {
             "vehicleKey": "STOCK_NDMS|901",
             "stickerNumber": "901",
             "teamName": "Stock NDMS Trail Blazers 01",
@@ -12743,89 +12826,6 @@
             "teamName": "Stock NDMS Canyon Crew 15",
             "driverName": "Parth Sathe",
             "coDriverName": "Shreyas Inamdar",
-            "totalPoints": 0,
-            "totalTimingMs": null,
-            "trackMap": {
-              "k2": {
-                "trackLabel": "K2",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "everest": {
-                "trackLabel": "EVEREST",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "sahyadri": {
-                "trackLabel": "SAHYADRI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "himalaya": {
-                "trackLabel": "HIMALAYA",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "kalasubai": {
-                "trackLabel": "KALASUBAI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "valmiki": {
-                "trackLabel": "VALMIKI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              "satpuda": {
-                "trackLabel": "SATPUDA",
-                "totalPoints": 0,
-                "entries": []
-              }
-            },
-            "trackSummaries": [
-              {
-                "trackLabel": "K2",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "EVEREST",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "SAHYADRI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "HIMALAYA",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "KALASUBAI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "VALMIKI",
-                "totalPoints": 0,
-                "entries": []
-              },
-              {
-                "trackLabel": "SATPUDA",
-                "totalPoints": 0,
-                "entries": []
-              }
-            ]
-          },
-          {
-            "vehicleKey": "STOCK_NDMS|916",
-            "stickerNumber": "916",
-            "teamName": "PMW",
-            "driverName": "Mahesh Birmane",
-            "coDriverName": "***",
             "totalPoints": 0,
             "totalTimingMs": null,
             "trackMap": {

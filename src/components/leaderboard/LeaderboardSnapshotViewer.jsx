@@ -339,6 +339,18 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   }, [respectVisibility]);
 
   useEffect(() => {
+    const handleSnapshotUpdated = () => {
+      refreshLeaderboard();
+    };
+
+    window.addEventListener("leaderboard-snapshot-updated", handleSnapshotUpdated);
+
+    return () => {
+      window.removeEventListener("leaderboard-snapshot-updated", handleSnapshotUpdated);
+    };
+  }, [refreshLeaderboard]);
+
+  useEffect(() => {
     loadVisibility();
   }, [loadVisibility]);
 
