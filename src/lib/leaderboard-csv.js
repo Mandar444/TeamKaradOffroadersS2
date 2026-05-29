@@ -156,6 +156,10 @@ export const normalizeCsvCategoryKey = value => {
     .replace(/[^A-Z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
 
+  if (normalized === "OPEN_CATEGORY" || normalized === "EXTREME") {
+    return "OPEN";
+  }
+
   if (normalized === "LADIES") {
     return "LADIES_CATEGORY";
   }

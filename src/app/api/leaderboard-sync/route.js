@@ -62,10 +62,11 @@ const normalizeCategoryKey = value => {
   const normalized = String(value || "")
     .trim()
     .toUpperCase()
-    .replace(/\s+/g, "_");
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 
-  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY") {
-    return "EXTREME";
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY" || normalized === "EXTREME") {
+    return "OPEN";
   }
 
   if (normalized === "LADIES" || normalized === "LADIES_CATEGORY") {
