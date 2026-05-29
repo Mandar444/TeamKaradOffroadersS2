@@ -68,16 +68,28 @@ export default function LeaderboardCsvUploader() {
           </div>
         </div>
 
-        {activeCategory?.fileName ? (
-          <a
-            href={`/data/leaderboard-csv/${activeCategory.fileName}`}
-            download
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ff7a00]/35 bg-[#ff7a00]/10 px-4 font-mono text-[10px] font-black uppercase tracking-[0.16em] text-[#ffb35c] transition-colors hover:border-[#ffb35c] hover:bg-[#ff7a00] hover:text-black"
-          >
-            <Download className="h-4 w-4" />
-            Template
-          </a>
-        ) : null}
+        <div className="flex flex-wrap gap-2">
+          {activeCategory?.detailFileName ? (
+            <a
+              href={`/data/leaderboard-entry-csv/${activeCategory.detailFileName}`}
+              download
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ff7a00] bg-[#ff7a00] px-4 font-mono text-[10px] font-black uppercase tracking-[0.16em] text-black transition-transform hover:scale-[1.02]"
+            >
+              <Download className="h-4 w-4" />
+              Entry Details
+            </a>
+          ) : null}
+          {activeCategory?.fileName ? (
+            <a
+              href={`/data/leaderboard-csv/${activeCategory.fileName}`}
+              download
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ff7a00]/35 bg-[#ff7a00]/10 px-4 font-mono text-[10px] font-black uppercase tracking-[0.16em] text-[#ffb35c] transition-colors hover:border-[#ffb35c] hover:bg-[#ff7a00] hover:text-black"
+            >
+              <Download className="h-4 w-4" />
+              Summary
+            </a>
+          ) : null}
+        </div>
       </div>
 
       <form onSubmit={uploadCsv} className="grid gap-3 lg:grid-cols-[minmax(220px,320px)_1fr_auto] lg:items-end">
