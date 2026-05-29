@@ -194,6 +194,215 @@ const filterSnapshotToCategory = (snapshot, focusCategory) => {
   };
 };
 
+const safeParseJsonObject = value => {
+  if (!value || typeof value !== "string") {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+};
+
+const getMergedSource = source => ({
+  ...safeParseJsonObject(source?.submission_json),
+  ...(source || {}),
+});
+
+const normalizeIdentityValue = value =>
+  String(value || "")
+    .trim()
+    .toLowerCase();
+
+const getVehicleMergeKey = (source, fallbackCategory = "") => {
+  const mergedSource = getMergedSource(source);
+  const category = normalizeCategoryKey(
+    mergedSource?.category ||
+      mergedSource?.categoryKey ||
+      mergedSource?.category_key ||
+      fallbackCategory ||
+      ""
+  );
+  const sticker = normalizeIdentityValue(
+    mergedSource?.stickerNumber ||
+      mergedSource?.sticker_number ||
+      mergedSource?.sticker ||
+      mergedSource?.carNumber ||
+      mergedSource?.car_number ||
+      ""
+  ).replace(/^#/, "");
+  const driver = normalizeIdentityValue(
+    mergedSource?.driverName ||
+      mergedSource?.driver_name ||
+      mergedSource?.driver ||
+      ""
+  );
+  const rowVehicleKey = normalizeIdentityValue(mergedSource?.vehicleKey || "");
+
+  if (category && sticker) {
+    return `${category}|sticker:${sticker}`;
+  }
+
+  if (category && driver) {
+    return `${category}|driver:${driver}`;
+  }
+
+  return rowVehicleKey ? `${category || "UNKNOWN"}|row:${rowVehicleKey}` : "";
+};
+
+const getNumericValue = value => {
+  const numericValue = Number(String(value ?? "").replace(/[^\d.-]/g, ""));
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
+const hasMeaningfulText = value => {
+  const normalizedValue = String(value || "").trim().toLowerCase();
+  return Boolean(normalizedValue && normalizedValue !== "na" && normalizedValue !== "n/a" && normalizedValue !== "--");
+};
+
+const hasTrackEntryData = entry =>
+  hasMeaningfulText(entry?.timingLabel || entry?.timing_label || entry?.value) ||
+  hasMeaningfulText(entry?.pointsLabel || entry?.points_label) ||
+  hasMeaningfulText(entry?.rankLabel || entry?.rank_label || entry?.rank) ||
+  getNumericValue(entry?.points) !== 0 ||
+  getNumericValue(entry?.totalPoints || entry?.total_points) !== 0;
+
+const hasTrackSummaryData = summary =>
+  getNumericValue(summary?.totalPoints || summary?.total_points || summary?.total) !== 0 ||
+  (Array.isArray(summary?.entries) && summary.entries.some(hasTrackEntryData));
+
+const hasRowTrackData = row => {
+  if (!row || typeof row !== "object") {
+    return false;
+  }
+
+  const trackSummaries = Array.isArray(row?.trackSummaries)
+    ? row.trackSummaries
+    : row?.trackSummaries && typeof row.trackSummaries === "object"
+      ? Object.values(row.trackSummaries)
+      : [];
+  const trackMapSummaries = row?.trackMap && typeof row.trackMap === "object"
+    ? Object.values(row.trackMap)
+    : [];
+
+  return (
+    getNumericValue(row?.totalPoints || row?.total_points || row?.total || row?.points) !== 0 ||
+    hasMeaningfulText(row?.totalTimingLabel || row?.total_timing_label || row?.totalTime || row?.total_time) ||
+    [...trackSummaries, ...trackMapSummaries].some(hasTrackSummaryData)
+  );
+};
+
+const hasResultTrackData = item => {
+  const source = getMergedSource(item);
+  return (
+    hasMeaningfulText(source?.trackName || source?.track_name || source?.trackLabel || source?.track_label || source?.track) ||
+    hasMeaningfulText(source?.totalTimeDisplay || source?.total_time_display || source?.total_time) ||
+    hasMeaningfulText(source?.performanceTimeDisplay || source?.performance_time_display || source?.performance_time) ||
+    getNumericValue(source?.points || source?.totalPoints || source?.total_points || source?.score) !== 0
+  );
+};
+
+const mergeCategoryOptions = (existingItems = [], incomingItems = []) => {
+  const merged = new Map();
+
+  [...existingItems, ...incomingItems].forEach(item => {
+    const key = getCategoryKeyFromItem(item);
+    if (key) {
+      merged.set(key, { ...(merged.get(key) || {}), ...item });
+    }
+  });
+
+  return [...merged.values()];
+};
+
+const mergeItemsByVehicleData = (existingItems = [], incomingItems = [], replaceCategoryKeys, incomingVehicleKeys, shouldIncludeIncoming) => {
+  const incomingItemsToKeep = incomingItems.filter(item => {
+    const categoryKey = getCategoryKeyFromItem(item);
+    const vehicleKey = getVehicleMergeKey(item, categoryKey);
+
+    return replaceCategoryKeys.has(categoryKey) && incomingVehicleKeys.has(vehicleKey) && shouldIncludeIncoming(item);
+  });
+
+  return [
+    ...existingItems.filter(item => {
+      const categoryKey = getCategoryKeyFromItem(item);
+      const vehicleKey = getVehicleMergeKey(item, categoryKey);
+
+      return !replaceCategoryKeys.has(categoryKey) || !incomingVehicleKeys.has(vehicleKey);
+    }),
+    ...incomingItemsToKeep,
+  ];
+};
+
+const mergeTrackList = (existingTracks = [], incomingTracks = []) => {
+  const trackMap = new Map();
+
+  [...existingTracks, ...incomingTracks].filter(Boolean).forEach(track => {
+    const key = String(track?.key || track?.trackKey || track?.label || track?.name || track || "")
+      .trim()
+      .toLowerCase();
+
+    if (key) {
+      trackMap.set(key, track);
+    }
+  });
+
+  return [...trackMap.values()];
+};
+
+const mergeLeaderboardCategories = (existingCategories = [], incomingCategories = [], replaceCategoryKeys, incomingVehicleKeys) => {
+  const categoriesByKey = new Map();
+
+  existingCategories.forEach(category => {
+    const key = getCategoryKeyFromItem(category);
+    if (key) {
+      categoriesByKey.set(key, category);
+    }
+  });
+
+  incomingCategories.forEach(incomingCategory => {
+    const categoryKey = getCategoryKeyFromItem(incomingCategory);
+
+    if (!categoryKey || !replaceCategoryKeys.has(categoryKey)) {
+      if (categoryKey && !categoriesByKey.has(categoryKey)) {
+        categoriesByKey.set(categoryKey, incomingCategory);
+      }
+      return;
+    }
+
+    const existingCategory = categoriesByKey.get(categoryKey);
+    const incomingRowsWithData = (Array.isArray(incomingCategory?.rows) ? incomingCategory.rows : [])
+      .filter(row => hasRowTrackData(row));
+    const incomingRowKeys = new Set(
+      incomingRowsWithData
+        .map(row => getVehicleMergeKey(row, categoryKey))
+        .filter(Boolean)
+    );
+
+    incomingRowKeys.forEach(key => incomingVehicleKeys.add(key));
+
+    if (!existingCategory && !incomingRowsWithData.length) {
+      return;
+    }
+
+    const existingRows = Array.isArray(existingCategory?.rows) ? existingCategory.rows : [];
+    const preservedRows = existingRows.filter(row => !incomingRowKeys.has(getVehicleMergeKey(row, categoryKey)));
+    const nextRows = [...preservedRows, ...incomingRowsWithData];
+
+    categoriesByKey.set(categoryKey, {
+      ...(existingCategory || {}),
+      ...incomingCategory,
+      tracks: mergeTrackList(existingCategory?.tracks || [], incomingCategory?.tracks || incomingCategory?.trackOptions || []),
+      rows: nextRows,
+    });
+  });
+
+  return [...categoriesByKey.values()];
+};
+
 const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
   const focusedCategory = isFocusedCategorySnapshot(incomingSnapshot)
     ? getSnapshotCategoryKey(incomingSnapshot)
@@ -216,29 +425,76 @@ const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
   const incomingCategorySnapshot = focusedCategory
     ? filterSnapshotToCategory(incomingSnapshot, focusedCategory)
     : incomingSnapshot;
-  const keepOtherCategory = item => {
-    const itemCategory = getCategoryKeyFromItem(item);
-    return !itemCategory || !replaceCategoryKeys.has(itemCategory);
-  };
-  const mergeCategoryList = (existingItems = [], incomingItems = []) => [
-    ...existingItems.filter(keepOtherCategory),
-    ...incomingItems,
-  ];
+  const incomingVehicleKeys = new Set();
+  const incomingResultsWithData = [
+    ...(Array.isArray(incomingCategorySnapshot?.results) ? incomingCategorySnapshot.results : []),
+    ...(Array.isArray(incomingCategorySnapshot?.disputes) ? incomingCategorySnapshot.disputes : []),
+  ].filter(hasResultTrackData);
+
+  incomingResultsWithData.forEach(item => {
+    const categoryKey = getCategoryKeyFromItem(item);
+    const vehicleKey = getVehicleMergeKey(item, categoryKey);
+
+    if (replaceCategoryKeys.has(categoryKey) && vehicleKey) {
+      incomingVehicleKeys.add(vehicleKey);
+    }
+  });
+  const incomingLeaderboardCategories = Array.isArray(incomingCategorySnapshot.leaderboard?.categories)
+    ? incomingCategorySnapshot.leaderboard.categories
+    : [];
+
+  incomingLeaderboardCategories.forEach(category => {
+    const categoryKey = getCategoryKeyFromItem(category);
+
+    if (!replaceCategoryKeys.has(categoryKey)) {
+      return;
+    }
+
+    (Array.isArray(category?.rows) ? category.rows : [])
+      .filter(hasRowTrackData)
+      .forEach(row => {
+        const vehicleKey = getVehicleMergeKey(row, categoryKey);
+
+        if (vehicleKey) {
+          incomingVehicleKeys.add(vehicleKey);
+        }
+      });
+  });
 
   return {
     ...(existingSnapshot || {}),
     ...incomingSnapshot,
     ...(focusedCategory ? { focusCategory: focusedCategory } : {}),
-    teams: mergeCategoryList(existingSnapshot?.teams || [], incomingCategorySnapshot.teams || []),
-    results: mergeCategoryList(existingSnapshot?.results || [], incomingCategorySnapshot.results || []),
-    disputes: mergeCategoryList(existingSnapshot?.disputes || [], incomingCategorySnapshot.disputes || []),
-    categoryOptions: mergeCategoryList(existingSnapshot?.categoryOptions || [], incomingCategorySnapshot.categoryOptions || []),
+    teams: mergeItemsByVehicleData(
+      existingSnapshot?.teams || [],
+      incomingCategorySnapshot.teams || [],
+      replaceCategoryKeys,
+      incomingVehicleKeys,
+      item => incomingVehicleKeys.has(getVehicleMergeKey(item, getCategoryKeyFromItem(item)))
+    ),
+    results: mergeItemsByVehicleData(
+      existingSnapshot?.results || [],
+      incomingCategorySnapshot.results || [],
+      replaceCategoryKeys,
+      incomingVehicleKeys,
+      hasResultTrackData
+    ),
+    disputes: mergeItemsByVehicleData(
+      existingSnapshot?.disputes || [],
+      incomingCategorySnapshot.disputes || [],
+      replaceCategoryKeys,
+      incomingVehicleKeys,
+      hasResultTrackData
+    ),
+    categoryOptions: mergeCategoryOptions(existingSnapshot?.categoryOptions || [], incomingCategorySnapshot.categoryOptions || []),
     leaderboard: {
       ...(existingSnapshot?.leaderboard || {}),
       ...(incomingSnapshot?.leaderboard || {}),
-      categories: mergeCategoryList(
+      categories: mergeLeaderboardCategories(
         existingSnapshot?.leaderboard?.categories || [],
-        incomingCategorySnapshot.leaderboard?.categories || []
+        incomingLeaderboardCategories,
+        replaceCategoryKeys,
+        incomingVehicleKeys
       ),
     },
   };
