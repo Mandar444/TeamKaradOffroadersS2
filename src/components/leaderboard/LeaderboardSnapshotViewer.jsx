@@ -278,24 +278,31 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     }
   }, [respectVisibility]);
 
-  const loadSnapshot = useCallback(async () => {
+  const loadSnapshot = useCallback(async ({ silent = false } = {}) => {
     if (respectVisibility && !leaderboardVisible) {
       setSnapshot(null);
       setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError("");
+    if (!silent) {
+      setLoading(true);
+      setError("");
+    }
 
     try {
       const exportedSnapshot = await fetchLeaderboardSnapshot();
       setSnapshot(exportedSnapshot);
+      setError("");
     } catch (loadError) {
-      setSnapshot(null);
-      setError(loadError?.message || "Waiting for synced leaderboard data from the app.");
+      if (!silent) {
+        setSnapshot(null);
+        setError(loadError?.message || "Waiting for synced leaderboard data from the app.");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, [leaderboardVisible, respectVisibility]);
 
@@ -381,6 +388,18 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     loadSnapshot();
   }, [leaderboardVisible, loadSnapshot, visibilityLoading]);
 
+  useEffect(() => {
+    if (visibilityLoading || (respectVisibility && !leaderboardVisible)) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      loadSnapshot({ silent: true });
+    }, 10000);
+
+    return () => window.clearInterval(intervalId);
+  }, [leaderboardVisible, loadSnapshot, respectVisibility, visibilityLoading]);
+
   const categories = useMemo(() => getCategoriesFromSnapshot(snapshot), [snapshot]);
   const activeCategory = useMemo(() => {
     if (!categories.length) {
@@ -390,6 +409,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     return categories.find(category => category.key === selectedCategory) || categories[0];
   }, [categories, selectedCategory]);
   const rows = activeCategory?.rows || [];
+  const uploadedCategoryCount = categories.length;
 
   useEffect(() => {
     if (!categories.length) {
@@ -516,14 +536,21 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
       ) : (
         <div className="bg-black">
           <div className="mb-4 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Vehicle Category</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Category Tabs</p>
                 <p className="mt-1 font-mono text-[14px] font-black uppercase text-[#fff7ef]">
                   {activeCategory?.label || "Leaderboard"}
                 </p>
+                <p className="mt-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#d9a36d]">
+                  {uploadedCategoryCount} {uploadedCategoryCount === 1 ? "Category" : "Categories"} Uploaded
+                </p>
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-wrap lg:justify-end lg:overflow-visible lg:pb-0">
+              <div
+                role="tablist"
+                aria-label="Live leaderboard categories"
+                className="grid auto-cols-[minmax(160px,1fr)] grid-flow-col gap-2 overflow-x-auto pb-1 sm:auto-cols-[minmax(190px,1fr)] lg:grid-flow-row lg:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] lg:overflow-visible lg:pb-0"
+              >
                 {categories.map(category => {
                   const active = selectedCategory === category.key;
 
@@ -531,14 +558,21 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                     <button
                       key={category.key}
                       type="button"
+                      role="tab"
+                      id={`leaderboard-category-tab-${category.key}`}
+                      aria-selected={active}
+                      aria-controls={`leaderboard-category-panel-${category.key}`}
                       onClick={() => setSelectedCategory(category.key)}
-                      className={`shrink-0 rounded-full border px-4 py-2 font-mono text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+                      className={`flex min-h-14 min-w-0 flex-col justify-center rounded-[14px] border px-4 py-3 text-left font-mono uppercase transition-colors ${
                         active
                           ? "border-[#ff7a00] bg-[#ff7a00] text-black"
                           : "border-[#2b1709] bg-black text-[#d9a36d] hover:border-[#ff7a00]/60 hover:text-[#fff7ef]"
                       }`}
                     >
-                      {category.label}
+                      <span className="truncate text-[11px] font-black tracking-[0.12em]">{category.label}</span>
+                      <span className={`mt-1 text-[9px] font-black tracking-[0.16em] ${active ? "text-black/65" : "text-[#8e6841]"}`}>
+                        {category.rows.length} {category.rows.length === 1 ? "Entry" : "Entries"}
+                      </span>
                     </button>
                   );
                 })}
@@ -547,6 +581,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
           </div>
 
           <div
+            role="tabpanel"
+            id={`leaderboard-category-panel-${activeCategory.key}`}
+            aria-labelledby={`leaderboard-category-tab-${activeCategory.key}`}
             ref={tableScrollRef}
             onMouseDown={startTableDrag}
             onMouseMove={moveTableDrag}
