@@ -94,9 +94,10 @@ export const normalizeCategoryKey = value => {
   const normalized = String(value || "")
     .trim()
     .toUpperCase()
-    .replace(/\s+/g, "_");
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 
-  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY") {
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY" || normalized === "EXTREME") {
     return "EXTREME";
   }
 
@@ -370,14 +371,329 @@ export const normalizeCategory = category => {
   };
 };
 
+const getCategoryKeyFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeCategoryKey(
+    source?.category ||
+      source?.categoryKey ||
+      source?.category_key ||
+      source?.key ||
+      parsedSubmission?.category ||
+      parsedSubmission?.categoryKey ||
+      parsedSubmission?.category_key ||
+      ""
+  );
+};
+
+const getCategoryLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.label ||
+      source?.name ||
+      source?.categoryLabel ||
+      source?.category_label ||
+      source?.category ||
+      parsedSubmission?.categoryLabel ||
+      parsedSubmission?.category_label ||
+      parsedSubmission?.category ||
+      ""
+  );
+};
+
+const getVehicleIdentityFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const mergedSource = { ...parsedSubmission, ...source };
+
+  return {
+    stickerNumber: normalizeText(
+      mergedSource?.stickerNumber ||
+        mergedSource?.sticker_number ||
+        mergedSource?.sticker ||
+        mergedSource?.carNumber ||
+        mergedSource?.car_number ||
+        ""
+    ),
+    teamName: normalizeText(mergedSource?.teamName || mergedSource?.team_name || mergedSource?.team || "--"),
+    driverName: normalizeText(mergedSource?.driverName || mergedSource?.driver_name || mergedSource?.driver || "--"),
+    coDriverName: normalizeText(
+      mergedSource?.coDriverName ||
+        mergedSource?.codriver_name ||
+        mergedSource?.co_driver_name ||
+        mergedSource?.codriver ||
+        mergedSource?.co_driver ||
+        "--"
+    ),
+  };
+};
+
+const getTrackLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.trackLabel ||
+      source?.track_label ||
+      source?.trackName ||
+      source?.track_name ||
+      source?.track ||
+      parsedSubmission?.trackLabel ||
+      parsedSubmission?.track_label ||
+      parsedSubmission?.trackName ||
+      parsedSubmission?.track_name ||
+      parsedSubmission?.track ||
+      ""
+  );
+};
+
+const getDayLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.selectedDayLabel ||
+      source?.selected_day_label ||
+      source?.selectedDayId ||
+      source?.selected_day_id ||
+      parsedSubmission?.selectedDayLabel ||
+      parsedSubmission?.selected_day_label ||
+      parsedSubmission?.selectedDayId ||
+      parsedSubmission?.selected_day_id ||
+      ""
+  );
+};
+
+const getTimingLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.totalTimeDisplay ||
+      source?.total_time_display ||
+      source?.total_time ||
+      source?.performanceTimeDisplay ||
+      source?.performance_time_display ||
+      source?.performance_time ||
+      source?.completionTime ||
+      source?.completion_time ||
+      parsedSubmission?.totalTimeDisplay ||
+      parsedSubmission?.total_time_display ||
+      parsedSubmission?.total_time ||
+      parsedSubmission?.performanceTimeDisplay ||
+      parsedSubmission?.performance_time_display ||
+      parsedSubmission?.performance_time ||
+      parsedSubmission?.completionTime ||
+      parsedSubmission?.completion_time ||
+      "NA"
+  );
+};
+
+const getPointsFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const value = getFirstDefinedValue(
+    source?.points,
+    source?.totalPoints,
+    source?.total_points,
+    source?.score,
+    parsedSubmission?.points,
+    parsedSubmission?.totalPoints,
+    parsedSubmission?.total_points,
+    parsedSubmission?.score
+  );
+  const numericValue = Number(String(value || "").replace(/[^\d.-]/g, ""));
+
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
+const getRankLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const rank = normalizeText(source?.rankLabel || source?.rank_label || source?.rank || parsedSubmission?.rankLabel || parsedSubmission?.rank || "");
+
+  if (!rank) {
+    return "";
+  }
+
+  return rank.toUpperCase().startsWith("P") ? rank.toUpperCase() : `P${rank}`;
+};
+
+const ensureCategory = (categoryMap, rawCategory = {}) => {
+  const key = normalizeCategoryKey(rawCategory?.key || rawCategory?.category || rawCategory?.label || rawCategory?.name || "");
+
+  if (!key) {
+    return null;
+  }
+
+  if (!categoryMap.has(key)) {
+    categoryMap.set(key, {
+      key,
+      label: normalizeText(rawCategory?.label || rawCategory?.name || rawCategory?.category || "") || formatCategoryLabel(key),
+      tracks: Array.isArray(rawCategory?.tracks)
+        ? rawCategory.tracks
+        : Array.isArray(rawCategory?.trackOptions)
+          ? rawCategory.trackOptions
+          : [],
+      rows: [],
+    });
+  } else {
+    const existingCategory = categoryMap.get(key);
+    const tracks = Array.isArray(rawCategory?.tracks)
+      ? rawCategory.tracks
+      : Array.isArray(rawCategory?.trackOptions)
+        ? rawCategory.trackOptions
+        : [];
+
+    if (!existingCategory.label || existingCategory.label === formatCategoryLabel(existingCategory.key)) {
+      existingCategory.label = normalizeText(rawCategory?.label || rawCategory?.name || rawCategory?.category || "") || existingCategory.label;
+    }
+
+    if (tracks.length) {
+      existingCategory.tracks = [...(existingCategory.tracks || []), ...tracks];
+    }
+  }
+
+  return categoryMap.get(key);
+};
+
+const addTrackToCategory = (category, trackLabel) => {
+  const descriptor = normalizeTrackDescriptor(trackLabel);
+
+  if (!descriptor.key || !category) {
+    return;
+  }
+
+  const tracks = Array.isArray(category.tracks) ? category.tracks : [];
+  const hasTrack = tracks.some(track => {
+    const existingDescriptor = normalizeTrackDescriptor(track);
+    return existingDescriptor.key === descriptor.key || normalizeTrackKey(existingDescriptor.label) === descriptor.key;
+  });
+
+  if (!hasTrack) {
+    category.tracks = [...tracks, descriptor];
+  }
+};
+
+const getOrCreateCategoryRow = (category, identity, fallbackIndex = 0) => {
+  const stickerNumber = identity.stickerNumber || String(fallbackIndex + 1);
+  const vehicleKey = `${category.key}|${stickerNumber}|${normalizeText(identity.driverName).toLowerCase()}`;
+  let row = category.rows.find(item => item.vehicleKey === vehicleKey);
+
+  if (!row) {
+    row = {
+      vehicleKey,
+      stickerNumber,
+      teamName: identity.teamName || "--",
+      driverName: identity.driverName || "--",
+      coDriverName: identity.coDriverName || "--",
+      totalPoints: 0,
+      totalTimingMs: null,
+      totalTimingLabel: "",
+      trackMap: {},
+      trackSummaries: [],
+    };
+    category.rows.push(row);
+  }
+
+  return row;
+};
+
+const addTeamToCategory = (categoryMap, team, index) => {
+  const key = getCategoryKeyFromSource(team);
+
+  if (!key) {
+    return;
+  }
+
+  const category = ensureCategory(categoryMap, {
+    key,
+    label: getCategoryLabelFromSource(team) || formatCategoryLabel(key),
+  });
+
+  if (category.__hasRenderedRows) {
+    return;
+  }
+
+  getOrCreateCategoryRow(category, getVehicleIdentityFromSource(team), index);
+};
+
+const addResultToCategory = (categoryMap, result, index) => {
+  const key = getCategoryKeyFromSource(result);
+
+  if (!key) {
+    return;
+  }
+
+  const category = ensureCategory(categoryMap, {
+    key,
+    label: getCategoryLabelFromSource(result) || formatCategoryLabel(key),
+  });
+
+  if (category.__hasRenderedRows) {
+    return;
+  }
+
+  const identity = getVehicleIdentityFromSource(result);
+  const row = getOrCreateCategoryRow(category, identity, index);
+  const trackLabel = getTrackLabelFromSource(result);
+
+  if (!trackLabel) {
+    return;
+  }
+
+  const track = normalizeTrackDescriptor(trackLabel);
+  const points = getPointsFromSource(result);
+  const timingLabel = getTimingLabelFromSource(result);
+  const entry = {
+    key: normalizeResultIdentityKey(result),
+    dayLabel: getDayLabelFromSource(result),
+    dayOrder: null,
+    timingLabel,
+    pointsLabel: `${points} pts`,
+    rankLabel: getRankLabelFromSource(result),
+  };
+
+  addTrackToCategory(category, trackLabel);
+
+  if (!row.trackMap[track.key]) {
+    const summary = {
+      trackKey: track.key,
+      trackLabel: track.label,
+      totalPoints: 0,
+      entries: [],
+    };
+    row.trackMap[track.key] = summary;
+    row.trackSummaries.push(summary);
+  }
+
+  row.trackMap[track.key].entries.push(entry);
+  row.trackMap[track.key].totalPoints += points;
+  row.totalPoints += points;
+};
+
 export const getCategoriesFromSnapshot = snapshot => {
   const sourceCategories = Array.isArray(snapshot?.leaderboard?.categories)
     ? snapshot.leaderboard.categories
     : Array.isArray(snapshot?.categories)
       ? snapshot.categories
       : [];
+  const categoryMap = new Map();
 
-  return sourceCategories.map(normalizeCategory).filter(category => category.key);
+  sourceCategories.forEach(category => {
+    const normalizedCategory = normalizeCategory(category);
+    if (normalizedCategory.key) {
+      normalizedCategory.__hasRenderedRows = normalizedCategory.rows.length > 0;
+      categoryMap.set(normalizedCategory.key, normalizedCategory);
+    }
+  });
+
+  (Array.isArray(snapshot?.categoryOptions) ? snapshot.categoryOptions : []).forEach(categoryOption => {
+    ensureCategory(categoryMap, categoryOption);
+  });
+
+  (Array.isArray(snapshot?.results) ? snapshot.results : []).forEach(addResultToCategory.bind(null, categoryMap));
+  (Array.isArray(snapshot?.disputes) ? snapshot.disputes : []).forEach(addResultToCategory.bind(null, categoryMap));
+  (Array.isArray(snapshot?.teams) ? snapshot.teams : []).forEach(addTeamToCategory.bind(null, categoryMap));
+
+  return [...categoryMap.values()]
+    .map(normalizeCategory)
+    .filter(category => category.key && category.rows.length);
 };
 
 export const buildLeaderboardDetailIndex = snapshot => {
