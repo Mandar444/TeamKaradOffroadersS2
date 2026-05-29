@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { cookies } from "next/headers";
+import os from "os";
 import path from "path";
 import {
   clearObsoleteLeaderboardDriveData,
@@ -25,8 +26,11 @@ export const dynamic = "force-dynamic";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-API-Key, Accept, Origin",
+  "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS, HEAD",
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Expose-Headers": "X-Leaderboard-Sync-Available, X-Leaderboard-Accepts-Post",
+  "X-Leaderboard-Sync-Available": "true",
+  "X-Leaderboard-Accepts-Post": "true",
   "Access-Control-Max-Age": "86400",
   "Cache-Control": "no-store",
 };
@@ -35,6 +39,8 @@ const LEADERBOARD_FILE_NAME = process.env.GOOGLE_LEADERBOARD_FILE_NAME || "leade
 const LOCAL_EXPORT_DIR = path.join(process.cwd(), "public", "data");
 const LOCAL_EXPORT_FILE = path.join(LOCAL_EXPORT_DIR, "leaderboard-export.json");
 const LOCAL_ROOT_EXPORT_FILE = path.join(process.cwd(), "public", "leaderboard-export.json");
+const FALLBACK_EXPORT_DIR = path.join(os.tmpdir(), "team-karad-offroaders");
+const FALLBACK_EXPORT_FILE = path.join(FALLBACK_EXPORT_DIR, "leaderboard-export.json");
 const IS_VERCEL = process.env.VERCEL === "1";
 
 const hasDriveConfig = () =>
@@ -195,10 +201,28 @@ const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
 };
 
 async function saveLocalSnapshot(snapshot) {
-  await mkdir(LOCAL_EXPORT_DIR, { recursive: true });
   const payload = JSON.stringify(snapshot, null, 2);
-  await writeFile(LOCAL_EXPORT_FILE, payload, "utf8");
-  await writeFile(LOCAL_ROOT_EXPORT_FILE, payload, "utf8");
+  const failures = [];
+
+  for (const [dirPath, filePath] of [
+    [LOCAL_EXPORT_DIR, LOCAL_EXPORT_FILE],
+    [path.dirname(LOCAL_ROOT_EXPORT_FILE), LOCAL_ROOT_EXPORT_FILE],
+    [FALLBACK_EXPORT_DIR, FALLBACK_EXPORT_FILE],
+  ]) {
+    try {
+      await mkdir(dirPath, { recursive: true });
+      await writeFile(filePath, payload, "utf8");
+      failures.push(null);
+    } catch (error) {
+      failures.push(error?.message || String(error));
+    }
+  }
+
+  if (failures.some(error => error === null)) {
+    return true;
+  }
+
+  throw new Error(`Unable to save leaderboard snapshot locally: ${failures.join("; ")}`);
 }
 
 async function trySaveLocalSnapshot(snapshot) {
@@ -212,7 +236,7 @@ async function trySaveLocalSnapshot(snapshot) {
 }
 
 async function readLocalSnapshot() {
-  for (const filePath of [LOCAL_ROOT_EXPORT_FILE, LOCAL_EXPORT_FILE]) {
+  for (const filePath of [LOCAL_ROOT_EXPORT_FILE, LOCAL_EXPORT_FILE, FALLBACK_EXPORT_FILE]) {
     try {
       const raw = await readFile(filePath, "utf8");
       return JSON.parse(raw);
@@ -235,6 +259,22 @@ async function readOptionalJsonBody(request) {
 
   return JSON.parse(rawBody);
 }
+
+const unwrapIncomingSnapshot = payload => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return payload;
+  }
+
+  for (const key of ["snapshot", "leaderboardSnapshot", "leaderboardExport", "export", "data", "payload"]) {
+    const value = payload[key];
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value;
+    }
+  }
+
+  return payload;
+};
 
 const isEmptyObject = value =>
   value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
@@ -271,14 +311,21 @@ const getCurrentSnapshot = (snapshot, resetMarker) =>
 
 export async function POST(request) {
   try {
-    const incomingSnapshot = await readOptionalJsonBody(request);
+    const incomingSnapshot = unwrapIncomingSnapshot(await readOptionalJsonBody(request));
 
     if (incomingSnapshot === null || isEmptyObject(incomingSnapshot)) {
       return createUsableResponse({ skipped: true });
     }
 
+    if (!incomingSnapshot || typeof incomingSnapshot !== "object" || Array.isArray(incomingSnapshot)) {
+      return NextResponse.json(
+        { ok: false, error: "Invalid leaderboard payload" },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
     const existingSnapshot = hasDriveConfig()
-      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
+      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null)
       : await readLocalSnapshot().catch(() => null);
     const resetMarker = await getResetMarker(existingSnapshot);
     const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
@@ -287,7 +334,7 @@ export async function POST(request) {
       : incomingSnapshot;
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
     const latestSnapshot = hasDriveConfig()
-      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME)
+      ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null)
       : await readLocalSnapshot().catch(() => null);
     const latestResetMarker = await getResetMarker(latestSnapshot);
 
@@ -324,7 +371,7 @@ export async function POST(request) {
           );
         }
       }
-    } else if (IS_VERCEL) {
+    } else if (IS_VERCEL && !cachedLocally) {
       return NextResponse.json(
         {
           ok: false,
@@ -352,6 +399,7 @@ export async function POST(request) {
       {
         ok: false,
         error: error?.message || "Unable to sync leaderboard export",
+        detail: error?.stack || null,
       },
       {
         status: 500,
@@ -366,14 +414,11 @@ export async function GET() {
     const visibility = await readLeaderboardVisibility().catch(() => ({ visible: false }));
 
     if (!visibility.visible) {
-      return NextResponse.json(
-        {
-          ok: false,
-          closed: true,
-          error: "Live leaderboard is closed",
-        },
-        { status: 403, headers: corsHeaders }
-      );
+      return createUsableResponse({
+        closed: true,
+        publicVisible: false,
+        message: "Sync endpoint is available. Public leaderboard display is closed.",
+      });
     }
   }
 
@@ -387,16 +432,11 @@ export async function GET() {
       headers: corsHeaders,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: error?.message || "Leaderboard export file not found",
-      },
-      {
-        status: hasDriveConfig() ? 503 : 404,
-        headers: corsHeaders,
-      }
-    );
+    return createUsableResponse({
+      skipped: true,
+      missingSnapshot: true,
+      error: error?.message || "Leaderboard export file not found",
+    });
   }
 }
 
@@ -479,15 +519,23 @@ export async function DELETE() {
 }
 
 export function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: corsHeaders,
-  });
+  return NextResponse.json(
+    {
+      ok: true,
+      usable: true,
+      acceptsPost: true,
+      method: "OPTIONS",
+    },
+    {
+      status: 200,
+      headers: corsHeaders,
+    }
+  );
 }
 
 export function HEAD() {
   return new NextResponse(null, {
-    status: 204,
+    status: 200,
     headers: corsHeaders,
   });
 }
