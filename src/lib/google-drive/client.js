@@ -134,6 +134,13 @@ async function readDriveAppProperties(fileId) {
   return response.data.appProperties || {};
 }
 
+function isMissingDriveFileError(error) {
+  const status = error?.code || error?.response?.status;
+  const message = String(error?.message || error?.errors?.[0]?.message || '').toLowerCase();
+
+  return status === 404 || message.includes('file not found') || message.includes('not found');
+}
+
 const getResetProperties = resetMarker =>
   resetMarker
     ? {
@@ -250,31 +257,49 @@ export async function upsertJsonToDrive(fileName, jsonContent, { resetMarker = n
   const resetProperties = getResetProperties(resetMarker);
 
   if (existingFile?.id) {
-    const requestBody = resetProperties
-      ? { appProperties: { ...(await readDriveAppProperties(existingFile.id)), ...resetProperties } }
-      : undefined;
-    const response = await drive.files.update({
-      fileId: existingFile.id,
-      requestBody,
-      media,
-      fields: 'id, webViewLink, webContentLink',
-      supportsAllDrives: true,
-    });
-
     try {
-      await drive.permissions.create({
-        fileId: response.data.id,
-        requestBody: {
-          role: 'reader',
-          type: 'anyone',
-        },
+      const existingProperties = resetProperties
+        ? await readDriveAppProperties(existingFile.id).catch(error => {
+            if (isMissingDriveFileError(error)) {
+              throw error;
+            }
+
+            console.warn('[DRIVE] Warning: Could not read app properties for leaderboard JSON:', error.message);
+            return {};
+          })
+        : {};
+      const requestBody = resetProperties
+        ? { appProperties: { ...existingProperties, ...resetProperties } }
+        : undefined;
+      const response = await drive.files.update({
+        fileId: existingFile.id,
+        requestBody,
+        media,
+        fields: 'id, webViewLink, webContentLink',
         supportsAllDrives: true,
       });
-    } catch (permError) {
-      console.warn('[DRIVE] Warning: Could not update public permissions for leaderboard JSON:', permError.message);
-    }
 
-    return response.data;
+      try {
+        await drive.permissions.create({
+          fileId: response.data.id,
+          requestBody: {
+            role: 'reader',
+            type: 'anyone',
+          },
+          supportsAllDrives: true,
+        });
+      } catch (permError) {
+        console.warn('[DRIVE] Warning: Could not update public permissions for leaderboard JSON:', permError.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (!isMissingDriveFileError(error)) {
+        throw error;
+      }
+
+      console.warn(`[DRIVE] Configured leaderboard file ${existingFile.id} was not found. Creating a new ${fileName}.`);
+    }
   }
 
   const fileMetadata = {

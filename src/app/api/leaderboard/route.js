@@ -46,6 +46,18 @@ const IS_VERCEL = process.env.VERCEL === "1";
 const hasDriveConfig = () =>
   Boolean(process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
 
+const getStorageMode = () => {
+  if (hasDriveConfig()) {
+    return "google-drive";
+  }
+
+  if (IS_VERCEL) {
+    return "temporary-vercel-fallback";
+  }
+
+  return "local-files";
+};
+
 const createEmptySnapshot = () => ({
   generatedAt: null,
   source: "tko-app-reset",
@@ -63,6 +75,150 @@ async function isAdminSession() {
   const cookieStore = await cookies();
   return cookieStore.get("admin_session")?.value === "true";
 }
+
+const normalizeCategoryKey = value => {
+  const normalized = String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY" || normalized === "EXTREME") {
+    return "OPEN";
+  }
+
+  if (normalized === "LADIES" || normalized === "LADIES_CATEGORY") {
+    return "LADIES_CATEGORY";
+  }
+
+  return normalized;
+};
+
+const getCategoryKeyFromItem = item =>
+  normalizeCategoryKey(item?.category || item?.key || item?.category_key || item?.label || "");
+
+const getSnapshotCategoryKey = snapshot =>
+  normalizeCategoryKey(
+    snapshot?.focusCategory ||
+      snapshot?.categoryKey ||
+      snapshot?.category_key ||
+      snapshot?.category ||
+      snapshot?.categoryOptions?.[0]?.key ||
+      snapshot?.categoryOptions?.[0]?.label ||
+      snapshot?.leaderboard?.categories?.[0]?.key ||
+      snapshot?.leaderboard?.categories?.[0]?.label ||
+      ""
+  );
+
+const getUniqueCategoryKeys = items =>
+  [...new Set(
+    (Array.isArray(items) ? items : [])
+      .map(getCategoryKeyFromItem)
+      .filter(Boolean)
+  )];
+
+const isFocusedCategorySnapshot = snapshot => {
+  if (
+    normalizeCategoryKey(
+      snapshot?.focusCategory ||
+        snapshot?.categoryKey ||
+        snapshot?.category_key ||
+        snapshot?.category ||
+        ""
+    )
+  ) {
+    return true;
+  }
+
+  const leaderboardCategoryKeys = getUniqueCategoryKeys(snapshot?.leaderboard?.categories || []);
+  const dataCategoryKeys = [
+    ...getUniqueCategoryKeys(snapshot?.teams || []),
+    ...getUniqueCategoryKeys(snapshot?.results || []),
+    ...getUniqueCategoryKeys(snapshot?.disputes || []),
+  ];
+  const uniqueDataCategoryKeys = [...new Set(dataCategoryKeys)];
+
+  if (leaderboardCategoryKeys.length > 1 || uniqueDataCategoryKeys.length > 1) {
+    return false;
+  }
+
+  return leaderboardCategoryKeys.length === 1 || uniqueDataCategoryKeys.length === 1;
+};
+
+const filterSnapshotToCategory = (snapshot, focusCategory) => {
+  const normalizedFocusCategory = normalizeCategoryKey(focusCategory);
+
+  if (!normalizedFocusCategory) {
+    return snapshot;
+  }
+
+  const filterByCategory = item => {
+    const itemCategory = getCategoryKeyFromItem(item);
+    return !itemCategory || itemCategory === normalizedFocusCategory;
+  };
+  const tagCategory = item =>
+    getCategoryKeyFromItem(item) ? item : { ...item, category: normalizedFocusCategory };
+
+  return {
+    ...snapshot,
+    focusCategory: normalizedFocusCategory,
+    teams: Array.isArray(snapshot?.teams)
+      ? snapshot.teams.filter(filterByCategory).map(tagCategory)
+      : [],
+    results: Array.isArray(snapshot?.results)
+      ? snapshot.results.filter(filterByCategory).map(tagCategory)
+      : [],
+    disputes: Array.isArray(snapshot?.disputes)
+      ? snapshot.disputes.filter(filterByCategory).map(tagCategory)
+      : [],
+    categoryOptions: Array.isArray(snapshot?.categoryOptions)
+      ? snapshot.categoryOptions.filter(filterByCategory).map(tagCategory)
+      : [],
+    leaderboard: {
+      ...(snapshot?.leaderboard || {}),
+      categories: Array.isArray(snapshot?.leaderboard?.categories)
+        ? snapshot.leaderboard.categories.filter(filterByCategory).map(tagCategory)
+        : [],
+    },
+  };
+};
+
+const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
+  if (!isFocusedCategorySnapshot(incomingSnapshot)) {
+    return incomingSnapshot;
+  }
+
+  const focusCategory = getSnapshotCategoryKey(incomingSnapshot);
+
+  if (!focusCategory) {
+    return incomingSnapshot;
+  }
+
+  const incomingCategorySnapshot = filterSnapshotToCategory(incomingSnapshot, focusCategory);
+  const keepOtherCategory = item => getCategoryKeyFromItem(item) !== focusCategory;
+  const mergeCategoryList = (existingItems = [], incomingItems = []) => [
+    ...existingItems.filter(keepOtherCategory),
+    ...incomingItems,
+  ];
+
+  return {
+    ...(existingSnapshot || {}),
+    ...incomingSnapshot,
+    focusCategory,
+    teams: mergeCategoryList(existingSnapshot?.teams || [], incomingCategorySnapshot.teams || []),
+    results: mergeCategoryList(existingSnapshot?.results || [], incomingCategorySnapshot.results || []),
+    disputes: mergeCategoryList(existingSnapshot?.disputes || [], incomingCategorySnapshot.disputes || []),
+    categoryOptions: mergeCategoryList(existingSnapshot?.categoryOptions || [], incomingCategorySnapshot.categoryOptions || []),
+    leaderboard: {
+      ...(existingSnapshot?.leaderboard || {}),
+      ...(incomingSnapshot?.leaderboard || {}),
+      categories: mergeCategoryList(
+        existingSnapshot?.leaderboard?.categories || [],
+        incomingCategorySnapshot.leaderboard?.categories || []
+      ),
+    },
+  };
+};
 
 async function saveLocalSnapshot(snapshot) {
   const payload = JSON.stringify(snapshot, null, 2);
@@ -100,7 +256,11 @@ async function trySaveLocalSnapshot(snapshot) {
 }
 
 async function readLocalSnapshot() {
-  for (const filePath of [LOCAL_ROOT_EXPORT_FILE, LOCAL_EXPORT_FILE, FALLBACK_EXPORT_FILE]) {
+  const candidateFiles = IS_VERCEL
+    ? [FALLBACK_EXPORT_FILE, LOCAL_ROOT_EXPORT_FILE, LOCAL_EXPORT_FILE]
+    : [LOCAL_ROOT_EXPORT_FILE, LOCAL_EXPORT_FILE, FALLBACK_EXPORT_FILE];
+
+  for (const filePath of candidateFiles) {
     try {
       const raw = await readFile(filePath, "utf8");
       return JSON.parse(raw);
@@ -114,31 +274,105 @@ async function readLocalSnapshot() {
   throw new Error("Leaderboard export file not found locally");
 }
 
+const safeParseJsonValue = value => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(trimmedValue);
+  } catch (error) {
+    return value;
+  }
+};
+
+const parsePayloadCandidate = value => {
+  const parsedValue = safeParseJsonValue(value);
+
+  if (typeof parsedValue === "string") {
+    const maybeQuery = parsedValue.includes("=") ? Object.fromEntries(new URLSearchParams(parsedValue)) : null;
+    return maybeQuery || parsedValue;
+  }
+
+  return parsedValue;
+};
+
+const unwrapIncomingSnapshot = payload => {
+  const parsedPayload = parsePayloadCandidate(payload);
+
+  if (parsedPayload !== payload) {
+    return unwrapIncomingSnapshot(parsedPayload);
+  }
+
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return payload;
+  }
+
+  for (const key of ["snapshot", "leaderboardSnapshot", "leaderboardExport", "leaderboard", "export", "data", "payload", "json", "body"]) {
+    const value = payload[key];
+
+    if (value !== null && value !== undefined && value !== "") {
+      const unwrappedValue = unwrapIncomingSnapshot(value);
+
+      if (unwrappedValue && typeof unwrappedValue === "object" && !Array.isArray(unwrappedValue)) {
+        return unwrappedValue;
+      }
+    }
+  }
+
+  return payload;
+};
+
 async function readOptionalJsonBody(request) {
+  const contentType = request.headers.get("content-type") || "";
+
+  if (contentType.includes("multipart/form-data")) {
+    const formData = await request.formData();
+    const preferredKeys = ["file", "snapshot", "leaderboardSnapshot", "leaderboardExport", "leaderboard", "export", "data", "payload", "json", "body"];
+
+    for (const key of preferredKeys) {
+      const value = formData.get(key);
+
+      if (!value) {
+        continue;
+      }
+
+      if (typeof value === "string") {
+        return parsePayloadCandidate(value);
+      }
+
+      if (typeof value.text === "function") {
+        return parsePayloadCandidate(await value.text());
+      }
+    }
+
+    const fields = {};
+
+    for (const [key, value] of formData.entries()) {
+      fields[key] = typeof value === "string" ? value : await value.text();
+    }
+
+    return Object.keys(fields).length ? fields : null;
+  }
+
   const rawBody = await request.text();
 
   if (!rawBody.trim()) {
     return null;
   }
 
-  return JSON.parse(rawBody);
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    return Object.fromEntries(new URLSearchParams(rawBody));
+  }
+
+  return parsePayloadCandidate(rawBody);
 }
-
-const unwrapIncomingSnapshot = payload => {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return payload;
-  }
-
-  for (const key of ["snapshot", "leaderboardSnapshot", "leaderboardExport", "export", "data", "payload"]) {
-    const value = payload[key];
-
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      return value;
-    }
-  }
-
-  return payload;
-};
 
 const isEmptyObject = value =>
   value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
@@ -147,8 +381,12 @@ function createUsableResponse(extra = {}) {
   return NextResponse.json(
     {
       ok: true,
+      success: true,
       usable: true,
+      available: true,
+      syncAvailable: true,
       acceptsPost: true,
+      canSync: true,
       ...extra,
     },
     { headers: corsHeaders }
@@ -157,8 +395,12 @@ function createUsableResponse(extra = {}) {
 
 const withEndpointStatus = snapshot => ({
   ok: true,
+  success: true,
   usable: true,
+  available: true,
+  syncAvailable: true,
   acceptsPost: true,
+  canSync: true,
   ...(snapshot || createEmptySnapshot()),
 });
 
@@ -192,7 +434,11 @@ export async function POST(request) {
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null)
       : await readLocalSnapshot().catch(() => null);
     const resetMarker = await getResetMarker(existingSnapshot);
-    const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(incomingSnapshot), resetMarker);
+    const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
+    const mergedSnapshot = currentExistingSnapshot
+      ? mergeSnapshotCategory(currentExistingSnapshot, incomingSnapshot)
+      : incomingSnapshot;
+    const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
     const latestSnapshot = hasDriveConfig()
       ? await readJsonFromDrive(LEADERBOARD_FILE_NAME).catch(() => null)
       : await readLocalSnapshot().catch(() => null);
@@ -247,10 +493,17 @@ export async function POST(request) {
     return NextResponse.json(
       {
         ok: true,
+        success: true,
+        usable: true,
+        available: true,
+        syncAvailable: true,
+        acceptsPost: true,
+        canSync: true,
         savedTo: file?.webViewLink || "/leaderboard-export.json",
         generatedAt: snapshot?.generatedAt || null,
         cachedLocally,
         persistedToDrive: Boolean(file?.id),
+        storageMode: getStorageMode(),
       },
       { headers: corsHeaders }
     );
@@ -380,8 +633,12 @@ export function OPTIONS() {
   return NextResponse.json(
     {
       ok: true,
+      success: true,
       usable: true,
+      available: true,
+      syncAvailable: true,
       acceptsPost: true,
+      canSync: true,
       method: "OPTIONS",
     },
     {
