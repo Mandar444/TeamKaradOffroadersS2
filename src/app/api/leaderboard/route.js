@@ -195,18 +195,31 @@ const filterSnapshotToCategory = (snapshot, focusCategory) => {
 };
 
 const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
-  if (!isFocusedCategorySnapshot(incomingSnapshot)) {
+  const focusedCategory = isFocusedCategorySnapshot(incomingSnapshot)
+    ? getSnapshotCategoryKey(incomingSnapshot)
+    : "";
+  const incomingCategoryKeys = focusedCategory
+    ? [focusedCategory]
+    : [
+        ...getUniqueCategoryKeys(incomingSnapshot?.leaderboard?.categories || []),
+        ...getUniqueCategoryKeys(incomingSnapshot?.categoryOptions || []),
+        ...getUniqueCategoryKeys(incomingSnapshot?.teams || []),
+        ...getUniqueCategoryKeys(incomingSnapshot?.results || []),
+        ...getUniqueCategoryKeys(incomingSnapshot?.disputes || []),
+      ];
+  const replaceCategoryKeys = new Set(incomingCategoryKeys.filter(Boolean));
+
+  if (!replaceCategoryKeys.size) {
     return incomingSnapshot;
   }
 
-  const focusCategory = getSnapshotCategoryKey(incomingSnapshot);
-
-  if (!focusCategory) {
-    return incomingSnapshot;
-  }
-
-  const incomingCategorySnapshot = filterSnapshotToCategory(incomingSnapshot, focusCategory);
-  const keepOtherCategory = item => getCategoryKeyFromItem(item) !== focusCategory;
+  const incomingCategorySnapshot = focusedCategory
+    ? filterSnapshotToCategory(incomingSnapshot, focusedCategory)
+    : incomingSnapshot;
+  const keepOtherCategory = item => {
+    const itemCategory = getCategoryKeyFromItem(item);
+    return !itemCategory || !replaceCategoryKeys.has(itemCategory);
+  };
   const mergeCategoryList = (existingItems = [], incomingItems = []) => [
     ...existingItems.filter(keepOtherCategory),
     ...incomingItems,
@@ -215,7 +228,7 @@ const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
   return {
     ...(existingSnapshot || {}),
     ...incomingSnapshot,
-    focusCategory,
+    ...(focusedCategory ? { focusCategory: focusedCategory } : {}),
     teams: mergeCategoryList(existingSnapshot?.teams || [], incomingCategorySnapshot.teams || []),
     results: mergeCategoryList(existingSnapshot?.results || [], incomingCategorySnapshot.results || []),
     disputes: mergeCategoryList(existingSnapshot?.disputes || [], incomingCategorySnapshot.disputes || []),
