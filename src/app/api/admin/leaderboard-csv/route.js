@@ -286,6 +286,8 @@ export async function POST(request) {
       savedTo: file?.webViewLink || "/leaderboard-export.json",
       generatedAt: snapshot.generatedAt,
       cachedLocally,
+      database: getStorageMode(),
+      persistedToDatabase: Boolean(file?.id),
       persistedToSheets: hasSheetsConfig() && Boolean(file?.id),
       persistedToDrive: !hasSheetsConfig() && Boolean(file?.id),
       storageMode: getStorageMode(),
