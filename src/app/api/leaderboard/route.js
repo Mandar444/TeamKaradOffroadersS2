@@ -417,6 +417,18 @@ const getCurrentSnapshot = (snapshot, resetMarker) =>
 
 export async function POST(request) {
   try {
+    if (IS_VERCEL && !hasDriveConfig()) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Persistent Google Drive storage is required on Vercel to preserve multiple leaderboard categories.",
+          detail: "Temporary Vercel storage cannot reliably merge category-by-category uploads. Configure GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY.",
+          storageMode: getStorageMode(),
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    }
+
     const incomingSnapshot = unwrapIncomingSnapshot(await readOptionalJsonBody(request));
 
     if (incomingSnapshot === null || isEmptyObject(incomingSnapshot)) {
@@ -477,15 +489,6 @@ export async function POST(request) {
 
         throw driveError;
       }
-    } else if (IS_VERCEL && !cachedLocally) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Google Drive credentials are required to persist leaderboard data on Vercel.",
-          cachedLocally,
-        },
-        { status: 500, headers: corsHeaders }
-      );
     } else if (!cachedLocally) {
       throw new Error("Unable to save leaderboard snapshot locally.");
     }
