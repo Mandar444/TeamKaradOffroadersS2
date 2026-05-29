@@ -327,6 +327,24 @@ const parsePayloadCandidate = value => {
   return parsedValue;
 };
 
+const isLeaderboardSnapshotPayload = payload =>
+  payload &&
+  typeof payload === "object" &&
+  !Array.isArray(payload) &&
+  (
+    Array.isArray(payload?.teams) ||
+    Array.isArray(payload?.results) ||
+    Array.isArray(payload?.disputes) ||
+    Array.isArray(payload?.categoryOptions) ||
+    Array.isArray(payload?.categories) ||
+    Array.isArray(payload?.leaderboard?.categories) ||
+    payload?.schemaVersion !== undefined ||
+    payload?.generatedAt !== undefined ||
+    payload?.focusCategory !== undefined ||
+    payload?.categoryKey !== undefined ||
+    payload?.category_key !== undefined
+  );
+
 const unwrapIncomingSnapshot = payload => {
   const parsedPayload = parsePayloadCandidate(payload);
 
@@ -335,6 +353,10 @@ const unwrapIncomingSnapshot = payload => {
   }
 
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (isLeaderboardSnapshotPayload(payload)) {
     return payload;
   }
 

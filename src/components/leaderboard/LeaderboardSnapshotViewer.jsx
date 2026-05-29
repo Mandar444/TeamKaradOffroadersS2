@@ -592,10 +592,10 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
         </div>
       ) : (
         <div className="bg-black">
-          <div className="mb-4 rounded-[18px] border border-[#2b1709] bg-[#101010] px-4 py-4">
+          <div className="sticky top-20 z-20 mb-4 rounded-[18px] border border-[#3a210f] bg-[#101010]/95 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)] backdrop-blur">
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Category Tabs</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff7a00]">Vehicle Category Tabs</p>
                 <p className="mt-1 font-mono text-[14px] font-black uppercase text-[#fff7ef]">
                   {activeCategory?.label || "Leaderboard"}
                 </p>
@@ -606,7 +606,7 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
               <div
                 role="tablist"
                 aria-label="Live leaderboard categories"
-                className="grid auto-cols-[minmax(160px,1fr)] grid-flow-col gap-2 overflow-x-auto pb-1 sm:auto-cols-[minmax(190px,1fr)] lg:grid-flow-row lg:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] lg:overflow-visible lg:pb-0"
+                className="grid auto-cols-[minmax(170px,1fr)] grid-flow-col gap-2 overflow-x-auto pb-1 sm:auto-cols-[minmax(205px,1fr)] xl:grid-flow-row xl:grid-cols-[repeat(auto-fit,minmax(190px,1fr))] xl:overflow-visible xl:pb-0"
               >
                 {categories.map(category => {
                   const active = activeCategory?.key === category.key;
@@ -622,10 +622,10 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                       tabIndex={active ? 0 : -1}
                       onClick={() => selectCategory(category.key)}
                       onKeyDown={event => handleCategoryTabKeyDown(event, category.key)}
-                      className={`flex min-h-14 min-w-0 flex-col justify-center rounded-[14px] border px-4 py-3 text-left font-mono uppercase transition-colors ${
+                      className={`flex min-h-16 min-w-0 flex-col justify-center rounded-[14px] border px-4 py-3 text-left font-mono uppercase transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb35c] focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                         active
-                          ? "border-[#ff7a00] bg-[#ff7a00] text-black"
-                          : "border-[#2b1709] bg-black text-[#d9a36d] hover:border-[#ff7a00]/60 hover:text-[#fff7ef]"
+                          ? "border-[#ff7a00] bg-[#ff7a00] text-black shadow-[0_0_24px_rgba(255,122,0,0.22)]"
+                          : "border-[#3a210f] bg-black text-[#d9a36d] hover:border-[#ff7a00]/60 hover:bg-[#170d05] hover:text-[#fff7ef]"
                       }`}
                     >
                       <span className="truncate text-[11px] font-black tracking-[0.12em]">{category.label}</span>
