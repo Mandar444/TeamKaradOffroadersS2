@@ -7,7 +7,9 @@ import { LEADERBOARD_CSV_CATEGORIES } from "@/lib/leaderboard-csv";
 export default function LeaderboardCsvUploader() {
   const [selectedCategory, setSelectedCategory] = useState(LEADERBOARD_CSV_CATEGORIES[0]?.key || "");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fullFile, setFullFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [fullUploading, setFullUploading] = useState(false);
   const [status, setStatus] = useState(null);
 
   const activeCategory = useMemo(
@@ -53,6 +55,44 @@ export default function LeaderboardCsvUploader() {
     }
   }
 
+  async function uploadFullCsv(event) {
+    event.preventDefault();
+
+    if (!fullFile) {
+      setStatus({ type: "error", message: "Choose a full leaderboard CSV file first." });
+      return;
+    }
+
+    setFullUploading(true);
+    setStatus(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("mode", "full");
+      formData.append("file", fullFile);
+
+      const response = await fetch("/api/admin/leaderboard-csv", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || "Full leaderboard CSV upload failed.");
+      }
+
+      setStatus({
+        type: "success",
+        message: `Full leaderboard imported: ${result.rows} rows, ${result.results} track results.`,
+      });
+      window.dispatchEvent(new Event("leaderboard-snapshot-updated"));
+    } catch (error) {
+      setStatus({ type: "error", message: error?.message || "Full leaderboard CSV upload failed." });
+    } finally {
+      setFullUploading(false);
+    }
+  }
+
   return (
     <section className="mb-6 rounded-[18px] border border-[#2b1709] bg-[#101010] p-4 sm:p-5">
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -61,14 +101,22 @@ export default function LeaderboardCsvUploader() {
             <FileSpreadsheet className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#ff7a00]">Direct CSV Upload</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#ff7a00]">Leaderboard CSV Upload</p>
             <p className="mt-1 text-sm leading-relaxed text-[#c58f55]">
-              Replace one live leaderboard category without waiting for the TKO app sync.
+              Download, edit, upload, and merge live leaderboard data without waiting for the TKO app sync.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <a
+            href="/api/admin/leaderboard-csv?download=full"
+            download
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ff7a00] bg-[#ff7a00] px-4 font-mono text-[10px] font-black uppercase tracking-[0.16em] text-black transition-transform hover:scale-[1.02]"
+          >
+            <Download className="h-4 w-4" />
+            Download Full CSV
+          </a>
           {activeCategory?.detailFileName ? (
             <a
               href={`/data/leaderboard-entry-csv/${activeCategory.detailFileName}`}
@@ -91,6 +139,27 @@ export default function LeaderboardCsvUploader() {
           ) : null}
         </div>
       </div>
+
+      <form onSubmit={uploadFullCsv} className="mb-5 grid gap-3 rounded-[16px] border border-[#2b1709] bg-black/45 p-3 lg:grid-cols-[1fr_auto] lg:items-end">
+        <label className="block">
+          <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">Upload Full Leaderboard CSV</span>
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            onChange={event => setFullFile(event.target.files?.[0] || null)}
+            className="block h-12 w-full rounded-2xl border border-[#2b1709] bg-black px-3 py-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] file:mr-3 file:rounded-full file:border-0 file:bg-[#ff7a00] file:px-3 file:py-1.5 file:text-[10px] file:font-black file:uppercase file:tracking-[0.12em] file:text-black focus:border-[#ff7a00] focus:outline-none"
+          />
+        </label>
+
+        <button
+          type="submit"
+          disabled={fullUploading}
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#ff7a00] bg-[#ff7a00] px-5 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-black transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {fullUploading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {fullUploading ? "Uploading" : "Upload Full CSV"}
+        </button>
+      </form>
 
       <form onSubmit={uploadCsv} className="grid gap-3 lg:grid-cols-[minmax(220px,320px)_1fr_auto] lg:items-end">
         <label className="block">

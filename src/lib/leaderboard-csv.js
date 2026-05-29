@@ -142,6 +142,13 @@ export const ENTRY_DETAIL_CSV_HEADERS = [
   "submission_json",
 ];
 
+export const FULL_LEADERBOARD_CSV_HEADERS = [
+  ...new Set([
+    ...CSV_BASE_HEADERS,
+    ...ENTRY_DETAIL_CSV_HEADERS,
+  ]),
+];
+
 export const normalizeCsvHeader = value =>
   normalizeText(value)
     .toLowerCase()
@@ -190,6 +197,8 @@ export const getCsvHeadersForCategory = category => {
 };
 
 export const getEntryDetailCsvHeaders = () => ENTRY_DETAIL_CSV_HEADERS;
+
+export const getFullLeaderboardCsvHeaders = () => FULL_LEADERBOARD_CSV_HEADERS;
 
 export const escapeCsvValue = value => {
   const rawValue = value === null || value === undefined ? "" : String(value);
@@ -350,6 +359,18 @@ const safeParseJsonObject = value => {
   }
 };
 
+const toCsvJsonValue = value => {
+  if (value === null || value === undefined || value === "") {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return JSON.stringify(value);
+};
+
 const safeParseJsonValue = value => {
   if (!value || typeof value !== "string") {
     return value;
@@ -430,6 +451,71 @@ const getCsvDetailTimingLabel = record =>
 const getCsvDetailPoints = record => parseNumericValue(
   getFirstValue(record, ["points", "total_points", "score", "track_points", "dnf_points"])
 ) || 0;
+
+const getResultCategoryKey = record => {
+  const parsedSubmission = safeParseJsonObject(record?.submission_json);
+  return normalizeCsvCategoryKey(
+    record?.category_key ||
+      record?.categoryKey ||
+      record?.category ||
+      parsedSubmission?.category_key ||
+      parsedSubmission?.categoryKey ||
+      parsedSubmission?.category ||
+      ""
+  );
+};
+
+const getResultVehicleKey = (record, fallbackCategoryKey = "") => {
+  const parsedSubmission = safeParseJsonObject(record?.submission_json);
+  const source = { ...parsedSubmission, ...record };
+  const categoryKey = normalizeCsvCategoryKey(
+    source?.category_key ||
+      source?.categoryKey ||
+      source?.category ||
+      fallbackCategoryKey ||
+      ""
+  );
+  const stickerNumber = normalizeText(
+    source?.sticker_number ||
+      source?.stickerNumber ||
+      source?.sticker ||
+      source?.car_number ||
+      source?.carNumber ||
+      ""
+  ).replace(/^#/, "");
+  const driverName = normalizeText(source?.driver_name || source?.driverName || source?.driver || "").toLowerCase();
+
+  if (categoryKey && stickerNumber) {
+    return `${categoryKey}|${stickerNumber}`;
+  }
+
+  return categoryKey && driverName ? `${categoryKey}|${driverName}` : "";
+};
+
+const getResultMergeKey = (record, fallbackCategoryKey = "") => {
+  const parsedSubmission = safeParseJsonObject(record?.submission_json);
+  const source = { ...parsedSubmission, ...record };
+  const vehicleKey = getResultVehicleKey(record, fallbackCategoryKey);
+  const trackKey = normalizeTrackKey(
+    source?.track_name ||
+      source?.trackName ||
+      source?.track_label ||
+      source?.trackLabel ||
+      source?.track ||
+      ""
+  );
+  const dayKey = normalizeDayId(
+    source?.selected_day_id ||
+      source?.selectedDayId ||
+      source?.selected_day_label ||
+      source?.selectedDayLabel ||
+      source?.selected_day_date ||
+      source?.selectedDayDate ||
+      ""
+  );
+
+  return vehicleKey && trackKey ? `${vehicleKey}|${trackKey}|${dayKey}` : "";
+};
 
 const hasEntryDetailValue = record => {
   const timing = getFirstValue(record, [
@@ -927,8 +1013,329 @@ export function buildLeaderboardSnapshotFromCsv(csvText, requestedCategoryKey = 
   };
 }
 
+const getSnapshotCategoryRows = snapshot =>
+  (Array.isArray(snapshot?.leaderboard?.categories) ? snapshot.leaderboard.categories : [])
+    .flatMap(category => {
+      const categoryKey = normalizeCsvCategoryKey(category?.key || category?.category || category?.label || "");
+      const categoryLabel = category?.label || formatCsvCategoryLabel(categoryKey);
+      const tracks = Array.isArray(category?.tracks) ? category.tracks : [];
+
+      return (Array.isArray(category?.rows) ? category.rows : []).flatMap((row, rowIndex) => {
+        const baseRow = {
+          categoryKey,
+          categoryLabel,
+          position: rowIndex + 1,
+          stickerNumber: row?.stickerNumber || row?.sticker || row?.car_number || row?.carNumber || "",
+          teamName: row?.teamName || row?.team_name || row?.team || "",
+          driverName: row?.driverName || row?.driver_name || row?.driver || "",
+          coDriverName: row?.coDriverName || row?.codriver_name || row?.co_driver_name || row?.codriver || row?.co_driver || "",
+          totalPoints: row?.totalPoints ?? row?.total_points ?? row?.total ?? "",
+          totalTimingMs: row?.totalTimingMs ?? row?.total_timing_ms ?? "",
+          totalTimingLabel: row?.totalTimingLabel || row?.total_timing_label || "",
+        };
+        const summaries = Array.isArray(row?.trackSummaries)
+          ? row.trackSummaries
+          : row?.trackMap && typeof row.trackMap === "object"
+            ? Object.values(row.trackMap)
+            : [];
+
+        return summaries.flatMap(summary => {
+          const trackLabel = summary?.trackLabel || summary?.track_label || summary?.label || "";
+          const entries = Array.isArray(summary?.entries) ? summary.entries : [];
+
+          if (!entries.length) {
+            return [{
+              ...baseRow,
+              trackName: trackLabel,
+              trackPoints: summary?.totalPoints ?? summary?.total_points ?? "",
+              dayLabel: "",
+              timingLabel: "",
+              rankLabel: "",
+            }];
+          }
+
+          return entries.map(entry => ({
+            ...baseRow,
+            trackName: trackLabel,
+            trackPoints: parseNumericValue(entry?.pointsLabel || entry?.points_label) ?? summary?.totalPoints ?? "",
+            dayLabel: entry?.dayLabel || entry?.day_label || "",
+            timingLabel: entry?.timingLabel || entry?.timing_label || "",
+            rankLabel: entry?.rankLabel || entry?.rank_label || "",
+          }));
+        });
+      });
+    });
+
+const buildResultLookup = snapshot => {
+  const lookup = new Map();
+
+  [
+    ...(Array.isArray(snapshot?.results) ? snapshot.results : []),
+    ...(Array.isArray(snapshot?.disputes) ? snapshot.disputes : []),
+  ].forEach(record => {
+    const key = getResultMergeKey(record);
+    if (key && !lookup.has(key)) {
+      lookup.set(key, record);
+    }
+  });
+
+  return lookup;
+};
+
+const getRecordValueForExport = (record, keys) => getFirstValue({ ...safeParseJsonObject(record?.submission_json), ...record }, keys);
+
+const createFullCsvRow = ({ tableRow, record = {} }) => {
+  const parsedSubmission = safeParseJsonObject(record?.submission_json);
+  const source = { ...parsedSubmission, ...record };
+
+  return {
+    position: tableRow.position,
+    category_key: tableRow.categoryKey,
+    category_label: tableRow.categoryLabel,
+    sticker_number: getRecordValueForExport(record, ["sticker_number", "stickerNumber", "sticker", "car_number", "carNumber"]) || tableRow.stickerNumber,
+    team_name: getRecordValueForExport(record, ["team_name", "teamName", "team"]) || tableRow.teamName,
+    driver_name: getRecordValueForExport(record, ["driver_name", "driverName", "driver"]) || tableRow.driverName,
+    codriver_name: getRecordValueForExport(record, ["codriver_name", "coDriverName", "co_driver_name", "codriver", "co_driver"]) || tableRow.coDriverName,
+    total_points: tableRow.totalPoints,
+    total_timing_ms: tableRow.totalTimingMs,
+    total_timing_label: tableRow.totalTimingLabel,
+    sr_no: source?.sr_no || source?.srNo || "",
+    track_name: getRecordValueForExport(record, ["track_name", "trackName", "track_label", "trackLabel", "track"]) || tableRow.trackName,
+    selected_day_id: source?.selected_day_id || source?.selectedDayId || normalizeDayId(tableRow.dayLabel),
+    selected_day_label: source?.selected_day_label || source?.selectedDayLabel || tableRow.dayLabel,
+    selected_day_date: source?.selected_day_date || source?.selectedDayDate || "",
+    rank: source?.rank || source?.rank_label || tableRow.rankLabel,
+    points: source?.points ?? parseNumericValue(tableRow.trackPoints) ?? "",
+    completion_time: source?.completion_time || source?.completionTime || tableRow.timingLabel,
+    performance_time: source?.performance_time || source?.performanceTimeDisplay || tableRow.timingLabel,
+    performance_time_ms: source?.performance_time_ms || source?.performanceTimeMilliseconds || "",
+    total_penalties_time: source?.total_penalties_time || source?.totalPenaltiesTime || "",
+    total_time: source?.total_time || source?.totalTimeDisplay || tableRow.timingLabel,
+    total_time_ms: source?.total_time_ms || source?.totalTimeMilliseconds || "",
+    track_timer_limit_display: source?.track_timer_limit_display || source?.trackTimerLimitDisplay || "",
+    bunting_count: source?.bunting_count ?? source?.busting_count ?? source?.bustingCount ?? "",
+    bunting_penalty_time: source?.bunting_penalty_time ?? source?.busting_penalty_time ?? source?.bustingPenaltyTime ?? "",
+    pole_down_count: source?.pole_down_count ?? source?.poleDownCount ?? "",
+    pole_down_penalty_time: source?.pole_down_penalty_time ?? source?.poleDownPenaltyTime ?? "",
+    seatbelt_count: source?.seatbelt_count ?? source?.seatbeltCount ?? "",
+    seatbelt_penalty_time: source?.seatbelt_penalty_time ?? source?.seatbeltPenaltyTime ?? "",
+    ground_touch_count: source?.ground_touch_count ?? source?.groundTouchCount ?? "",
+    ground_touch_penalty_time: source?.ground_touch_penalty_time ?? source?.groundTouchPenaltyTime ?? "",
+    late_start_mode: source?.late_start_mode || source?.lateStartMode || "",
+    late_start_status: source?.late_start_status || source?.lateStartStatus || "",
+    late_start_count: source?.late_start_count ?? source?.lateStartCount ?? "",
+    late_start_penalty_time: source?.late_start_penalty_time ?? source?.lateStartPenaltyTime ?? "",
+    late_start_penalty_points: source?.late_start_penalty_points ?? source?.lateStartPenaltyPoints ?? "",
+    attempt_count: source?.attempt_count ?? source?.attemptCount ?? "",
+    attempt_penalty_time: source?.attempt_penalty_time ?? source?.attemptPenaltyTime ?? "",
+    task_skipped_count: source?.task_skipped_count ?? source?.taskSkippedCount ?? "",
+    task_skipped_penalty_time: source?.task_skipped_penalty_time ?? source?.taskSkippedPenaltyTime ?? "",
+    is_dns: source?.is_dns ?? source?.isDNS ?? "",
+    is_dnf: source?.is_dnf ?? source?.isDNF ?? "",
+    wrong_course_selected: source?.wrong_course_selected ?? source?.wrongCourseSelected ?? "",
+    fourth_attempt_selected: source?.fourth_attempt_selected ?? source?.fourthAttemptSelected ?? "",
+    time_over_selected: source?.time_over_selected ?? source?.timeOverSelected ?? "",
+    vehicle_out_of_track_selected: source?.vehicle_out_of_track_selected ?? source?.vehicleOutOfTrackSelected ?? "",
+    vehicle_breakdown_selected: source?.vehicle_breakdown_selected ?? source?.vehicleBreakdownSelected ?? "",
+    dnf_selection: source?.dnf_selection || source?.dnfSelection || "",
+    dnf_points: source?.dnf_points ?? source?.dnfPoints ?? "",
+    dispute_details: toCsvJsonValue(source?.dispute_details ?? source?.disputeDetails),
+    dispute_resolutions: toCsvJsonValue(source?.dispute_resolutions ?? source?.disputeResolutions),
+    dispute_signatures: toCsvJsonValue(source?.dispute_signatures ?? source?.disputeSignatures),
+    dispute_signed_by: toCsvJsonValue(source?.dispute_signed_by ?? source?.disputeSignedBy),
+    dispute_resolution_status: source?.dispute_resolution_status || source?.disputeResolutionStatus || "",
+    dispute_resolution_label: source?.dispute_resolution_label || source?.disputeResolutionLabel || "",
+    submission_json: record?.submission_json || (Object.keys(parsedSubmission).length ? JSON.stringify(parsedSubmission) : ""),
+  };
+};
+
+export function buildFullLeaderboardCsvFromSnapshot(snapshot) {
+  const resultLookup = buildResultLookup(snapshot);
+  const tableRows = getSnapshotCategoryRows(snapshot);
+  const csvRows = tableRows.map(tableRow => {
+    const lookupRecord = {
+      category: tableRow.categoryKey,
+      sticker_number: tableRow.stickerNumber,
+      driver_name: tableRow.driverName,
+      track_name: tableRow.trackName,
+      selected_day_label: tableRow.dayLabel,
+    };
+    const record = resultLookup.get(getResultMergeKey(lookupRecord)) || {};
+
+    return createFullCsvRow({ tableRow, record });
+  });
+
+  [
+    ...(Array.isArray(snapshot?.results) ? snapshot.results : []),
+    ...(Array.isArray(snapshot?.disputes) ? snapshot.disputes : []),
+  ].forEach(record => {
+    const key = getResultMergeKey(record);
+    const alreadyExported = tableRows.some(tableRow => getResultMergeKey({
+      category: tableRow.categoryKey,
+      sticker_number: tableRow.stickerNumber,
+      driver_name: tableRow.driverName,
+      track_name: tableRow.trackName,
+      selected_day_label: tableRow.dayLabel,
+    }) === key);
+
+    if (!alreadyExported) {
+      const categoryKey = getResultCategoryKey(record);
+      csvRows.push(createFullCsvRow({
+        tableRow: {
+          categoryKey,
+          categoryLabel: formatCsvCategoryLabel(categoryKey),
+          position: "",
+          stickerNumber: getRecordValueForExport(record, ["sticker_number", "stickerNumber", "car_number", "carNumber"]),
+          teamName: getRecordValueForExport(record, ["team_name", "teamName", "team"]),
+          driverName: getRecordValueForExport(record, ["driver_name", "driverName", "driver"]),
+          coDriverName: getRecordValueForExport(record, ["codriver_name", "coDriverName", "co_driver_name"]),
+          totalPoints: "",
+          totalTimingMs: "",
+          totalTimingLabel: "",
+          trackName: getRecordValueForExport(record, ["track_name", "trackName"]),
+          trackPoints: getRecordValueForExport(record, ["points", "total_points", "score"]),
+          dayLabel: getRecordValueForExport(record, ["selected_day_label", "selectedDayLabel"]),
+          timingLabel: getRecordValueForExport(record, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay"]),
+          rankLabel: getRecordValueForExport(record, ["rank", "rank_label"]),
+        },
+        record,
+      }));
+    }
+  });
+
+  return stringifyCsv(FULL_LEADERBOARD_CSV_HEADERS, csvRows);
+}
+
+export function buildFullLeaderboardSnapshotFromCsv(csvText) {
+  const records = parseCsv(csvText);
+  const recordsByCategory = new Map();
+
+  records.forEach(record => {
+    const categoryKey = normalizeCsvCategoryKey(getFirstValue(record, ["category_key", "category", "category_label"]));
+
+    if (!categoryKey) {
+      return;
+    }
+
+    if (!recordsByCategory.has(categoryKey)) {
+      recordsByCategory.set(categoryKey, []);
+    }
+
+    recordsByCategory.get(categoryKey).push(record);
+  });
+
+  let snapshot = null;
+
+  recordsByCategory.forEach((categoryRecords, categoryKey) => {
+    const categorySnapshot = buildLeaderboardSnapshotFromCsv(
+      stringifyCsv(FULL_LEADERBOARD_CSV_HEADERS, categoryRecords),
+      categoryKey
+    );
+    snapshot = mergeLeaderboardCategorySnapshot(snapshot, categorySnapshot);
+  });
+
+  if (!snapshot) {
+    throw new Error("Full leaderboard CSV does not contain any valid category rows.");
+  }
+
+  return {
+    ...snapshot,
+    source: "full-csv-upload",
+    generatedAt: new Date().toISOString(),
+  };
+}
+
 const getItemCategoryKey = item =>
   normalizeCsvCategoryKey(item?.category || item?.key || item?.category_key || item?.label || "");
+
+const mergeArrayByKey = (existingItems = [], incomingItems = [], getKey) => {
+  const itemMap = new Map();
+
+  existingItems.forEach(item => {
+    const key = getKey(item);
+    if (key) {
+      itemMap.set(key, item);
+    }
+  });
+
+  incomingItems.forEach(item => {
+    const key = getKey(item);
+    if (key) {
+      itemMap.set(key, item);
+    }
+  });
+
+  return [...itemMap.values()];
+};
+
+const mergeTracks = (existingTracks = [], incomingTracks = []) =>
+  mergeArrayByKey(existingTracks, incomingTracks, track =>
+    normalizeTrackKey(track?.key || track?.trackKey || track?.label || track?.name || track || "")
+  );
+
+const sortLeaderboardRows = rows =>
+  [...rows].sort((a, b) => {
+    const pointDelta = (parseNumericValue(b?.totalPoints ?? b?.total_points) || 0) - (parseNumericValue(a?.totalPoints ?? a?.total_points) || 0);
+    if (pointDelta !== 0) {
+      return pointDelta;
+    }
+
+    const timingA = parseNumericValue(a?.totalTimingMs ?? a?.total_timing_ms);
+    const timingB = parseNumericValue(b?.totalTimingMs ?? b?.total_timing_ms);
+    if (timingA !== null && timingB !== null && timingA !== timingB) {
+      return timingA - timingB;
+    }
+
+    return 0;
+  });
+
+export function mergeFullLeaderboardSnapshot(existingSnapshot, incomingSnapshot) {
+  const existing = existingSnapshot || {};
+  const categoriesByKey = new Map();
+
+  (Array.isArray(existing.leaderboard?.categories) ? existing.leaderboard.categories : []).forEach(category => {
+    const key = getItemCategoryKey(category);
+    if (key) {
+      categoriesByKey.set(key, category);
+    }
+  });
+
+  (Array.isArray(incomingSnapshot?.leaderboard?.categories) ? incomingSnapshot.leaderboard.categories : []).forEach(incomingCategory => {
+    const key = getItemCategoryKey(incomingCategory);
+    const existingCategory = categoriesByKey.get(key);
+
+    if (!key) {
+      return;
+    }
+
+    categoriesByKey.set(key, {
+      ...(existingCategory || {}),
+      ...incomingCategory,
+      tracks: mergeTracks(existingCategory?.tracks || [], incomingCategory?.tracks || incomingCategory?.trackOptions || []),
+      rows: sortLeaderboardRows(mergeArrayByKey(
+        Array.isArray(existingCategory?.rows) ? existingCategory.rows : [],
+        Array.isArray(incomingCategory?.rows) ? incomingCategory.rows : [],
+        row => getResultVehicleKey(row, key)
+      )),
+    });
+  });
+
+  return {
+    ...existing,
+    ...incomingSnapshot,
+    source: "full-csv-upload",
+    generatedAt: incomingSnapshot?.generatedAt || new Date().toISOString(),
+    teams: mergeArrayByKey(existing.teams || [], incomingSnapshot?.teams || [], item => getResultVehicleKey(item)),
+    results: mergeArrayByKey(existing.results || [], incomingSnapshot?.results || [], item => getResultMergeKey(item)),
+    disputes: mergeArrayByKey(existing.disputes || [], incomingSnapshot?.disputes || [], item => getResultMergeKey(item)),
+    categoryOptions: mergeArrayByKey(existing.categoryOptions || [], incomingSnapshot?.categoryOptions || [], getItemCategoryKey),
+    leaderboard: {
+      ...(existing.leaderboard || {}),
+      ...(incomingSnapshot?.leaderboard || {}),
+      categories: [...categoriesByKey.values()],
+    },
+  };
+}
 
 export function mergeLeaderboardCategorySnapshot(existingSnapshot, categorySnapshot) {
   const focusCategory = normalizeCsvCategoryKey(categorySnapshot?.focusCategory);

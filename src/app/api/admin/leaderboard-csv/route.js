@@ -3,8 +3,11 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { cookies } from "next/headers";
 import path from "path";
 import {
+  buildFullLeaderboardCsvFromSnapshot,
+  buildFullLeaderboardSnapshotFromCsv,
   buildLeaderboardSnapshotFromCsv,
   LEADERBOARD_CSV_CATEGORIES,
+  mergeFullLeaderboardSnapshot,
   mergeLeaderboardCategorySnapshot,
 } from "@/lib/leaderboard-csv";
 import {
@@ -156,6 +159,7 @@ async function readUploadPayload(request) {
     return {
       categoryKey: String(formData.get("categoryKey") || formData.get("category") || ""),
       csvText: file && typeof file.text === "function" ? await file.text() : "",
+      mode: String(formData.get("mode") || ""),
     };
   }
 
@@ -164,18 +168,36 @@ async function readUploadPayload(request) {
     return {
       categoryKey: String(body?.categoryKey || body?.category || ""),
       csvText: String(body?.csv || body?.csvText || ""),
+      mode: String(body?.mode || ""),
     };
   }
 
   return {
     categoryKey: request.nextUrl.searchParams.get("categoryKey") || "",
     csvText: await request.text(),
+    mode: request.nextUrl.searchParams.get("mode") || "",
   };
 }
 
-export async function GET() {
+export async function GET(request) {
   if (!(await isAdminSession())) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
+  const downloadMode = request.nextUrl.searchParams.get("download") || request.nextUrl.searchParams.get("mode") || "";
+
+  if (downloadMode === "full" || downloadMode === "full-csv") {
+    const snapshot = await readSharedSnapshot({ optional: true });
+    const csv = buildFullLeaderboardCsvFromSnapshot(snapshot || createEmptySnapshot());
+    const fileName = `live-leaderboard-full-${new Date().toISOString().slice(0, 10)}.csv`;
+
+    return new NextResponse(csv, {
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Cache-Control": "no-store",
+      },
+    });
   }
 
   return NextResponse.json({
@@ -190,7 +212,7 @@ export async function POST(request) {
   }
 
   try {
-    const { categoryKey, csvText } = await readUploadPayload(request);
+    const { categoryKey, csvText, mode } = await readUploadPayload(request);
 
     if (!csvText.trim()) {
       return NextResponse.json(
@@ -214,8 +236,13 @@ export async function POST(request) {
     const existingSnapshot = await readSharedSnapshot({ optional: true });
     const resetMarker = await getResetMarker(existingSnapshot);
     const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
-    const categorySnapshot = buildLeaderboardSnapshotFromCsv(csvText, categoryKey);
-    const mergedSnapshot = mergeLeaderboardCategorySnapshot(currentExistingSnapshot, categorySnapshot);
+    const isFullUpload = mode === "full" || mode === "full-csv" || !categoryKey;
+    const uploadSnapshot = isFullUpload
+      ? buildFullLeaderboardSnapshotFromCsv(csvText)
+      : buildLeaderboardSnapshotFromCsv(csvText, categoryKey);
+    const mergedSnapshot = isFullUpload
+      ? mergeFullLeaderboardSnapshot(currentExistingSnapshot, uploadSnapshot)
+      : mergeLeaderboardCategorySnapshot(currentExistingSnapshot, uploadSnapshot);
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
     const latestSnapshot = await readSharedSnapshot({ optional: true });
     const latestResetMarker = await getResetMarker(latestSnapshot);
@@ -275,14 +302,18 @@ export async function POST(request) {
       throw new Error("Unable to save CSV leaderboard snapshot locally.");
     }
 
-    const importedCategory = categorySnapshot.leaderboard.categories[0];
+    const importedCategory = uploadSnapshot.leaderboard.categories[0];
+    const importedRows = (uploadSnapshot.leaderboard.categories || []).reduce(
+      (total, category) => total + (category?.rows?.length || 0),
+      0
+    );
 
     return NextResponse.json({
       ok: true,
       categoryKey: importedCategory?.key || categoryKey,
-      categoryLabel: importedCategory?.label || "",
-      rows: importedCategory?.rows?.length || 0,
-      results: categorySnapshot.results.length,
+      categoryLabel: isFullUpload ? "Full leaderboard" : importedCategory?.label || "",
+      rows: importedRows,
+      results: uploadSnapshot.results.length,
       savedTo: file?.webViewLink || "/leaderboard-export.json",
       generatedAt: snapshot.generatedAt,
       cachedLocally,
