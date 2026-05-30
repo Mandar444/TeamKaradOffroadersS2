@@ -255,6 +255,52 @@ const getVehicleMergeKey = (source, fallbackCategory = "") => {
   return rowVehicleKey ? `${category || "UNKNOWN"}|row:${rowVehicleKey}` : "";
 };
 
+const normalizeMergeText = value =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+
+const getTrackMergeKey = source => {
+  const mergedSource = getMergedSource(source);
+  return normalizeMergeText(
+    mergedSource?.trackKey ||
+      mergedSource?.track_key ||
+      mergedSource?.trackName ||
+      mergedSource?.track_name ||
+      mergedSource?.trackLabel ||
+      mergedSource?.track_label ||
+      mergedSource?.track ||
+      mergedSource?.key ||
+      mergedSource?.label ||
+      ""
+  );
+};
+
+const getDayMergeKey = source => {
+  const mergedSource = getMergedSource(source);
+  return normalizeMergeText(
+    mergedSource?.selectedDayId ||
+      mergedSource?.selected_day_id ||
+      mergedSource?.selectedDayLabel ||
+      mergedSource?.selected_day_label ||
+      mergedSource?.selectedDayDate ||
+      mergedSource?.selected_day_date ||
+      mergedSource?.dayLabel ||
+      mergedSource?.day_label ||
+      mergedSource?.day ||
+      ""
+  );
+};
+
+const getResultMergeKey = (source, fallbackCategory = "") => {
+  const vehicleKey = getVehicleMergeKey(source, fallbackCategory);
+  const trackKey = getTrackMergeKey(source);
+  const dayKey = getDayMergeKey(source);
+
+  return vehicleKey && trackKey ? `${vehicleKey}|track:${trackKey}|day:${dayKey || "default"}` : "";
+};
+
 const getNumericValue = value => {
   const numericValue = Number(String(value ?? "").replace(/[^\d.-]/g, ""));
   return Number.isFinite(numericValue) ? numericValue : 0;
@@ -265,12 +311,19 @@ const hasMeaningfulText = value => {
   return Boolean(normalizedValue && normalizedValue !== "na" && normalizedValue !== "n/a" && normalizedValue !== "--");
 };
 
+const hasAnyText = value => String(value || "").trim() !== "";
+
 const hasTrackEntryData = entry =>
-  hasMeaningfulText(entry?.timingLabel || entry?.timing_label || entry?.value) ||
-  hasMeaningfulText(entry?.pointsLabel || entry?.points_label) ||
-  hasMeaningfulText(entry?.rankLabel || entry?.rank_label || entry?.rank) ||
-  getNumericValue(entry?.points) !== 0 ||
-  getNumericValue(entry?.totalPoints || entry?.total_points) !== 0;
+  Boolean(entry && typeof entry === "object" && Object.keys(entry).length) &&
+  (
+    hasAnyText(entry?.key || entry?.identityKey) ||
+    hasAnyText(entry?.dayLabel || entry?.day_label || entry?.day) ||
+    hasAnyText(entry?.timingLabel || entry?.timing_label || entry?.value) ||
+    hasAnyText(entry?.pointsLabel || entry?.points_label) ||
+    hasAnyText(entry?.rankLabel || entry?.rank_label || entry?.rank) ||
+    getNumericValue(entry?.points) !== 0 ||
+    getNumericValue(entry?.totalPoints || entry?.total_points) !== 0
+  );
 
 const hasTrackSummaryData = summary =>
   getNumericValue(summary?.totalPoints || summary?.total_points || summary?.total) !== 0 ||
@@ -320,23 +373,24 @@ const mergeCategoryOptions = (existingItems = [], incomingItems = []) => {
   return [...merged.values()];
 };
 
-const mergeItemsByVehicleData = (existingItems = [], incomingItems = [], replaceCategoryKeys, incomingVehicleKeys, shouldIncludeIncoming) => {
-  const incomingItemsToKeep = incomingItems.filter(item => {
-    const categoryKey = getCategoryKeyFromItem(item);
-    const vehicleKey = getVehicleMergeKey(item, categoryKey);
+const mergeItemsByKey = (existingItems = [], incomingItems = [], getKey, shouldIncludeIncoming = () => true) => {
+  const merged = new Map();
 
-    return replaceCategoryKeys.has(categoryKey) && incomingVehicleKeys.has(vehicleKey) && shouldIncludeIncoming(item);
+  existingItems.forEach(item => {
+    const key = getKey(item);
+    if (key) {
+      merged.set(key, item);
+    }
   });
 
-  return [
-    ...existingItems.filter(item => {
-      const categoryKey = getCategoryKeyFromItem(item);
-      const vehicleKey = getVehicleMergeKey(item, categoryKey);
+  incomingItems.filter(shouldIncludeIncoming).forEach(item => {
+    const key = getKey(item);
+    if (key) {
+      merged.set(key, { ...(merged.get(key) || {}), ...item });
+    }
+  });
 
-      return !replaceCategoryKeys.has(categoryKey) || !incomingVehicleKeys.has(vehicleKey);
-    }),
-    ...incomingItemsToKeep,
-  ];
+  return [...merged.values()];
 };
 
 const mergeTrackList = (existingTracks = [], incomingTracks = []) => {
@@ -373,6 +427,111 @@ const getAllowedIncomingRows = (existingCategory, incomingCategory, categoryKey)
   });
 };
 
+const getRowSummaries = row => {
+  const summaries = Array.isArray(row?.trackSummaries)
+    ? row.trackSummaries
+    : row?.trackSummaries && typeof row.trackSummaries === "object"
+      ? Object.values(row.trackSummaries)
+      : [];
+  const mapSummaries = row?.trackMap && typeof row.trackMap === "object"
+    ? Object.values(row.trackMap)
+    : [];
+
+  return [...summaries, ...mapSummaries].filter(Boolean);
+};
+
+const mergeEntries = (existingEntries = [], incomingEntries = []) => {
+  const merged = new Map();
+
+  existingEntries.forEach(entry => {
+    const key = normalizeMergeText(entry?.key || entry?.identityKey || `${getDayMergeKey(entry)}|${entry?.timingLabel || entry?.timing_label || ""}`);
+    if (key) {
+      merged.set(key, entry);
+    }
+  });
+
+  incomingEntries.forEach(entry => {
+    if (!hasTrackEntryData(entry)) {
+      return;
+    }
+
+    const key = normalizeMergeText(entry?.key || entry?.identityKey || `${getDayMergeKey(entry)}|${entry?.timingLabel || entry?.timing_label || ""}`);
+    if (key) {
+      merged.set(key, { ...(merged.get(key) || {}), ...entry });
+    }
+  });
+
+  return [...merged.values()];
+};
+
+const mergeSummary = (existingSummary, incomingSummary) => {
+  if (!existingSummary) {
+    return incomingSummary;
+  }
+
+  if (!hasTrackSummaryData(incomingSummary) && hasTrackSummaryData(existingSummary)) {
+    return existingSummary;
+  }
+
+  const entries = mergeEntries(existingSummary?.entries || [], incomingSummary?.entries || []);
+
+  return {
+    ...existingSummary,
+    ...incomingSummary,
+    totalPoints: getNumericValue(incomingSummary?.totalPoints ?? incomingSummary?.total_points ?? incomingSummary?.total) ||
+      getNumericValue(existingSummary?.totalPoints ?? existingSummary?.total_points ?? existingSummary?.total) ||
+      entries.reduce((total, entry) => total + getNumericValue(entry?.pointsLabel || entry?.points_label || entry?.points), 0),
+    entries,
+  };
+};
+
+const mergeRows = (existingRow, incomingRow) => {
+  if (!existingRow) {
+    return incomingRow;
+  }
+
+  if (!hasRowTrackData(incomingRow) && hasRowTrackData(existingRow)) {
+    return existingRow;
+  }
+
+  const summaries = new Map();
+
+  getRowSummaries(existingRow).forEach(summary => {
+    const key = getTrackMergeKey(summary);
+    if (key) {
+      summaries.set(key, summary);
+    }
+  });
+
+  getRowSummaries(incomingRow).forEach(summary => {
+    const key = getTrackMergeKey(summary);
+    if (key) {
+      summaries.set(key, mergeSummary(summaries.get(key), summary));
+    }
+  });
+
+  const trackSummaries = [...summaries.values()];
+  const trackMap = trackSummaries.reduce((acc, summary) => {
+    const key = getTrackMergeKey(summary);
+    if (key) {
+      acc[key] = summary;
+    }
+    return acc;
+  }, {});
+  const totalPoints = trackSummaries.reduce(
+    (total, summary) => total + getNumericValue(summary?.totalPoints ?? summary?.total_points ?? summary?.total),
+    0
+  );
+
+  return {
+    ...existingRow,
+    ...incomingRow,
+    totalPoints,
+    trackMap,
+    trackSummaries,
+  };
+};
+
 const mergeLeaderboardCategories = (existingCategories = [], incomingCategories = [], replaceCategoryKeys, incomingVehicleKeys) => {
   const categoriesByKey = new Map();
 
@@ -395,27 +554,33 @@ const mergeLeaderboardCategories = (existingCategories = [], incomingCategories 
 
     const existingCategory = categoriesByKey.get(categoryKey);
     const incomingRowsToKeep = getAllowedIncomingRows(existingCategory, incomingCategory, categoryKey);
-    const incomingRowKeys = new Set(
-      incomingRowsToKeep
-        .map(row => getVehicleMergeKey(row, categoryKey))
-        .filter(Boolean)
-    );
-
-    incomingRowKeys.forEach(key => incomingVehicleKeys.add(key));
-
     if (!existingCategory && !incomingRowsToKeep.length) {
       return;
     }
 
+    const rowsByKey = new Map();
     const existingRows = Array.isArray(existingCategory?.rows) ? existingCategory.rows : [];
-    const preservedRows = existingRows.filter(row => !incomingRowKeys.has(getVehicleMergeKey(row, categoryKey)));
-    const nextRows = [...preservedRows, ...incomingRowsToKeep];
+
+    existingRows.forEach(row => {
+      const key = getVehicleMergeKey(row, categoryKey);
+      if (key) {
+        rowsByKey.set(key, row);
+      }
+    });
+
+    incomingRowsToKeep.forEach(row => {
+      const key = getVehicleMergeKey(row, categoryKey);
+      if (key) {
+        incomingVehicleKeys.add(key);
+        rowsByKey.set(key, mergeRows(rowsByKey.get(key), row));
+      }
+    });
 
     categoriesByKey.set(categoryKey, {
       ...(existingCategory || {}),
       ...incomingCategory,
       tracks: mergeTrackList(existingCategory?.tracks || [], incomingCategory?.tracks || incomingCategory?.trackOptions || []),
-      rows: nextRows,
+      rows: [...rowsByKey.values()],
     });
   });
 
@@ -485,25 +650,22 @@ const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
     ...(existingSnapshot || {}),
     ...incomingSnapshot,
     ...(focusedCategory ? { focusCategory: focusedCategory } : {}),
-    teams: mergeItemsByVehicleData(
+    teams: mergeItemsByKey(
       existingSnapshot?.teams || [],
       incomingCategorySnapshot.teams || [],
-      replaceCategoryKeys,
-      incomingVehicleKeys,
+      item => getVehicleMergeKey(item, getCategoryKeyFromItem(item)),
       item => incomingVehicleKeys.has(getVehicleMergeKey(item, getCategoryKeyFromItem(item)))
     ),
-    results: mergeItemsByVehicleData(
+    results: mergeItemsByKey(
       existingSnapshot?.results || [],
       incomingCategorySnapshot.results || [],
-      replaceCategoryKeys,
-      incomingVehicleKeys,
+      item => getResultMergeKey(item, getCategoryKeyFromItem(item)),
       hasResultTrackData
     ),
-    disputes: mergeItemsByVehicleData(
+    disputes: mergeItemsByKey(
       existingSnapshot?.disputes || [],
       incomingCategorySnapshot.disputes || [],
-      replaceCategoryKeys,
-      incomingVehicleKeys,
+      item => getResultMergeKey(item, getCategoryKeyFromItem(item)),
       hasResultTrackData
     ),
     categoryOptions: mergeCategoryOptions(existingSnapshot?.categoryOptions || [], incomingCategorySnapshot.categoryOptions || []),
