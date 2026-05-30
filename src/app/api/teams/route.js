@@ -76,15 +76,12 @@ export async function GET() {
       catMap[normalize(CATEGORIES[key].name)] = key;
     });
 
-    // Filter: Show only Authorized teams with explicit UTR (Payment Evidence)
+    // Show verified/authorized participants. Some confirmed rows may not have
+    // a UTR in the public sheet columns, so status is the source of truth here.
     const confirmedTeams = rows
       .filter((row) => {
         const s = (row.get("status") || "").trim().toUpperCase();
-        const utr = (row.get("utr_number") || "").trim();
-        const isVerified = (s === "CONFIRMED" || s === "AUTHORIZED GRID" || s === "AUTHORIZED");
-        
-        // Strict Mode: Must be verified AND have a UTR tracked
-        return isVerified && utr !== "";
+        return ["CONFIRMED", "AUTHORIZED GRID", "AUTHORIZED", "FINALIZED"].includes(s);
       })
       .map((row) => {
         const rawCat = row.get("category");
@@ -137,6 +134,11 @@ export async function GET() {
     return NextResponse.json({ teams: uniqueTeams });
   } catch (error) {
     console.error("Teams fetch error:", error);
-    return NextResponse.json({ teams: [] });
+    return NextResponse.json({
+      teams: PUBLISHED_TEAM_ENTRIES.map(team => ({
+        ...team,
+        recordId: buildTeamId(team),
+      })),
+    });
   }
 }

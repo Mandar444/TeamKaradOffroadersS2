@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Info, RefreshCw } from "lucide-react";
+import { Info, RefreshCw, Trash2 } from "lucide-react";
 import {
   fetchLeaderboardSnapshot,
   fetchLeaderboardVisibility,
@@ -26,6 +26,106 @@ function TotalCell({ total, maxPoints }) {
     </div>
   );
 }
+
+const normalizeParticipantMatchValue = value =>
+  String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+const normalizeParticipantCompactValue = value =>
+  normalizeParticipantMatchValue(value).replace(/[^a-z0-9]/g, "");
+
+const normalizeParticipantCategoryKey = value => {
+  const normalized = String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  if (normalized === "EXTREME" || normalized === "OPEN_CATEGORY") {
+    return "OPEN";
+  }
+
+  if (normalized === "LADIES") {
+    return "LADIES_CATEGORY";
+  }
+
+  return normalized;
+};
+
+const getParticipantCarNumber = participant =>
+  String(participant?.car_number ?? participant?.sticker_number ?? participant?.stickerNumber ?? "")
+    .trim()
+    .replace(/^#/, "");
+
+const getParticipantMatchKeys = ({ categoryKey, stickerNumber, driverName, coDriverName }) => {
+  const category = normalizeParticipantCategoryKey(categoryKey);
+  const sticker = normalizeParticipantCompactValue(String(stickerNumber || "").replace(/^#/, ""));
+  const driver = normalizeParticipantCompactValue(driverName);
+  const coDriver = normalizeParticipantCompactValue(coDriverName);
+
+  return {
+    sticker: category && sticker ? `${category}|sticker|${sticker}` : "",
+    driver: category && driver ? `${category}|driver|${driver}` : "",
+    coDriver: category && coDriver ? `${category}|codriver|${coDriver}` : "",
+  };
+};
+
+const buildParticipantLookup = participants => {
+  const lookup = new Map();
+
+  participants.forEach(participant => {
+    const keys = getParticipantMatchKeys({
+      categoryKey: participant?.category,
+      stickerNumber: getParticipantCarNumber(participant),
+      driverName: participant?.driver_name,
+      coDriverName: participant?.codriver_name,
+    });
+
+    Object.values(keys).filter(Boolean).forEach(key => {
+      if (!lookup.has(key)) {
+        lookup.set(key, participant);
+      }
+    });
+  });
+
+  return lookup;
+};
+
+const getParticipantForRow = (lookup, categoryKey, row) => {
+  const keys = getParticipantMatchKeys({
+    categoryKey,
+    stickerNumber: row?.stickerNumber,
+    driverName: row?.driverName,
+    coDriverName: row?.coDriverName,
+  });
+
+  return lookup.get(keys.sticker) || lookup.get(keys.driver) || lookup.get(keys.coDriver) || null;
+};
+
+const applyParticipantTeamNames = (categories, participants) => {
+  if (!participants.length) {
+    return categories;
+  }
+
+  const lookup = buildParticipantLookup(participants);
+
+  return categories.map(category => ({
+    ...category,
+    rows: category.rows.map(row => {
+      const participant = getParticipantForRow(lookup, category.key, row);
+      const participantTeamName = normalizeParticipantMatchValue(participant?.team_name);
+
+      return participantTeamName
+        ? {
+            ...row,
+            teamName: participant.team_name,
+          }
+        : row;
+    }),
+  }));
+};
 
 function RealisticTrophyIcon({ id, className = "" }) {
   const gradientId = `trophy-metal-${id}`;
@@ -193,7 +293,15 @@ function buildDetailHref({ activeCategory, row, trackLabel, entry, returnHref = 
   return `/leaderboard/details?${params.toString()}`;
 }
 
-function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref }) {
+function TrackCell({
+  summary,
+  row,
+  trackLabel,
+  activeCategory,
+  detailReturnHref,
+  onDeleteEntry,
+  deletingEntryKey,
+}) {
   if (!summary) {
     return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">NA</span>;
   }
@@ -212,6 +320,24 @@ function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref 
           entry,
           returnHref: detailReturnHref,
         });
+        const deletePayload = {
+          key: entry?.key || "",
+          category: activeCategory?.label || activeCategory?.key || "",
+          categoryKey: activeCategory?.key || "",
+          track: trackLabel || "",
+          sticker: row?.stickerNumber || "",
+          driver: row?.driverName || "",
+          day: entry?.dayLabel || "",
+        };
+        const deleteKey = [
+          deletePayload.key,
+          deletePayload.categoryKey,
+          deletePayload.track,
+          deletePayload.sticker,
+          deletePayload.driver,
+          deletePayload.day,
+        ].filter(Boolean).join("|");
+        const deleting = deletingEntryKey === deleteKey;
 
         return (
           <div
@@ -232,6 +358,18 @@ function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref 
               <Info className="h-3.5 w-3.5" />
               Details
             </Link>
+            {onDeleteEntry ? (
+              <button
+                type="button"
+                onClick={() => onDeleteEntry(deletePayload, deleteKey)}
+                disabled={deleting}
+                className="ml-2 mt-2 inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-red-200 transition-colors hover:border-red-300 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                title="Delete uploaded track data"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {deleting ? "Deleting" : "Delete"}
+              </button>
+            ) : null}
           </div>
         );
       })}
@@ -239,7 +377,11 @@ function TrackCell({ summary, row, trackLabel, activeCategory, detailReturnHref 
   );
 }
 
-export default function LeaderboardSnapshotViewer({ respectVisibility = true, detailReturnHref = "" }) {
+export default function LeaderboardSnapshotViewer({
+  respectVisibility = true,
+  detailReturnHref = "",
+  allowAdminDelete = false,
+}) {
   const searchParams = useSearchParams();
   const tableScrollRef = useRef(null);
   const dragScrollRef = useRef({
@@ -254,6 +396,9 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
   const [selectedCategory, setSelectedCategory] = useState("");
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [deletingEntryKey, setDeletingEntryKey] = useState("");
+  const [deleteStatus, setDeleteStatus] = useState(null);
+  const [participants, setParticipants] = useState([]);
 
   const loadVisibility = useCallback(async ({ silent = false } = {}) => {
     if (!respectVisibility) {
@@ -345,6 +490,46 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     }
   }, [respectVisibility]);
 
+  const deleteTrackEntry = useCallback(async (payload, deleteKey) => {
+    if (!allowAdminDelete) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete uploaded data for #${payload.sticker || "--"} ${payload.track || "track"} ${payload.day || ""}?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingEntryKey(deleteKey);
+    setDeleteStatus(null);
+
+    try {
+      const response = await fetch("/api/admin/leaderboard-track-entry", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: payload }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || "Unable to delete uploaded data.");
+      }
+
+      setDeleteStatus({ type: "success", message: "Uploaded track data deleted." });
+      window.dispatchEvent(new Event("leaderboard-snapshot-updated"));
+    } catch (deleteError) {
+      setDeleteStatus({
+        type: "error",
+        message: deleteError?.message || "Unable to delete uploaded data.",
+      });
+    } finally {
+      setDeletingEntryKey("");
+    }
+  }, [allowAdminDelete]);
+
   useEffect(() => {
     const handleSnapshotUpdated = () => {
       refreshLeaderboard();
@@ -356,6 +541,36 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
       window.removeEventListener("leaderboard-snapshot-updated", handleSnapshotUpdated);
     };
   }, [refreshLeaderboard]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadParticipants() {
+      try {
+        const response = await fetch("/api/teams", { cache: "no-store" });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setParticipants(Array.isArray(data?.teams) ? data.teams : []);
+        }
+      } catch (participantsError) {
+        if (!cancelled) {
+          setParticipants([]);
+        }
+      }
+    }
+
+    loadParticipants();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     loadVisibility();
@@ -400,7 +615,10 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
     return () => window.clearInterval(intervalId);
   }, [leaderboardVisible, loadSnapshot, respectVisibility, visibilityLoading]);
 
-  const categories = useMemo(() => getCategoriesFromSnapshot(snapshot), [snapshot]);
+  const categories = useMemo(
+    () => applyParticipantTeamNames(getCategoriesFromSnapshot(snapshot), participants),
+    [participants, snapshot]
+  );
   const activeCategory = useMemo(() => {
     if (!categories.length) {
       return null;
@@ -586,6 +804,18 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
         </div>
       ) : null}
 
+      {deleteStatus ? (
+        <div
+          className={`mb-4 rounded-[18px] border px-4 py-4 text-[11px] font-black uppercase tracking-[0.14em] ${
+            deleteStatus.type === "success"
+              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
+              : "border-red-500/25 bg-red-500/10 text-red-200"
+          }`}
+        >
+          {deleteStatus.message}
+        </div>
+      ) : null}
+
       {!activeCategory ? (
         <div className="rounded-[18px] border border-[#2b1709] bg-[#101010] p-6 text-sm text-[#c58f55]">
           {loading ? "Loading leaderboard..." : "No leaderboard data has been synced from the app yet."}
@@ -718,6 +948,8 @@ export default function LeaderboardSnapshotViewer({ respectVisibility = true, de
                           trackLabel={trackLabel}
                           activeCategory={activeCategory}
                           detailReturnHref={detailReturnHref}
+                          onDeleteEntry={allowAdminDelete ? deleteTrackEntry : null}
+                          deletingEntryKey={deletingEntryKey}
                         />
                       </td>
                     );

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, DatabaseZap, Trophy } from "lucide-react";
 import LeaderboardSnapshotViewer from "@/components/leaderboard/LeaderboardSnapshotViewer";
-import LeaderboardCsvUploader from "@/components/leaderboard/LeaderboardCsvUploader";
+import LeaderboardTrackDataUploader from "@/components/leaderboard/LeaderboardTrackDataUploader";
 import LeaderboardVisibilityControl from "@/components/leaderboard/LeaderboardVisibilityControl";
 
 export default function AdminLeaderboardPage() {
@@ -69,7 +69,7 @@ export default function AdminLeaderboardPage() {
         </motion.div>
 
         <LeaderboardVisibilityControl />
-        <LeaderboardCsvUploader />
+        <LeaderboardTrackDataUploader />
 
         <Suspense
           fallback={
@@ -78,7 +78,11 @@ export default function AdminLeaderboardPage() {
             </div>
           }
         >
-          <LeaderboardSnapshotViewer respectVisibility={false} detailReturnHref="/admin/leaderboard" />
+          <LeaderboardSnapshotViewer
+            respectVisibility={false}
+            detailReturnHref="/admin/leaderboard"
+            allowAdminDelete
+          />
         </Suspense>
       </div>
     </div>
