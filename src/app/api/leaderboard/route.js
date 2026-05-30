@@ -36,6 +36,8 @@ const corsHeaders = {
   "Access-Control-Expose-Headers": "X-Leaderboard-Sync-Available, X-Leaderboard-Accepts-Post",
   "X-Leaderboard-Sync-Available": "true",
   "X-Leaderboard-Accepts-Post": "true",
+  "Allow": "GET, POST, DELETE, OPTIONS, HEAD",
+  "Accept-Post": "application/json, multipart/form-data, application/x-www-form-urlencoded, text/plain",
   "Access-Control-Max-Age": "86400",
   "Cache-Control": "no-store",
 };
@@ -353,6 +355,24 @@ const mergeTrackList = (existingTracks = [], incomingTracks = []) => {
   return [...trackMap.values()];
 };
 
+const getAllowedIncomingRows = (existingCategory, incomingCategory, categoryKey) => {
+  const existingRowsByKey = new Map();
+
+  (Array.isArray(existingCategory?.rows) ? existingCategory.rows : []).forEach(row => {
+    const key = getVehicleMergeKey(row, categoryKey);
+    if (key) {
+      existingRowsByKey.set(key, row);
+    }
+  });
+
+  return (Array.isArray(incomingCategory?.rows) ? incomingCategory.rows : []).filter(row => {
+    const vehicleKey = getVehicleMergeKey(row, categoryKey);
+    const existingRow = existingRowsByKey.get(vehicleKey);
+
+    return hasRowTrackData(row) || !existingRow || !hasRowTrackData(existingRow);
+  });
+};
+
 const mergeLeaderboardCategories = (existingCategories = [], incomingCategories = [], replaceCategoryKeys, incomingVehicleKeys) => {
   const categoriesByKey = new Map();
 
@@ -374,23 +394,22 @@ const mergeLeaderboardCategories = (existingCategories = [], incomingCategories 
     }
 
     const existingCategory = categoriesByKey.get(categoryKey);
-    const incomingRowsWithData = (Array.isArray(incomingCategory?.rows) ? incomingCategory.rows : [])
-      .filter(row => hasRowTrackData(row));
+    const incomingRowsToKeep = getAllowedIncomingRows(existingCategory, incomingCategory, categoryKey);
     const incomingRowKeys = new Set(
-      incomingRowsWithData
+      incomingRowsToKeep
         .map(row => getVehicleMergeKey(row, categoryKey))
         .filter(Boolean)
     );
 
     incomingRowKeys.forEach(key => incomingVehicleKeys.add(key));
 
-    if (!existingCategory && !incomingRowsWithData.length) {
+    if (!existingCategory && !incomingRowsToKeep.length) {
       return;
     }
 
     const existingRows = Array.isArray(existingCategory?.rows) ? existingCategory.rows : [];
     const preservedRows = existingRows.filter(row => !incomingRowKeys.has(getVehicleMergeKey(row, categoryKey)));
-    const nextRows = [...preservedRows, ...incomingRowsWithData];
+    const nextRows = [...preservedRows, ...incomingRowsToKeep];
 
     categoriesByKey.set(categoryKey, {
       ...(existingCategory || {}),
@@ -450,15 +469,16 @@ const mergeSnapshotCategory = (existingSnapshot, incomingSnapshot) => {
       return;
     }
 
-    (Array.isArray(category?.rows) ? category.rows : [])
-      .filter(hasRowTrackData)
-      .forEach(row => {
-        const vehicleKey = getVehicleMergeKey(row, categoryKey);
+    const existingCategory = (Array.isArray(existingSnapshot?.leaderboard?.categories) ? existingSnapshot.leaderboard.categories : [])
+      .find(existingCategoryItem => getCategoryKeyFromItem(existingCategoryItem) === categoryKey);
 
-        if (vehicleKey) {
-          incomingVehicleKeys.add(vehicleKey);
-        }
-      });
+    getAllowedIncomingRows(existingCategory, category, categoryKey).forEach(row => {
+      const vehicleKey = getVehicleMergeKey(row, categoryKey);
+
+      if (vehicleKey) {
+        incomingVehicleKeys.add(vehicleKey);
+      }
+    });
   });
 
   return {
@@ -631,6 +651,146 @@ const unwrapIncomingSnapshot = payload => {
   return payload;
 };
 
+const getFirstPayloadValue = (payload, keys) => {
+  const parsedSubmission = safeParseJsonObject(payload?.submission_json);
+  const source = { ...parsedSubmission, ...(payload || {}) };
+
+  for (const key of keys) {
+    const value = source?.[key];
+
+    if (value !== null && value !== undefined && value !== "") {
+      return value;
+    }
+  }
+
+  return "";
+};
+
+const normalizeTrackKey = value =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+
+const formatCategoryLabel = value =>
+  String(value || "")
+    .trim()
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, letter => letter.toUpperCase()) || "Category";
+
+const getSingleResultPoints = payload => {
+  const value = getFirstPayloadValue(payload, ["points", "totalPoints", "total_points", "score", "track_points", "dnf_points"]);
+  const numericValue = Number(String(value || "").replace(/[^\d.-]/g, ""));
+
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
+const isSingleLeaderboardResultPayload = payload => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload) || isLeaderboardSnapshotPayload(payload)) {
+    return false;
+  }
+
+  const category = normalizeCategoryKey(getFirstPayloadValue(payload, ["category", "categoryKey", "category_key", "categoryLabel", "category_label"]));
+  const track = getFirstPayloadValue(payload, ["track_name", "trackName", "track_label", "trackLabel", "track"]);
+  const sticker = getFirstPayloadValue(payload, ["sticker_number", "stickerNumber", "sticker", "car_number", "carNumber"]);
+  const driver = getFirstPayloadValue(payload, ["driver_name", "driverName", "driver"]);
+  const timing = getFirstPayloadValue(payload, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay", "completion_time", "completionTime"]);
+
+  return Boolean(category && track && (sticker || driver || timing || getSingleResultPoints(payload) !== 0));
+};
+
+const createSnapshotFromSingleResult = payload => {
+  const categoryKey = normalizeCategoryKey(getFirstPayloadValue(payload, ["categoryKey", "category_key", "category", "categoryLabel", "category_label"]));
+  const categoryLabel = getFirstPayloadValue(payload, ["categoryLabel", "category_label", "category"]) || formatCategoryLabel(categoryKey);
+  const trackLabel = getFirstPayloadValue(payload, ["track_name", "trackName", "track_label", "trackLabel", "track"]);
+  const trackKey = normalizeTrackKey(trackLabel);
+  const stickerNumber = String(getFirstPayloadValue(payload, ["sticker_number", "stickerNumber", "sticker", "car_number", "carNumber"]) || "").replace(/^#/, "");
+  const driverName = getFirstPayloadValue(payload, ["driver_name", "driverName", "driver"]) || "--";
+  const teamName = getFirstPayloadValue(payload, ["team_name", "teamName", "team"]) || "--";
+  const coDriverName = getFirstPayloadValue(payload, ["codriver_name", "coDriverName", "co_driver_name", "codriver", "co_driver"]) || "--";
+  const dayLabel = getFirstPayloadValue(payload, ["selected_day_label", "selectedDayLabel", "selected_day_id", "selectedDayId", "day", "day_label"]) || "D1";
+  const timingLabel = getFirstPayloadValue(payload, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay", "completion_time", "completionTime"]) || "NA";
+  const points = getSingleResultPoints(payload);
+  const rankLabel = getFirstPayloadValue(payload, ["rank", "rank_label", "rankLabel", "position"]);
+  const result = {
+    ...payload,
+    category: categoryKey,
+    category_key: categoryKey,
+    track_name: trackLabel,
+    sticker_number: stickerNumber,
+    driver_name: driverName,
+    team_name: teamName,
+    codriver_name: coDriverName,
+    selected_day_label: dayLabel,
+    total_time: timingLabel,
+    performance_time: getFirstPayloadValue(payload, ["performance_time", "performanceTimeDisplay"]) || timingLabel,
+    points,
+    rank: rankLabel,
+  };
+  const entry = {
+    key: `${categoryKey}|${trackKey}|${stickerNumber || driverName}|${dayLabel}`,
+    dayLabel,
+    dayOrder: 1,
+    timingLabel,
+    pointsLabel: `${points} pts`,
+    rankLabel: rankLabel ? (String(rankLabel).toUpperCase().startsWith("P") ? String(rankLabel).toUpperCase() : `P${rankLabel}`) : "",
+  };
+  const summary = {
+    trackKey,
+    trackLabel,
+    totalPoints: points,
+    entries: [entry],
+  };
+
+  return {
+    generatedAt: new Date().toISOString(),
+    source: "tko-app-track-upload",
+    schemaVersion: 1,
+    focusCategory: categoryKey,
+    teams: [{
+      id: `${categoryKey}-${stickerNumber || driverName}`,
+      team_name: teamName,
+      driver_name: driverName,
+      codriver_name: coDriverName,
+      car_number: stickerNumber,
+      category: categoryKey,
+      status: "ACTIVE",
+    }],
+    results: [result],
+    disputes: [],
+    categoryOptions: [{ key: categoryKey, label: categoryLabel }],
+    leaderboard: {
+      categories: [{
+        key: categoryKey,
+        label: categoryLabel,
+        tracks: [trackLabel],
+        rows: [{
+          vehicleKey: `${categoryKey}|${stickerNumber || driverName}`,
+          stickerNumber,
+          teamName,
+          driverName,
+          coDriverName,
+          totalPoints: points,
+          totalTimingMs: null,
+          totalTimingLabel: timingLabel,
+          trackMap: { [trackKey]: summary },
+          trackSummaries: [summary],
+        }],
+      }],
+    },
+  };
+};
+
+const normalizeIncomingSnapshot = payload => {
+  const unwrappedPayload = unwrapIncomingSnapshot(payload);
+
+  return isSingleLeaderboardResultPayload(unwrappedPayload)
+    ? createSnapshotFromSingleResult(unwrappedPayload)
+    : unwrappedPayload;
+};
+
 async function readOptionalJsonBody(request) {
   const contentType = request.headers.get("content-type") || "";
 
@@ -761,7 +921,7 @@ export async function POST(request) {
       );
     }
 
-    const incomingSnapshot = unwrapIncomingSnapshot(await readOptionalJsonBody(request));
+    const incomingSnapshot = normalizeIncomingSnapshot(await readOptionalJsonBody(request));
 
     if (incomingSnapshot === null || isEmptyObject(incomingSnapshot)) {
       return createUsableResponse({ skipped: true });
