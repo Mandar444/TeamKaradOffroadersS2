@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-21T16:57:34.639Z",
-  "source": "tko-app",
+  "generatedAt": "2026-05-30T02:27:03.944Z",
+  "source": "admin-leaderboard-edit",
   "schemaVersion": 1,
   "teams": [
     {
@@ -2438,7 +2438,7 @@
       "driver_name": "Aarav Patil",
       "codriver_name": "Vivaan More",
       "category": "Diesel Expert",
-      "bunting_count": 0,
+      "bunting_count": 2,
       "seatbelt_count": 0,
       "ground_touch_count": 0,
       "late_start_count": 0,
@@ -2447,17 +2447,72 @@
       "wrong_course_count": 0,
       "fourth_attempt_count": 0,
       "is_dns": 0,
-      "total_penalties_time": 0,
+      "total_penalties_time": "60",
       "performance_time": "00:01:85",
-      "total_time": "00:01:85",
+      "total_time": "01:01:85",
       "created_at": "2026-05-21 16:57:05",
       "selected_day_id": "day-1",
       "selected_day_label": "Day 1",
       "selected_day_date": "Friday, 29th May 2026",
-      "submission_json": "{\"disputeId\":null,\"source\":\"records\",\"disputeDetails\":[],\"disputeResolutions\":{},\"dispute_resolutions\":{},\"disputeSignatures\":{\"byTeam\":{\"driver\":false,\"coDriver\":false}},\"dispute_signatures\":{\"byTeam\":{\"driver\":false,\"coDriver\":false}},\"disputeSignedBy\":[],\"dispute_signed_by\":[],\"resolveDisputeCategory\":\"\",\"disputeResolutionStatus\":\"\",\"disputeResolutionLabel\":\"\",\"selectedDayId\":\"day-1\",\"selectedDayLabel\":\"Day 1\",\"selectedDayDate\":\"Friday, 29th May 2026\",\"trackName\":\"KRISHNA\",\"category\":\"Diesel Expert\",\"srNo\":\"1\",\"teamName\":\"Diesel Expert Trail Blazers 01\",\"stickerNumber\":\"401\",\"driverName\":\"Aarav Patil\",\"coDriverName\":\"Vivaan More\",\"completionTime\":\"00:01:85\",\"completionTimeMilliseconds\":1854,\"performanceTimeDisplay\":\"00:01:85\",\"trackTimerLimitSeconds\":null,\"trackTimerLimitDisplay\":\"Not set\",\"bustingCount\":\"0\",\"poleDownCount\":\"0\",\"seatbeltCount\":\"0\",\"groundTouchCount\":\"0\",\"lateStartMode\":\"\",\"lateStartStatus\":\"No\",\"lateStartPenaltyTime\":0,\"attemptCount\":\"0\",\"taskSkippedCount\":\"0\",\"isDNF\":false,\"isDNS\":false,\"wrongCourseSelected\":false,\"fourthAttemptSelected\":false,\"timeOverSelected\":false,\"vehicleOutOfTrackSelected\":false,\"vehicleBreakdownSelected\":false,\"dnfSelection\":\"\",\"dnfPoints\":0,\"bustingPenaltyTime\":0,\"poleDownPenaltyTime\":0,\"seatbeltPenaltyTime\":0,\"groundTouchPenaltyTime\":0,\"attemptPenaltyTime\":0,\"taskSkippedPenaltyTime\":0,\"totalPenaltiesTime\":0,\"totalTimeMilliseconds\":1854,\"totalTimeDisplay\":\"00:01:85\",\"selected_day_id\":\"day-1\",\"selected_day_label\":\"Day 1\",\"selected_day_date\":\"Friday, 29th May 2026\"}",
+      "submission_json": "{\"disputeId\":null,\"source\":\"records\",\"disputeDetails\":[],\"disputeResolutions\":{},\"dispute_resolutions\":{},\"disputeSignatures\":{\"byTeam\":{\"driver\":false,\"coDriver\":false}},\"dispute_signatures\":{\"byTeam\":{\"driver\":false,\"coDriver\":false}},\"disputeSignedBy\":[],\"dispute_signed_by\":[],\"resolveDisputeCategory\":\"\",\"disputeResolutionStatus\":\"\",\"disputeResolutionLabel\":\"\",\"selectedDayId\":\"day-1\",\"selectedDayLabel\":\"Day 1\",\"selectedDayDate\":\"Friday, 29th May 2026\",\"trackName\":\"KRISHNA\",\"category\":\"Diesel Expert\",\"srNo\":\"1\",\"teamName\":\"Diesel Expert Trail Blazers 01\",\"stickerNumber\":\"401\",\"driverName\":\"Aarav Patil\",\"coDriverName\":\"Vivaan More\",\"completionTime\":\"00:01:85\",\"completionTimeMilliseconds\":1850,\"performanceTimeDisplay\":\"00:01:85\",\"trackTimerLimitSeconds\":null,\"trackTimerLimitDisplay\":\"Not set\",\"bustingCount\":2,\"poleDownCount\":1,\"seatbeltCount\":0,\"groundTouchCount\":0,\"lateStartMode\":\"\",\"lateStartStatus\":\"No\",\"lateStartPenaltyTime\":0,\"attemptCount\":0,\"taskSkippedCount\":0,\"isDNF\":false,\"isDNS\":false,\"wrongCourseSelected\":false,\"fourthAttemptSelected\":false,\"timeOverSelected\":false,\"vehicleOutOfTrackSelected\":false,\"vehicleBreakdownSelected\":false,\"dnfSelection\":\"\",\"dnfPoints\":0,\"bustingPenaltyTime\":40,\"poleDownPenaltyTime\":20,\"seatbeltPenaltyTime\":0,\"groundTouchPenaltyTime\":0,\"attemptPenaltyTime\":0,\"taskSkippedPenaltyTime\":0,\"totalPenaltiesTime\":60,\"totalTimeMilliseconds\":61850,\"totalTimeDisplay\":\"01:01:85\",\"selected_day_id\":\"day-1\",\"selected_day_label\":\"Day 1\",\"selected_day_date\":\"Friday, 29th May 2026\",\"buntingCount\":2,\"lateStartPenaltyPoints\":0,\"buntingPenaltyTime\":40,\"points\":100}",
       "selectedDayId": "day-1",
       "selectedDayLabel": "Day 1",
-      "selectedDayDate": "Friday, 29th May 2026"
+      "selectedDayDate": "Friday, 29th May 2026",
+      "performanceTimeDisplay": "00:01:85",
+      "performance_time_ms": 1850,
+      "performanceTimeMilliseconds": 1850,
+      "completion_time": "00:01:85",
+      "completionTime": "00:01:85",
+      "completion_time_ms": 1850,
+      "completionTimeMilliseconds": 1850,
+      "totalPenaltiesTime": 60,
+      "totalTimeDisplay": "01:01:85",
+      "total_time_ms": 61850,
+      "totalTimeMilliseconds": 61850,
+      "busting_count": 2,
+      "buntingCount": 2,
+      "bustingCount": 2,
+      "bunting_penalty_time": 40,
+      "busting_penalty_time": 40,
+      "buntingPenaltyTime": 40,
+      "bustingPenaltyTime": 40,
+      "pole_down_count": 1,
+      "poleDownCount": 1,
+      "pole_down_penalty_time": 20,
+      "poleDownPenaltyTime": 20,
+      "seatbeltCount": 0,
+      "seatbelt_penalty_time": 0,
+      "seatbeltPenaltyTime": 0,
+      "groundTouchCount": 0,
+      "ground_touch_penalty_time": 0,
+      "groundTouchPenaltyTime": 0,
+      "late_start_mode": "",
+      "lateStartMode": "",
+      "late_start_status": "No",
+      "lateStartStatus": "No",
+      "lateStartCount": 0,
+      "late_start_penalty_time": 0,
+      "lateStartPenaltyTime": 0,
+      "late_start_penalty_points": 0,
+      "lateStartPenaltyPoints": 0,
+      "attemptCount": 0,
+      "attempt_penalty_time": 0,
+      "attemptPenaltyTime": 0,
+      "taskSkippedCount": 0,
+      "task_skipped_penalty_time": 0,
+      "taskSkippedPenaltyTime": 0,
+      "points": 100,
+      "rank": "P1",
+      "rank_label": "P1",
+      "is_dnf": 0,
+      "wrong_course_selected": 0,
+      "fourth_attempt_selected": 0,
+      "time_over_selected": 0,
+      "vehicle_out_of_track_selected": 0,
+      "vehicle_breakdown_selected": 0,
+      "dnf_selection": "",
+      "dnf_points": 0,
+      "updated_at": "2026-05-30T02:27:03.940Z"
     },
     {
       "id": 1,
@@ -2643,7 +2698,7 @@
             "driverName": "Aarav Patil",
             "coDriverName": "Vivaan More",
             "totalPoints": 100,
-            "totalTimingMs": 1850,
+            "totalTimingMs": 61850,
             "trackMap": {
               "krishna": {
                 "trackLabel": "KRISHNA",
@@ -2651,9 +2706,9 @@
                 "entries": [
                   {
                     "key": "DIESEL_EXPERT|krishna|401|aarav patil|day-1",
-                    "dayLabel": "D1",
+                    "dayLabel": "Day 1",
                     "dayOrder": 1,
-                    "timingLabel": "00:01:85",
+                    "timingLabel": "01:01:85",
                     "pointsLabel": "100 pts",
                     "rankLabel": "P1"
                   }
@@ -2697,9 +2752,9 @@
                 "entries": [
                   {
                     "key": "DIESEL_EXPERT|krishna|401|aarav patil|day-1",
-                    "dayLabel": "D1",
+                    "dayLabel": "Day 1",
                     "dayOrder": 1,
-                    "timingLabel": "00:01:85",
+                    "timingLabel": "01:01:85",
                     "pointsLabel": "100 pts",
                     "rankLabel": "P1"
                   }
@@ -2735,7 +2790,8 @@
                 "totalPoints": 0,
                 "entries": []
               }
-            ]
+            ],
+            "totalTimingLabel": "01:01:85"
           },
           {
             "vehicleKey": "DIESEL_EXPERT|402",
@@ -15426,5 +15482,9 @@
         ]
       }
     ]
+  },
+  "publicVisibility": {
+    "visible": true,
+    "updatedAt": "2026-05-21T15:42:13.825Z"
   }
 }
