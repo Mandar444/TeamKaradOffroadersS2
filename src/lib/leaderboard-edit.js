@@ -339,6 +339,7 @@ const isMatchingRecord = (record, payload) => {
 
 const updateRecord = (record, values) => {
   const submission = safeParseJsonObject(record?.submission_json);
+  const editedAt = new Date().toISOString();
   const isDns = Boolean(values.isDns);
   const isDnf = Boolean(values.isDnf);
   const wrongCourseSelected = isDnf && Boolean(values.wrongCourseSelected);
@@ -363,6 +364,13 @@ const updateRecord = (record, values) => {
   const boolValue = value => (value === true || value === "true" || value === "1" ? 1 : 0);
   const updatedSubmission = {
     ...submission,
+    source: submission.source || record?.source || "admin-leaderboard-edit",
+    adminEdited: true,
+    admin_edited: true,
+    adminEditedAt: editedAt,
+    admin_edited_at: editedAt,
+    editSource: "admin-leaderboard-edit",
+    edit_source: "admin-leaderboard-edit",
     selectedDayId: dayId,
     selectedDayLabel: dayLabel,
     selectedDayDate,
@@ -474,8 +482,13 @@ const updateRecord = (record, values) => {
     vehicle_breakdown_selected: boolValue(vehicleBreakdownSelected),
     dnf_selection: dnfSelection,
     dnf_points: dnfPoints,
+    adminEdited: true,
+    admin_edited: 1,
+    adminEditedAt: editedAt,
+    admin_edited_at: editedAt,
+    edit_source: "admin-leaderboard-edit",
     submission_json: JSON.stringify(updatedSubmission),
-    updated_at: new Date().toISOString(),
+    updated_at: editedAt,
   };
 };
 
@@ -560,6 +573,9 @@ const buildEntryFromRecord = record => ({
   timingLabel: getTimingLabel(record),
   pointsLabel: formatPointsLabel(record?.points),
   rankLabel: normalizeRankLabel(record?.rank || record?.rank_label || ""),
+  adminEdited: Boolean(record?.adminEdited || record?.admin_edited),
+  adminEditedAt: normalizeText(record?.adminEditedAt || record?.admin_edited_at || record?.updated_at || ""),
+  editSource: normalizeText(record?.editSource || record?.edit_source || ""),
 });
 
 const updateCategoryRows = (category, categoryResults) => {

@@ -415,13 +415,24 @@ function LeaderboardDetailsContent() {
   const stickerNumber = getRecordValue(record, ["sticker_number", "stickerNumber"], searchParams.get("sticker") || "--");
   const teamName = getRecordValue(record, ["team_name", "teamName", "team"], searchParams.get("team") || "--");
   const driverName = getRecordValue(record, ["driver_name", "driverName"], searchParams.get("driver") || "--");
+  const recordPoints = getRecordValue(record, ["points", "total_points"], "");
   const entry = {
-    dayLabel: searchParams.get("day") || getRecordValue(record, ["selected_day_label", "selectedDayLabel"], "--"),
+    dayLabel: isAdminMode
+      ? getRecordValue(record, ["selected_day_label", "selectedDayLabel"], searchParams.get("day") || "--")
+      : searchParams.get("day") || getRecordValue(record, ["selected_day_label", "selectedDayLabel"], "--"),
     timingLabel:
-      searchParams.get("timing") ||
-      getRecordValue(record, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay"], "--"),
-    pointsLabel: searchParams.get("points") || "--",
-    rankLabel: searchParams.get("rank") || "--",
+      isAdminMode
+        ? getRecordValue(record, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay"], searchParams.get("timing") || "--")
+        : searchParams.get("timing") ||
+          getRecordValue(record, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay"], "--"),
+    pointsLabel: isAdminMode
+      ? recordPoints !== "" && recordPoints !== "--"
+        ? `${recordPoints} pts`
+        : searchParams.get("points") || "--"
+      : searchParams.get("points") || "--",
+    rankLabel: isAdminMode
+      ? getRecordValue(record, ["rank", "rank_label"], searchParams.get("rank") || "--")
+      : searchParams.get("rank") || "--",
   };
   const detailSections = record
     ? [
@@ -495,6 +506,7 @@ function LeaderboardDetailsContent() {
 
               {isAdminMode && record ? (
                 <AdminEditForm
+                  key={record?.updated_at || record?.adminEditedAt || record?.admin_edited_at || record?.__identityKey}
                   record={record}
                   entry={entry}
                   searchParams={searchParams}

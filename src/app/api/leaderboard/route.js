@@ -354,6 +354,28 @@ const hasMeaningfulText = value => {
 
 const hasAnyText = value => String(value || "").trim() !== "";
 
+const isAdminEditedFlag = value =>
+  value === true ||
+  value === 1 ||
+  value === "1" ||
+  String(value || "").trim().toLowerCase() === "true" ||
+  String(value || "").trim().toLowerCase() === "yes";
+
+const isAdminEditSource = value => normalizeMergeText(value) === "admin_leaderboard_edit";
+
+const isAdminEditedItem = item => {
+  const source = getMergedSource(item);
+
+  return (
+    isAdminEditedFlag(source?.adminEdited ?? source?.admin_edited) ||
+    isAdminEditSource(source?.editSource || source?.edit_source)
+  );
+};
+
+const isAdminEditedEntry = entry =>
+  isAdminEditedFlag(entry?.adminEdited ?? entry?.admin_edited) ||
+  isAdminEditSource(entry?.editSource || entry?.edit_source);
+
 const hasTrackEntryData = entry =>
   Boolean(entry && typeof entry === "object" && Object.keys(entry).length) &&
   (
@@ -427,6 +449,12 @@ const mergeItemsByKey = (existingItems = [], incomingItems = [], getKey, shouldI
   incomingItems.filter(shouldIncludeIncoming).forEach(item => {
     const key = getKey(item);
     if (key) {
+      const existingItem = merged.get(key);
+
+      if (existingItem && isAdminEditedItem(existingItem) && !isAdminEditedItem(item)) {
+        return;
+      }
+
       merged.set(key, { ...(merged.get(key) || {}), ...item });
     }
   });
@@ -498,6 +526,12 @@ const mergeEntries = (existingEntries = [], incomingEntries = []) => {
 
     const key = normalizeMergeText(entry?.key || entry?.identityKey || `${getDayMergeKey(entry)}|${entry?.timingLabel || entry?.timing_label || ""}`);
     if (key) {
+      const existingEntry = merged.get(key);
+
+      if (existingEntry && isAdminEditedEntry(existingEntry) && !isAdminEditedEntry(entry)) {
+        return;
+      }
+
       merged.set(key, { ...(merged.get(key) || {}), ...entry });
     }
   });
@@ -515,13 +549,14 @@ const mergeSummary = (existingSummary, incomingSummary) => {
   }
 
   const entries = mergeEntries(existingSummary?.entries || [], incomingSummary?.entries || []);
+  const entriesTotalPoints = entries.reduce((total, entry) => total + getNumericValue(entry?.pointsLabel || entry?.points_label || entry?.points), 0);
 
   return {
     ...existingSummary,
     ...incomingSummary,
-    totalPoints: getNumericValue(incomingSummary?.totalPoints ?? incomingSummary?.total_points ?? incomingSummary?.total) ||
+    totalPoints: entries.length ? entriesTotalPoints : getNumericValue(incomingSummary?.totalPoints ?? incomingSummary?.total_points ?? incomingSummary?.total) ||
       getNumericValue(existingSummary?.totalPoints ?? existingSummary?.total_points ?? existingSummary?.total) ||
-      entries.reduce((total, entry) => total + getNumericValue(entry?.pointsLabel || entry?.points_label || entry?.points), 0),
+      0,
     entries,
   };
 };
