@@ -30,6 +30,15 @@ const parseNumber = value => {
   return Number.isFinite(numericValue) ? numericValue : 0;
 };
 
+const parseOptionalNumber = value => {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const numericValue = Number(String(value).replace(/[^\d.-]/g, ""));
+  return Number.isFinite(numericValue) ? numericValue : null;
+};
+
 const parseTimingMs = value => {
   const rawValue = normalizeText(value);
 
@@ -93,6 +102,34 @@ const parsePenaltySeconds = value => {
 };
 
 const formatPointsLabel = value => `${parseNumber(value)} pts`;
+
+const getTrackPlacementPoints = placement => {
+  if (placement <= 0) {
+    return 0;
+  }
+
+  if (placement === 1) {
+    return 100;
+  }
+
+  if (placement === 2 || placement === 3) {
+    return 90;
+  }
+
+  if (placement === 4) {
+    return 87;
+  }
+
+  if (placement === 5) {
+    return 84;
+  }
+
+  if (placement === 6) {
+    return 81;
+  }
+
+  return Math.max(0, 81 - (placement - 6));
+};
 
 const normalizeRankLabel = value => {
   const rank = normalizeText(value);
@@ -213,8 +250,48 @@ const getTrackKeyFromRecord = record =>
 const getSummaryKey = summary =>
   normalizeTrackKey(summary?.trackKey || summary?.track_key || summary?.trackLabel || summary?.track_label || summary?.label || "");
 
-const getEntryKey = entry =>
-  normalizeText(entry?.key || entry?.identityKey || `${getDayKey(entry)}|${entry?.timingLabel || entry?.timing_label || ""}`).toLowerCase();
+const isTruthy = value =>
+  value === true ||
+  value === 1 ||
+  value === "1" ||
+  normalizeText(value).toLowerCase() === "true" ||
+  normalizeText(value).toLowerCase() === "yes";
+
+const isDnsResult = record =>
+  isTruthy(record?.is_dns ?? record?.isDNS ?? record?.isDns) ||
+  normalizeText(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay)
+    .toUpperCase() === "DNS";
+
+const isDnfResult = record =>
+  isTruthy(record?.is_dnf ?? record?.isDNF ?? record?.isDnf) ||
+  normalizeText(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay)
+    .toUpperCase()
+    .startsWith("DNF");
+
+const getRecordTimingMs = record =>
+  parseOptionalNumber(record?.total_time_ms ?? record?.totalTimeMilliseconds) ??
+  parseTimingMs(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay);
+
+const getTimingLabel = record => {
+  const label = normalizeText(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay);
+
+  if (isDnsResult(record)) {
+    return "DNS";
+  }
+
+  if (label) {
+    return label;
+  }
+
+  if (isDnfResult(record)) {
+    const reason = normalizeText(record?.dnf_selection || record?.dnfSelection);
+    return reason ? `DNF - ${reason}` : "DNF";
+  }
+
+  return "NA";
+};
+
+const getStickerSortValue = record => parseOptionalNumber(getRecordSticker(record)) ?? Number.MAX_SAFE_INTEGER;
 
 const getRecordIdentityKeys = record => [
   normalizeResultIdentityKey(record),
@@ -391,74 +468,118 @@ const updateRecord = (record, values) => {
   };
 };
 
-const updateCategoryRows = (category, updatedRecord, payload) => {
-  const categoryKey = normalizeCategoryKey(category?.key || category?.category || category?.label || "");
-  const trackKey = getTrackKeyFromRecord(updatedRecord);
-  const vehicleKey = getVehicleKey(updatedRecord, categoryKey);
-  const points = parseNumber(updatedRecord.points);
-  const timingLabel = normalizeText(updatedRecord.total_time || updatedRecord.totalTimeDisplay || updatedRecord.performance_time);
-  const dayLabel = normalizeText(updatedRecord.selected_day_label || updatedRecord.selectedDayLabel || payload.day || "");
-  const rankLabel = normalizeRankLabel(updatedRecord.rank || updatedRecord.rank_label || "");
+const applyScoringToTrackResults = (results, categoryKey, trackKey) => {
+  const targetRecords = results
+    .map((record, index) => ({
+      record,
+      index,
+      timingMs: getRecordTimingMs(record),
+      isDns: isDnsResult(record),
+      isDnf: isDnfResult(record),
+    }))
+    .filter(item => getRecordCategoryKey(item.record) === categoryKey && getTrackKeyFromRecord(item.record) === trackKey);
 
-  const rows = (Array.isArray(category?.rows) ? category.rows : []).map(row => {
-    if (getVehicleKey(row, categoryKey) !== vehicleKey) {
-      return row;
+  const sortedRecords = [...targetRecords].sort((left, right) => {
+    const leftGroup = left.isDns ? 2 : left.isDnf || left.timingMs === null ? 1 : 0;
+    const rightGroup = right.isDns ? 2 : right.isDnf || right.timingMs === null ? 1 : 0;
+
+    if (leftGroup !== rightGroup) {
+      return leftGroup - rightGroup;
     }
 
-    const summaries = Array.isArray(row.trackSummaries) ? row.trackSummaries : [];
+    if (left.timingMs !== null && right.timingMs !== null && left.timingMs !== right.timingMs) {
+      return left.timingMs - right.timingMs;
+    }
+
+    const stickerDelta = getStickerSortValue(left.record) - getStickerSortValue(right.record);
+    if (stickerDelta !== 0) {
+      return stickerDelta;
+    }
+
+    return left.index - right.index;
+  });
+
+  let completedPlacement = 0;
+  const scoringByRecord = new Map();
+
+  sortedRecords.forEach((item, index) => {
+    const isCompletedTimedResult = !item.isDns && !item.isDnf && item.timingMs !== null;
+    const rank = normalizeRankLabel(index + 1);
+    let points = 0;
+
+    if (isCompletedTimedResult) {
+      completedPlacement += 1;
+      points = getTrackPlacementPoints(completedPlacement);
+    } else if (item.isDnf) {
+      points = parseNumber(item.record?.dnf_points ?? item.record?.dnfPoints);
+    }
+
+    scoringByRecord.set(item.record, { points, rank });
+  });
+
+  return results.map(record => {
+    const scoring = scoringByRecord.get(record);
+
+    if (!scoring) {
+      return record;
+    }
+
+    const submission = safeParseJsonObject(record?.submission_json);
+
+    return {
+      ...record,
+      points: scoring.points,
+      rank: scoring.rank,
+      rank_label: scoring.rank,
+      submission_json: JSON.stringify({
+        ...submission,
+        points: scoring.points,
+        rank: scoring.rank,
+        rankLabel: scoring.rank,
+      }),
+      updated_at: new Date().toISOString(),
+    };
+  });
+};
+
+const buildEntryFromRecord = record => ({
+  key: normalizeResultIdentityKey(record),
+  dayLabel: normalizeText(record?.selected_day_label || record?.selectedDayLabel || ""),
+  dayOrder: parseOptionalNumber(record?.selected_day_id || record?.selectedDayId || record?.selected_day_label || record?.selectedDayLabel) || 1,
+  timingLabel: getTimingLabel(record),
+  pointsLabel: formatPointsLabel(record?.points),
+  rankLabel: normalizeRankLabel(record?.rank || record?.rank_label || ""),
+});
+
+const updateCategoryRows = (category, categoryResults) => {
+  const categoryKey = normalizeCategoryKey(category?.key || category?.category || category?.label || "");
+
+  const rows = (Array.isArray(category?.rows) ? category.rows : []).map(row => {
+    const vehicleKey = getVehicleKey(row, categoryKey);
+    const summaries = Array.isArray(row.trackSummaries)
+      ? row.trackSummaries
+      : row.trackMap && typeof row.trackMap === "object"
+        ? Object.values(row.trackMap)
+        : [];
     const nextSummaries = summaries.map(summary => {
-      if (getSummaryKey(summary) !== trackKey) {
+      const summaryTrackKey = getSummaryKey(summary);
+      const matchingResults = categoryResults.filter(record =>
+        getVehicleKey(record, categoryKey) === vehicleKey && getTrackKeyFromRecord(record) === summaryTrackKey
+      );
+
+      if (!matchingResults.length) {
         return summary;
       }
 
-      const entries = Array.isArray(summary.entries) ? summary.entries : [];
-      const nextEntries = entries.length
-        ? entries.map(entry => {
-            const entryDay = normalizeText(entry.dayLabel || entry.day_label || "").toLowerCase();
-            if (payload.key && entry.key !== payload.key && getEntryKey(entry) !== normalizeText(payload.key).toLowerCase()) {
-              return entry;
-            }
-
-            if (!payload.key && dayLabel && entryDay && entryDay !== dayLabel.toLowerCase()) {
-              return entry;
-            }
-
-            return {
-              ...entry,
-              dayLabel,
-              timingLabel,
-              pointsLabel: formatPointsLabel(points),
-              rankLabel,
-            };
-          })
-        : [{
-            key: payload.key || normalizeResultIdentityKey(updatedRecord),
-            dayLabel,
-            dayOrder: 1,
-            timingLabel,
-            pointsLabel: formatPointsLabel(points),
-            rankLabel,
-          }];
-      const hasMatchedEntry = nextEntries.some(entry =>
-        (payload.key && (entry.key === payload.key || getEntryKey(entry) === normalizeText(payload.key).toLowerCase())) ||
-        (!payload.key && normalizeText(entry.dayLabel).toLowerCase() === dayLabel.toLowerCase())
-      );
-      const finalEntries = hasMatchedEntry
-        ? nextEntries
-        : [...nextEntries, {
-            key: payload.key || normalizeResultIdentityKey(updatedRecord),
-            dayLabel,
-            dayOrder: nextEntries.length + 1,
-            timingLabel,
-            pointsLabel: formatPointsLabel(points),
-            rankLabel,
-          }];
-      const totalPoints = finalEntries.reduce((total, entry) => total + parseNumber(entry.pointsLabel), 0);
+      const entries = matchingResults
+        .map(buildEntryFromRecord)
+        .sort((left, right) => (left.dayOrder || 0) - (right.dayOrder || 0));
+      const totalPoints = entries.reduce((total, entry) => total + parseNumber(entry.pointsLabel), 0);
 
       return {
         ...summary,
         totalPoints,
-        entries: finalEntries,
+        entries,
       };
     });
     const totalPoints = nextSummaries.reduce((total, summary) => total + parseNumber(summary.totalPoints), 0);
@@ -471,7 +592,7 @@ const updateCategoryRows = (category, updatedRecord, payload) => {
       ...row,
       totalPoints,
       totalTimingMs: timingValues.length ? timingValues.reduce((total, value) => total + value, 0) : row.totalTimingMs ?? null,
-      totalTimingLabel: timingLabel || row.totalTimingLabel || "",
+      totalTimingLabel: timingValues.length ? formatTimingMs(timingValues.reduce((total, value) => total + value, 0)) : row.totalTimingLabel || "",
       trackMap: nextSummaries.reduce((acc, summary) => {
         const key = getSummaryKey(summary);
         if (key) {
@@ -509,15 +630,18 @@ export function updateLeaderboardTrackResult(snapshot, payload) {
   }
 
   const updatedRecord = updateRecord(results[resultIndex], payload.values || {});
-  const nextResults = results.map((record, index) => (index === resultIndex ? updatedRecord : record));
+  const updatedCategoryKey = getRecordCategoryKey(updatedRecord);
+  const updatedTrackKey = getTrackKeyFromRecord(updatedRecord);
+  const editedResults = results.map((record, index) => (index === resultIndex ? updatedRecord : record));
+  const nextResults = applyScoringToTrackResults(editedResults, updatedCategoryKey, updatedTrackKey);
   const nextDisputes = Array.isArray(existingSnapshot.disputes)
     ? existingSnapshot.disputes.map(record => (isMatchingRecord(record, payload) ? updateRecord(record, payload.values || {}) : record))
     : [];
-  const updatedCategoryKey = getRecordCategoryKey(updatedRecord);
   const categories = (Array.isArray(existingSnapshot.leaderboard?.categories) ? existingSnapshot.leaderboard.categories : [])
     .map(category => {
       const categoryKey = normalizeCategoryKey(category?.key || category?.category || category?.label || "");
-      return categoryKey === updatedCategoryKey ? updateCategoryRows(category, updatedRecord, payload) : category;
+      const categoryResults = nextResults.filter(record => getRecordCategoryKey(record) === categoryKey);
+      return categoryKey === updatedCategoryKey ? updateCategoryRows(category, categoryResults) : category;
     });
 
   return {
