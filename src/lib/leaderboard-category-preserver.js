@@ -132,3 +132,55 @@ export function preserveMissingLeaderboardCategories(primarySnapshot, fallbackSn
 export function hasMoreLeaderboardCategories(leftSnapshot, rightSnapshot) {
   return getSnapshotCategoryKeys(rightSnapshot).size > getSnapshotCategoryKeys(leftSnapshot).size;
 }
+
+const DUMMY_NAME_PATTERNS = [
+  /\bTrail Blazers\b/i,
+  /\bRidge Runners\b/i,
+  /\bMud Masters\b/i,
+  /\bRock Crawlers\b/i,
+  /\bValley Torque\b/i,
+  /\bSummit Seekers\b/i,
+  /\bRiver Raiders\b/i,
+  /\bJungle Kings\b/i,
+  /\bDesert Stormers\b/i,
+  /\bHill Hunters\b/i,
+];
+
+const getTeamName = item =>
+  normalizeText(item?.teamName || item?.team_name || item?.team || "");
+
+const hasDummyName = item => DUMMY_NAME_PATTERNS.some(pattern => pattern.test(getTeamName(item)));
+
+export function isSeedLeaderboardSnapshot(snapshot) {
+  const teams = Array.isArray(snapshot?.teams) ? snapshot.teams : [];
+  const rows = getSnapshotCategories(snapshot).flatMap(category => getCategoryRows(category));
+  const namedItems = [...teams, ...rows].filter(item => getTeamName(item));
+
+  if (!namedItems.length) {
+    return false;
+  }
+
+  const dummyNameCount = namedItems.filter(hasDummyName).length;
+
+  return dummyNameCount >= 5 && dummyNameCount / namedItems.length > 0.35;
+}
+
+export function stripSeedLeaderboardSnapshot(snapshot) {
+  if (!isSeedLeaderboardSnapshot(snapshot)) {
+    return snapshot;
+  }
+
+  return {
+    ...(snapshot || {}),
+    generatedAt: null,
+    source: "cleaned-seed-leaderboard",
+    teams: [],
+    results: [],
+    disputes: [],
+    categoryOptions: [],
+    leaderboard: {
+      ...(snapshot?.leaderboard || {}),
+      categories: [],
+    },
+  };
+}
