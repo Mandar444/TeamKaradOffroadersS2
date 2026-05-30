@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Info, Pencil, RefreshCw, Trash2 } from "lucide-react";
+import { CATEGORY_PREFIXES } from "@/config/pricing";
 import {
   fetchLeaderboardSnapshot,
   fetchLeaderboardVisibility,
@@ -52,6 +53,34 @@ const normalizeParticipantCategoryKey = value => {
   }
 
   return normalized;
+};
+
+const getStickerPrefixForCategory = categoryKey => {
+  const normalized = normalizeParticipantCategoryKey(categoryKey);
+
+  if (normalized === "LADIES_CATEGORY") {
+    return CATEGORY_PREFIXES.LADIES || "LC";
+  }
+
+  return CATEGORY_PREFIXES[normalized] || "";
+};
+
+const formatDisplayStickerNumber = (categoryKey, stickerNumber) => {
+  const rawSticker = String(stickerNumber || "")
+    .trim()
+    .replace(/^#/, "")
+    .replace(/\s+/g, "")
+    .toUpperCase();
+
+  if (!rawSticker) {
+    return "";
+  }
+
+  if (/^[A-Z]+/.test(rawSticker)) {
+    return rawSticker;
+  }
+
+  return `${getStickerPrefixForCategory(categoryKey)}${rawSticker}`;
 };
 
 const getParticipantCarNumber = participant =>
@@ -928,7 +957,9 @@ export default function LeaderboardSnapshotViewer({
                     <PositionCell position={rowIndex + 1} />
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
-                    <span className="font-mono text-[17px] font-black text-[#fff7ef]">#{row.stickerNumber || "--"}</span>
+                    <span className="font-mono text-[17px] font-black text-[#fff7ef]">
+                      #{formatDisplayStickerNumber(activeCategory?.key, row.stickerNumber) || "--"}
+                    </span>
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.teamName}</p>

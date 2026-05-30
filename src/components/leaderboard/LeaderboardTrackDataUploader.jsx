@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Clock, Minus, Plus, RefreshCw, Send, Upload } from "lucide-react";
+import { CATEGORY_PREFIXES } from "@/config/pricing";
 import { LEADERBOARD_CSV_CATEGORIES } from "@/lib/leaderboard-csv";
 
 const COUNTERS = [
@@ -53,6 +54,34 @@ const getParticipantSticker = participant =>
   String(participant?.car_number || participant?.sticker_number || participant?.stickerNumber || "")
     .trim()
     .replace(/^#/, "");
+
+const getStickerPrefixForCategory = categoryKey => {
+  const normalized = normalizeCategoryKey(categoryKey);
+
+  if (normalized === "LADIES_CATEGORY") {
+    return CATEGORY_PREFIXES.LADIES || "LC";
+  }
+
+  return CATEGORY_PREFIXES[normalized] || "";
+};
+
+const formatStickerNumber = (categoryKey, stickerNumber) => {
+  const rawSticker = String(stickerNumber || "")
+    .trim()
+    .replace(/^#/, "")
+    .replace(/\s+/g, "")
+    .toUpperCase();
+
+  if (!rawSticker) {
+    return "";
+  }
+
+  if (/^[A-Z]+/.test(rawSticker)) {
+    return rawSticker;
+  }
+
+  return `${getStickerPrefixForCategory(categoryKey)}${rawSticker}`;
+};
 
 const INITIAL_FORM = {
   team_name: "",
@@ -255,7 +284,7 @@ export default function LeaderboardTrackDataUploader() {
 
     resetEntryFields({
       team_name: String(participant.team_name || "").toUpperCase(),
-      sticker_number: getParticipantSticker(participant).toUpperCase(),
+      sticker_number: formatStickerNumber(participant.category || selectedCategory, getParticipantSticker(participant)),
       driver_name: String(participant.driver_name || "").toUpperCase(),
       codriver_name: String(participant.codriver_name || "").toUpperCase(),
     });
@@ -359,7 +388,7 @@ export default function LeaderboardTrackDataUploader() {
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#ff7a00]">Track Data Upload</p>
           <p className="mt-1 text-sm leading-relaxed text-[#c58f55]">
-            Add or update one track result. Points and track ranking are recalculated after submit.
+            Add missing tablet data for one category and track. Points and track ranking are recalculated after submit.
           </p>
         </div>
         <button
@@ -368,7 +397,7 @@ export default function LeaderboardTrackDataUploader() {
           className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#ff7a00] bg-[#ff7a00] px-5 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-black transition-transform hover:scale-[1.02]"
         >
           <Upload className="h-4 w-4" />
-          Upload Data
+          Add Missing Data
           <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
       </div>
@@ -443,7 +472,7 @@ export default function LeaderboardTrackDataUploader() {
                       : "No participants in this category"}
                 </option>
                 {categoryParticipants.map(participant => {
-                  const sticker = getParticipantSticker(participant);
+                  const sticker = formatStickerNumber(participant.category || selectedCategory, getParticipantSticker(participant));
                   const label = [
                     sticker ? `#${sticker}` : "",
                     participant.driver_name || "Driver",
@@ -634,7 +663,7 @@ export default function LeaderboardTrackDataUploader() {
             </>
           ) : (
             <div className="rounded-[18px] border border-[#ff7a00]/25 bg-[#ff7a00]/10 px-4 py-5 text-center font-mono text-[11px] font-black uppercase tracking-[0.16em] text-[#ffb35c]">
-              Select category, track, and driver record to enter manual leaderboard data.
+              Select category, track, and driver record to add missing leaderboard data.
             </div>
           )}
 
