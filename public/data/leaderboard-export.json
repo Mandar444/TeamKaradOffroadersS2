@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-30T12:45:36.087Z",
-  "source": "admin-track-entry-delete",
+  "generatedAt": null,
+  "source": "tko-app-reset",
   "schemaVersion": 1,
   "teams": [],
   "results": [],
@@ -9,9 +9,12 @@
   "leaderboard": {
     "categories": []
   },
-  "focusCategory": "",
   "publicVisibility": {
-    "visible": true,
-    "updatedAt": "2026-05-21T15:42:13.825Z"
+    "visible": false,
+    "updatedAt": "2026-05-30T12:45:47.416Z"
+  },
+  "liveDataReset": {
+    "version": "23b3adf1-fe6e-4add-96f2-2ed589311cc8",
+    "resetAt": "2026-05-30T13:11:53.814Z"
   }
 }

@@ -8,7 +8,7 @@ import {
   normalizeShortIdentityKey,
 } from "@/lib/leaderboard-snapshot";
 
-const POINTS_BY_PLACE = [100, 90, 90, 87, 84, 81];
+const POINTS_BY_PLACE = [100, 95, 90, 87, 84, 81];
 
 const normalizeText = value => String(value || "").trim();
 
@@ -283,6 +283,13 @@ const DNF_REASON_FIELDS = [
   { key: "time_over_selected", camelKey: "timeOverSelected", label: "TIME OVER" },
 ];
 
+const ALLOWED_DNF_POINTS = new Set([20, 50]);
+
+const getDnfPoints = value => {
+  const points = Math.max(0, parseNumericValue(value) || 0);
+  return ALLOWED_DNF_POINTS.has(points) ? points : 0;
+};
+
 const getDnfReasonFlags = payload =>
   DNF_REASON_FIELDS.reduce((acc, field) => {
     acc[field.key] = parseBooleanValue(payload?.[field.key] ?? payload?.[field.camelKey]);
@@ -299,9 +306,10 @@ const createInputRecord = (payload, category, track) => {
   const isDns = parseBooleanValue(payload.is_dns ?? payload.isDNS);
   const dnfReasonFlags = getDnfReasonFlags(payload);
   const dnfSelection = getDnfSelection(payload, dnfReasonFlags);
-  const dnfPoints = Math.max(0, parseNumericValue(payload.dnf_points ?? payload.dnfPoints) || 0);
+  const dnfPoints = getDnfPoints(payload.dnf_points ?? payload.dnfPoints);
   const isDnf = !isDns && (
     parseBooleanValue(payload.is_dnf ?? payload.isDNF) ||
+    dnfPoints > 0 ||
     dnfSelection ||
     Object.values(dnfReasonFlags).some(Boolean)
   );
@@ -576,7 +584,7 @@ const rescoreTrackResults = (results, categoryKey, trackKey) => {
     const points = item.isDns
       ? 0
       : item.isDnf
-        ? Math.max(0, parseNumericValue(item.record?.dnf_points ?? item.record?.dnfPoints) || 0)
+        ? getDnfPoints(item.record?.dnf_points ?? item.record?.dnfPoints)
         : getPointsForPlace(timedPlace + 1);
 
     if (!item.isDns && !item.isDnf) {
@@ -936,7 +944,7 @@ export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload
     const points = item.isDns
       ? 0
       : item.isDnf
-        ? Math.max(0, parseNumericValue(item.record?.dnf_points ?? item.record?.dnfPoints) || 0)
+        ? getDnfPoints(item.record?.dnf_points ?? item.record?.dnfPoints)
         : getPointsForPlace(timedPlace + 1);
 
     if (!item.isDns && !item.isDnf) {

@@ -37,6 +37,7 @@ const INITIAL_FORM = {
   attempt_count: 0,
   task_skipped_count: 0,
   dnf_selection: "",
+  is_dnf: false,
   dnf_points: "",
   wrong_course_selected: false,
   fourth_attempt_selected: false,
@@ -143,8 +144,8 @@ export default function LeaderboardTrackDataUploader() {
       return "DNS";
     }
 
-    if (form.dnf_selection) {
-      return `DNF - ${form.dnf_selection}`;
+    if (form.dnf_selection || form.is_dnf) {
+      return form.dnf_selection ? `DNF - ${form.dnf_selection}` : "DNF";
     }
 
     const completionMs = parseTimingMs(form.completion_time);
@@ -155,7 +156,7 @@ export default function LeaderboardTrackDataUploader() {
     return penaltySeconds > 0
       ? formatTimingMs(completionMs + penaltySeconds * 1000)
       : form.completion_time.trim();
-  }, [form.completion_time, form.dnf_selection, form.is_dns, penaltySeconds]);
+  }, [form.completion_time, form.dnf_selection, form.is_dnf, form.is_dns, penaltySeconds]);
 
   const updateForm = (key, value) => {
     setForm(current => ({ ...current, [key]: value }));
@@ -169,6 +170,7 @@ export default function LeaderboardTrackDataUploader() {
       return {
         ...current,
         ...resetReasons,
+        is_dnf: !isSelected,
         dnf_selection: isSelected ? "" : reason.value,
         dnf_points: isSelected ? "" : current.dnf_points || "20",
         [reason.key]: !isSelected,
@@ -180,6 +182,7 @@ export default function LeaderboardTrackDataUploader() {
   const selectDnfPoints = points => {
     setForm(current => ({
       ...current,
+      is_dnf: true,
       dnf_points: String(points),
       is_dns: false,
     }));
@@ -192,6 +195,7 @@ export default function LeaderboardTrackDataUploader() {
       ...(checked
         ? {
             dnf_selection: "",
+            is_dnf: false,
             dnf_points: "",
             wrong_course_selected: false,
             fourth_attempt_selected: false,
@@ -447,7 +451,7 @@ export default function LeaderboardTrackDataUploader() {
                   value={form.completion_time}
                   onChange={event => updateForm("completion_time", event.target.value)}
                   placeholder="00:18:24"
-                  disabled={form.is_dns || Boolean(form.dnf_selection)}
+                  disabled={form.is_dns || form.is_dnf || Boolean(form.dnf_selection)}
                   className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-white px-3 font-mono text-[14px] font-black text-slate-950 outline outline-1 outline-[#ff7a00]/60 focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
                 />
               </label>
@@ -457,7 +461,7 @@ export default function LeaderboardTrackDataUploader() {
                   value={computedTotalTime}
                   readOnly
                   placeholder="Auto from completion"
-                  disabled={form.is_dns || Boolean(form.dnf_selection)}
+                  disabled={form.is_dns || form.is_dnf || Boolean(form.dnf_selection)}
                   className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-white px-3 font-mono text-[14px] font-black text-slate-950 outline outline-1 outline-[#ff7a00]/60 focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00] disabled:opacity-70"
                 />
               </label>

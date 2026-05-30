@@ -328,9 +328,32 @@ export const normalizeRow = row => {
   };
 };
 
+const sortLeaderboardRows = rows =>
+  [...rows].sort((left, right) => {
+    const pointDelta = (Number(right.totalPoints) || 0) - (Number(left.totalPoints) || 0);
+
+    if (pointDelta !== 0) {
+      return pointDelta;
+    }
+
+    if (left.totalTimingMs !== null && right.totalTimingMs !== null && left.totalTimingMs !== right.totalTimingMs) {
+      return left.totalTimingMs - right.totalTimingMs;
+    }
+
+    if (left.totalTimingMs !== null) {
+      return -1;
+    }
+
+    if (right.totalTimingMs !== null) {
+      return 1;
+    }
+
+    return normalizeText(left.driverName).localeCompare(normalizeText(right.driverName));
+  });
+
 export const normalizeCategory = category => {
   const rawRows = Array.isArray(category?.rows) ? category.rows : [];
-  const rows = rawRows.map(normalizeRow);
+  const rows = sortLeaderboardRows(rawRows.map(normalizeRow));
   const tracks = [];
   const seenTracks = new Set();
   const configuredTracks = Array.isArray(category?.tracks)

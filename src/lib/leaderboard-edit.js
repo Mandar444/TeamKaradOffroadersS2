@@ -103,6 +103,13 @@ const parsePenaltySeconds = value => {
 
 const formatPointsLabel = value => `${parseNumber(value)} pts`;
 
+const ALLOWED_DNF_POINTS = new Set([20, 50]);
+
+const getDnfPoints = value => {
+  const points = parseNumber(value);
+  return ALLOWED_DNF_POINTS.has(points) ? points : 0;
+};
+
 const getTrackPlacementPoints = placement => {
   if (placement <= 0) {
     return 0;
@@ -112,7 +119,11 @@ const getTrackPlacementPoints = placement => {
     return 100;
   }
 
-  if (placement === 2 || placement === 3) {
+  if (placement === 2) {
+    return 95;
+  }
+
+  if (placement === 3) {
     return 90;
   }
 
@@ -336,7 +347,7 @@ const updateRecord = (record, values) => {
   const vehicleOutOfTrackSelected = isDnf && Boolean(values.vehicleOutOfTrackSelected);
   const vehicleBreakdownSelected = isDnf && Boolean(values.vehicleBreakdownSelected);
   const dnfSelection = isDnf ? normalizeText(values.dnfSelection || submission.dnfSelection || record?.dnf_selection || "") : "";
-  const dnfPoints = isDnf ? parseNumber(values.dnfPoints ?? submission.dnfPoints ?? record?.dnf_points) : 0;
+  const dnfPoints = isDnf ? getDnfPoints(values.dnfPoints ?? submission.dnfPoints ?? record?.dnf_points) : 0;
   const hasSubmittedPoints = values.points !== null && values.points !== undefined && values.points !== "";
   const points = isDnf && !hasSubmittedPoints ? dnfPoints : parseNumber(values.points);
   const performanceTime = normalizeText(values.performanceTime || values.timing || record?.performance_time || record?.performanceTimeDisplay || record?.total_time || record?.totalTimeDisplay);
@@ -511,7 +522,7 @@ const applyScoringToTrackResults = (results, categoryKey, trackKey) => {
       completedPlacement += 1;
       points = getTrackPlacementPoints(completedPlacement);
     } else if (item.isDnf) {
-      points = parseNumber(item.record?.dnf_points ?? item.record?.dnfPoints);
+      points = getDnfPoints(item.record?.dnf_points ?? item.record?.dnfPoints);
     }
 
     scoringByRecord.set(item.record, { points, rank });
