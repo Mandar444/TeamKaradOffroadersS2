@@ -78,7 +78,10 @@ export default function AdminLoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="ENTER SECURITY KEY"
-                      className="h-16 pl-14 bg-white/5 border-white/5 rounded-2xl text-xl font-heading tracking-[0.2em] focus:bg-white/10 transition-all text-white placeholder:opacity-20"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      className="h-16 pl-14 bg-white/5 border-white/5 rounded-2xl text-xl tracking-[0.08em] normal-case focus:bg-white/10 transition-all text-white placeholder:opacity-20"
                     />
                  </div>
               </div>
