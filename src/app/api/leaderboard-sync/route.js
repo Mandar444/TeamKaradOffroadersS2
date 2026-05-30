@@ -25,6 +25,7 @@ import {
   isSameLeaderboardResetMarker,
   readLeaderboardResetMarker,
 } from "@/lib/leaderboard-reset-store";
+import { preserveMissingLeaderboardCategories } from "@/lib/leaderboard-category-preserver";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -1054,7 +1055,9 @@ async function readSharedSnapshot({ optional = false } = {}) {
 
   for (const attempt of attempts) {
     try {
-      return await attempt();
+      const snapshot = await attempt();
+      const localSnapshot = await readLocalSnapshot().catch(() => null);
+      return preserveMissingLeaderboardCategories(snapshot, localSnapshot);
     } catch (error) {
       if (!optional) {
         console.warn("[LEADERBOARD] Snapshot storage read failed:", error?.message || error);
