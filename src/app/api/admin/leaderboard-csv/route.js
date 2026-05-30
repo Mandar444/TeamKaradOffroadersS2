@@ -28,8 +28,8 @@ import {
   readLeaderboardResetMarker,
 } from "@/lib/leaderboard-reset-store";
 import {
+  cleanStoredLeaderboardSnapshot,
   preserveMissingLeaderboardCategories,
-  stripSeedLeaderboardSnapshot,
 } from "@/lib/leaderboard-category-preserver";
 
 export const runtime = "nodejs";
@@ -140,7 +140,7 @@ async function readSharedSnapshot({ optional = false } = {}) {
     try {
       const snapshot = await attempt();
       const localSnapshot = await readLocalSnapshot().catch(() => null);
-      return stripSeedLeaderboardSnapshot(preserveMissingLeaderboardCategories(snapshot, localSnapshot));
+      return cleanStoredLeaderboardSnapshot(preserveMissingLeaderboardCategories(snapshot, localSnapshot));
     } catch (error) {
       if (!optional) {
         console.warn("[LEADERBOARD CSV] Snapshot storage read failed:", error?.message || error);

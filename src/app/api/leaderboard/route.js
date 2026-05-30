@@ -26,8 +26,8 @@ import {
   readLeaderboardResetMarker,
 } from "@/lib/leaderboard-reset-store";
 import {
+  cleanStoredLeaderboardSnapshot,
   preserveMissingLeaderboardCategories,
-  stripSeedLeaderboardSnapshot,
 } from "@/lib/leaderboard-category-preserver";
 
 export const runtime = "nodejs";
@@ -1111,7 +1111,7 @@ async function readSharedSnapshot({ optional = false } = {}) {
     try {
       const snapshot = await attempt();
       const localSnapshot = await readLocalSnapshot().catch(() => null);
-      snapshots.push(stripSeedLeaderboardSnapshot(preserveMissingLeaderboardCategories(snapshot, localSnapshot)));
+      snapshots.push(cleanStoredLeaderboardSnapshot(preserveMissingLeaderboardCategories(snapshot, localSnapshot)));
     } catch (error) {
       if (!optional) {
         console.warn("[LEADERBOARD] Snapshot storage read failed:", error?.message || error);
@@ -1152,13 +1152,19 @@ export async function POST(request) {
       );
     }
 
-    const existingSnapshot = stripSeedLeaderboardSnapshot(await readSharedSnapshot({ optional: true }));
+    const existingSnapshot = cleanStoredLeaderboardSnapshot(await readSharedSnapshot({ optional: true }));
     const resetMarker = await getResetMarker(existingSnapshot);
     const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
     const mergedSnapshot = currentExistingSnapshot
       ? mergeSnapshotCategory(currentExistingSnapshot, incomingSnapshot)
       : incomingSnapshot;
-    const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(mergedSnapshot), resetMarker);
+    const snapshot = applyLeaderboardResetMarker(
+      await preserveLeaderboardVisibility({
+        ...mergedSnapshot,
+        generatedAt: new Date().toISOString(),
+      }),
+      resetMarker
+    );
     const latestSnapshot = await readSharedSnapshot({ optional: true });
     const latestResetMarker = await getResetMarker(latestSnapshot);
 

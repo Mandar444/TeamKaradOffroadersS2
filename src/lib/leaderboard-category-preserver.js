@@ -1,4 +1,5 @@
 const normalizeText = value => String(value || "").trim();
+const LIVE_LEADERBOARD_CLEANUP_CUTOFF_MS = Date.parse("2026-05-30T10:52:05.246Z");
 
 const normalizeCategoryKey = value => {
   const normalized = normalizeText(value)
@@ -183,4 +184,50 @@ export function stripSeedLeaderboardSnapshot(snapshot) {
       categories: [],
     },
   };
+}
+
+const hasLeaderboardData = snapshot =>
+  (Array.isArray(snapshot?.teams) && snapshot.teams.length > 0) ||
+  (Array.isArray(snapshot?.results) && snapshot.results.length > 0) ||
+  (Array.isArray(snapshot?.disputes) && snapshot.disputes.length > 0) ||
+  getSnapshotCategories(snapshot).some(category => getCategoryRows(category).length > 0);
+
+const isSnapshotBeforeLiveCleanup = snapshot => {
+  if (!snapshot || !hasLeaderboardData(snapshot)) {
+    return false;
+  }
+
+  const generatedAt = normalizeText(snapshot?.generatedAt || snapshot?.updatedAt || "");
+
+  if (!generatedAt) {
+    return true;
+  }
+
+  const snapshotTime = Date.parse(generatedAt);
+
+  return Number.isFinite(snapshotTime) && snapshotTime < LIVE_LEADERBOARD_CLEANUP_CUTOFF_MS;
+};
+
+export function stripStaleLeaderboardSnapshot(snapshot) {
+  if (!isSnapshotBeforeLiveCleanup(snapshot)) {
+    return snapshot;
+  }
+
+  return {
+    ...(snapshot || {}),
+    generatedAt: null,
+    source: "live-leaderboard-erased",
+    teams: [],
+    results: [],
+    disputes: [],
+    categoryOptions: [],
+    leaderboard: {
+      ...(snapshot?.leaderboard || {}),
+      categories: [],
+    },
+  };
+}
+
+export function cleanStoredLeaderboardSnapshot(snapshot) {
+  return stripStaleLeaderboardSnapshot(stripSeedLeaderboardSnapshot(snapshot));
 }
