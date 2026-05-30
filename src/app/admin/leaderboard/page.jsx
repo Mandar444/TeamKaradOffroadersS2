@@ -81,6 +81,7 @@ export default function AdminLeaderboardPage() {
           <LeaderboardSnapshotViewer
             respectVisibility={false}
             detailReturnHref="/admin/leaderboard"
+            allowAdminEdit
             allowAdminDelete
           />
         </Suspense>

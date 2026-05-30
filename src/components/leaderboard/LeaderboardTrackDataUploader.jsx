@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Clock, Minus, Plus, RefreshCw, Send, Upload } from "lucide-react";
 import { LEADERBOARD_CSV_CATEGORIES } from "@/lib/leaderboard-csv";
 
@@ -22,6 +22,37 @@ const DNF_REASONS = [
 ];
 
 const DNF_POINTS = [20, 50];
+
+const normalizeCategoryKey = value => {
+  const normalized = String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  if (normalized === "EXTREME" || normalized === "OPEN_CATEGORY") {
+    return "OPEN";
+  }
+
+  if (normalized === "LADIES") {
+    return "LADIES_CATEGORY";
+  }
+
+  return normalized;
+};
+
+const getParticipantId = participant =>
+  participant?.recordId ||
+  [
+    normalizeCategoryKey(participant?.category),
+    String(participant?.car_number || "").trim(),
+    String(participant?.driver_name || "").trim().toLowerCase(),
+  ].join("|");
+
+const getParticipantSticker = participant =>
+  String(participant?.car_number || participant?.sticker_number || participant?.stickerNumber || "")
+    .trim()
+    .replace(/^#/, "");
 
 const INITIAL_FORM = {
   team_name: "",
@@ -127,6 +158,9 @@ export default function LeaderboardTrackDataUploader() {
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(LEADERBOARD_CSV_CATEGORIES[0]?.key || "");
   const [selectedTrack, setSelectedTrack] = useState(LEADERBOARD_CSV_CATEGORIES[0]?.tracks?.[0] || "");
+  const [participants, setParticipants] = useState([]);
+  const [participantsLoading, setParticipantsLoading] = useState(false);
+  const [selectedParticipantId, setSelectedParticipantId] = useState("");
   const [form, setForm] = useState(INITIAL_FORM);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(null);
@@ -134,6 +168,14 @@ export default function LeaderboardTrackDataUploader() {
   const activeCategory = useMemo(
     () => LEADERBOARD_CSV_CATEGORIES.find(category => category.key === selectedCategory) || LEADERBOARD_CSV_CATEGORIES[0],
     [selectedCategory]
+  );
+  const categoryParticipants = useMemo(
+    () => participants.filter(participant => normalizeCategoryKey(participant?.category) === selectedCategory),
+    [participants, selectedCategory]
+  );
+  const selectedParticipant = useMemo(
+    () => categoryParticipants.find(participant => getParticipantId(participant) === selectedParticipantId) || null,
+    [categoryParticipants, selectedParticipantId]
   );
   const penaltySeconds = useMemo(
     () => COUNTERS.reduce((total, item) => total + (Number(form[item.key]) || 0) * item.seconds, 0),
@@ -160,6 +202,64 @@ export default function LeaderboardTrackDataUploader() {
 
   const updateForm = (key, value) => {
     setForm(current => ({ ...current, [key]: value }));
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadParticipants() {
+      setParticipantsLoading(true);
+
+      try {
+        const response = await fetch("/api/teams", { cache: "no-store" });
+        const data = response.ok ? await response.json() : {};
+
+        if (!cancelled) {
+          setParticipants(Array.isArray(data?.teams) ? data.teams : []);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setParticipants([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setParticipantsLoading(false);
+        }
+      }
+    }
+
+    if (open) {
+      loadParticipants();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  const resetEntryFields = identityFields => {
+    setForm({
+      ...INITIAL_FORM,
+      ...identityFields,
+    });
+  };
+
+  const selectParticipant = participantId => {
+    const participant = categoryParticipants.find(item => getParticipantId(item) === participantId) || null;
+    setSelectedParticipantId(participantId);
+
+    if (!participant) {
+      resetEntryFields({});
+      return;
+    }
+
+    resetEntryFields({
+      team_name: String(participant.team_name || "").toUpperCase(),
+      sticker_number: getParticipantSticker(participant).toUpperCase(),
+      driver_name: String(participant.driver_name || "").toUpperCase(),
+      codriver_name: String(participant.codriver_name || "").toUpperCase(),
+    });
+    setStatus(null);
   };
 
   const selectDnfReason = reason => {
@@ -210,6 +310,8 @@ export default function LeaderboardTrackDataUploader() {
   const selectCategory = category => {
     setSelectedCategory(category.key);
     setSelectedTrack(category.tracks?.[0] || "");
+    setSelectedParticipantId("");
+    resetEntryFields({});
     setStatus(null);
   };
 
@@ -241,6 +343,7 @@ export default function LeaderboardTrackDataUploader() {
         type: "success",
         message: `${activeCategory?.label || "Category"} ${selectedTrack} saved. Leaderboard refreshed.`,
       });
+      setSelectedParticipantId("");
       setForm(INITIAL_FORM);
       window.dispatchEvent(new Event("leaderboard-snapshot-updated"));
     } catch (error) {
@@ -320,25 +423,65 @@ export default function LeaderboardTrackDataUploader() {
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-4">
-            {[
-              ["Team Name", "team_name"],
-              ["Sticker No", "sticker_number"],
-              ["Driver Name", "driver_name"],
-              ["Co-Driver Name", "codriver_name"],
-            ].map(([label, key]) => (
-              <label key={key} className="block">
-                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">{label}</span>
-                <input
-                  value={form[key]}
-                  onChange={event => updateForm(key, event.target.value.toUpperCase())}
-                  required={key !== "codriver_name"}
-                  className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 transition-colors placeholder:text-[#5f4326] focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
-                />
-              </label>
-            ))}
+          <div>
+            <div className="mb-3 flex items-center gap-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#7f8ca3]">Participant Record</p>
+              <div className="h-px flex-1 bg-[#7f8ca3]/45" />
+            </div>
+            <label className="block">
+              <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">Driver Name</span>
+              <select
+                value={selectedParticipantId}
+                onChange={event => selectParticipant(event.target.value)}
+                className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 transition-colors focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
+              >
+                <option value="">
+                  {participantsLoading
+                    ? "Loading participants..."
+                    : categoryParticipants.length
+                      ? "Select driver"
+                      : "No participants in this category"}
+                </option>
+                {categoryParticipants.map(participant => {
+                  const sticker = getParticipantSticker(participant);
+                  const label = [
+                    sticker ? `#${sticker}` : "",
+                    participant.driver_name || "Driver",
+                    participant.team_name || "Team",
+                  ].filter(Boolean).join(" - ");
+
+                  return (
+                    <option key={getParticipantId(participant)} value={getParticipantId(participant)}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+
+            {selectedParticipant ? (
+              <div className="mt-4 grid gap-3 md:grid-cols-4">
+                {[
+                  ["Team Name", "team_name"],
+                  ["Sticker No", "sticker_number"],
+                  ["Driver Name", "driver_name"],
+                  ["Co-Driver Name", "codriver_name"],
+                ].map(([label, key]) => (
+                  <label key={key} className="block">
+                    <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">{label}</span>
+                    <input
+                      value={form[key]}
+                      readOnly
+                      className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 placeholder:text-[#5f4326]"
+                    />
+                  </label>
+                ))}
+              </div>
+            ) : null}
           </div>
 
+          {selectedParticipant ? (
+            <>
           {["Penalties", "Skipped"].map(group => (
             <div key={group}>
               <div className="mb-3 flex items-center gap-3">
@@ -487,6 +630,13 @@ export default function LeaderboardTrackDataUploader() {
             {saving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             {saving ? "Saving" : "Submit"}
           </button>
+
+            </>
+          ) : (
+            <div className="rounded-[18px] border border-[#ff7a00]/25 bg-[#ff7a00]/10 px-4 py-5 text-center font-mono text-[11px] font-black uppercase tracking-[0.16em] text-[#ffb35c]">
+              Select category, track, and driver record to enter manual leaderboard data.
+            </div>
+          )}
 
           {status ? (
             <div

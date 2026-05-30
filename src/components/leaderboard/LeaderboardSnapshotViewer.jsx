@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Info, RefreshCw, Trash2 } from "lucide-react";
+import { Info, Pencil, RefreshCw, Trash2 } from "lucide-react";
 import {
   fetchLeaderboardSnapshot,
   fetchLeaderboardVisibility,
@@ -299,6 +299,7 @@ function TrackCell({
   trackLabel,
   activeCategory,
   detailReturnHref,
+  allowAdminEdit,
   onDeleteEntry,
   deletingEntryKey,
 }) {
@@ -358,6 +359,16 @@ function TrackCell({
               <Info className="h-3.5 w-3.5" />
               Details
             </Link>
+            {allowAdminEdit ? (
+              <Link
+                href={detailHref}
+                className="ml-2 mt-2 inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-400/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-sky-100 transition-colors hover:border-sky-200 hover:bg-sky-500 hover:text-white"
+                title="Edit leaderboard record"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
+              </Link>
+            ) : null}
             {onDeleteEntry ? (
               <button
                 type="button"
@@ -381,6 +392,7 @@ export default function LeaderboardSnapshotViewer({
   respectVisibility = true,
   detailReturnHref = "",
   allowAdminDelete = false,
+  allowAdminEdit = false,
 }) {
   const searchParams = useSearchParams();
   const tableScrollRef = useRef(null);
@@ -948,6 +960,7 @@ export default function LeaderboardSnapshotViewer({
                           trackLabel={trackLabel}
                           activeCategory={activeCategory}
                           detailReturnHref={detailReturnHref}
+                          allowAdminEdit={allowAdminEdit}
                           onDeleteEntry={allowAdminDelete ? deleteTrackEntry : null}
                           deletingEntryKey={deletingEntryKey}
                         />
