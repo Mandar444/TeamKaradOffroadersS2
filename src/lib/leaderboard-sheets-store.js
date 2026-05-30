@@ -4,6 +4,7 @@ const LEADERBOARD_SHEET_NAME = process.env.GOOGLE_LEADERBOARD_SHEET_NAME || "Liv
 const SNAPSHOT_RECORD_KEY = "leaderboard_snapshot";
 const CHUNK_SIZE = 45000;
 const LEADERBOARD_HEADERS = ["record_key", "chunk_index", "chunk", "updated_at"];
+const QUOTA_RETRY_DELAYS_MS = [2500, 7500, 15000];
 
 export const hasLeaderboardSheetsConfig = () =>
   Boolean(process.env.GOOGLE_SHEET_ID && process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
@@ -52,6 +53,40 @@ const chunkText = value => {
   return chunks.length ? chunks : [""];
 };
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const isQuotaError = error => {
+  const status = error?.response?.status || error?.status || error?.code;
+  const message = String(error?.message || error || "").toLowerCase();
+
+  return (
+    Number(status) === 429 ||
+    message.includes("[429]") ||
+    message.includes("quota exceeded") ||
+    message.includes("rate limit")
+  );
+};
+
+const withQuotaRetry = async operation => {
+  let lastError = null;
+
+  for (let attempt = 0; attempt <= QUOTA_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+
+      if (!isQuotaError(error) || attempt >= QUOTA_RETRY_DELAYS_MS.length) {
+        throw error;
+      }
+
+      await sleep(QUOTA_RETRY_DELAYS_MS[attempt]);
+    }
+  }
+
+  throw lastError;
+};
+
 export async function readLeaderboardSnapshotFromSheets() {
   const sheet = await getLeaderboardSheet();
   const rows = await sheet.getRows();
@@ -73,25 +108,21 @@ export async function readLeaderboardSnapshotFromSheets() {
 }
 
 export async function writeLeaderboardSnapshotToSheets(snapshot) {
-  const sheet = await getLeaderboardSheet();
-  const rows = await sheet.getRows();
-  const existingRows = rows.filter(row => row.get("record_key") === SNAPSHOT_RECORD_KEY);
-
-  for (const row of existingRows) {
-    await row.delete();
-  }
-
   const updatedAt = new Date().toISOString();
   const chunks = chunkText(JSON.stringify(snapshot));
+  const chunkRows = chunks.map((chunk, index) => ({
+    record_key: SNAPSHOT_RECORD_KEY,
+    chunk_index: String(index),
+    chunk,
+    updated_at: updatedAt,
+  }));
 
-  for (const [index, chunk] of chunks.entries()) {
-    await sheet.addRow({
-      record_key: SNAPSHOT_RECORD_KEY,
-      chunk_index: String(index),
-      chunk,
-      updated_at: updatedAt,
-    });
-  }
+  const sheet = await withQuotaRetry(() => getLeaderboardSheet());
+
+  await withQuotaRetry(async () => {
+    await sheet.clearRows({ start: 2 });
+    await sheet.addRows(chunkRows, { raw: true });
+  });
 
   return {
     id: `${LEADERBOARD_SHEET_NAME}:${SNAPSHOT_RECORD_KEY}`,
