@@ -72,6 +72,43 @@ const getStorageMode = () => {
   return "local-files";
 };
 
+async function persistLeaderboardSnapshot(snapshot) {
+  const warnings = [];
+  const cachedLocally = await trySaveLocalSnapshot(snapshot);
+  let sheetsFile = null;
+  let driveFile = null;
+
+  if (hasSheetsConfig()) {
+    try {
+      sheetsFile = await writeLeaderboardSnapshotToSheets(snapshot);
+    } catch (sheetsError) {
+      warnings.push(`Google Sheets save failed: ${sheetsError?.message || sheetsError}`);
+      console.warn("[LEADERBOARD] Sheets sync failed:", sheetsError?.message || sheetsError);
+    }
+  }
+
+  if (hasDriveConfig()) {
+    try {
+      driveFile = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, JSON.stringify(snapshot, null, 2));
+    } catch (driveError) {
+      warnings.push(`Google Drive save failed: ${driveError?.message || driveError}`);
+      console.warn("[LEADERBOARD] Drive sync failed:", driveError?.message || driveError);
+    }
+  }
+
+  if (!cachedLocally && !sheetsFile?.id && !driveFile?.id) {
+    throw new Error(warnings.join(" | ") || "Unable to save leaderboard snapshot.");
+  }
+
+  return {
+    cachedLocally,
+    file: sheetsFile || driveFile,
+    warnings,
+    persistedToSheets: Boolean(sheetsFile?.id),
+    persistedToDrive: Boolean(driveFile?.id),
+  };
+}
+
 const createEmptySnapshot = () => ({
   generatedAt: null,
   source: "tko-app-reset",
@@ -1040,6 +1077,18 @@ const getCurrentSnapshot = (snapshot, resetMarker) =>
     ? snapshot
     : applyLeaderboardResetMarker(createEmptySnapshot(), resetMarker);
 
+const getSnapshotTime = snapshot => {
+  const timestamp = Date.parse(snapshot?.generatedAt || snapshot?.updatedAt || "");
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const getSnapshotCategoryCount = snapshot =>
+  Array.isArray(snapshot?.leaderboard?.categories)
+    ? snapshot.leaderboard.categories.length
+    : Array.isArray(snapshot?.categories)
+      ? snapshot.categories.length
+      : 0;
+
 async function readSharedSnapshot({ optional = false } = {}) {
   const attempts = [];
 
@@ -1053,16 +1102,29 @@ async function readSharedSnapshot({ optional = false } = {}) {
 
   attempts.push(() => readLocalSnapshot());
 
+  const snapshots = [];
+
   for (const attempt of attempts) {
     try {
       const snapshot = await attempt();
       const localSnapshot = await readLocalSnapshot().catch(() => null);
-      return preserveMissingLeaderboardCategories(snapshot, localSnapshot);
+      snapshots.push(preserveMissingLeaderboardCategories(snapshot, localSnapshot));
     } catch (error) {
       if (!optional) {
         console.warn("[LEADERBOARD] Snapshot storage read failed:", error?.message || error);
       }
     }
+  }
+
+  if (snapshots.length) {
+    return snapshots.sort((left, right) => {
+      const timeDelta = getSnapshotTime(right) - getSnapshotTime(left);
+      if (timeDelta !== 0) {
+        return timeDelta;
+      }
+
+      return getSnapshotCategoryCount(right) - getSnapshotCategoryCount(left);
+    })[0];
   }
 
   if (optional) {
@@ -1074,18 +1136,6 @@ async function readSharedSnapshot({ optional = false } = {}) {
 
 export async function POST(request) {
   try {
-    if (IS_VERCEL && !hasSheetsConfig() && !hasDriveConfig()) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Persistent Google Sheets or Google Drive storage is required on Vercel to preserve multiple leaderboard categories.",
-          detail: "Temporary Vercel storage cannot reliably merge category-by-category uploads. Configure GOOGLE_SHEET_ID, GOOGLE_CLIENT_EMAIL, and GOOGLE_PRIVATE_KEY.",
-          storageMode: getStorageMode(),
-        },
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
     const incomingSnapshot = normalizeIncomingSnapshot(await readOptionalJsonBody(request));
 
     if (incomingSnapshot === null || isEmptyObject(incomingSnapshot)) {
@@ -1120,49 +1170,7 @@ export async function POST(request) {
       );
     }
 
-    const cachedLocally = hasDriveConfig() ? await trySaveLocalSnapshot(snapshot) : (await trySaveLocalSnapshot(snapshot));
-
-    let file = null;
-    if (hasSheetsConfig()) {
-      try {
-        file = await writeLeaderboardSnapshotToSheets(snapshot);
-      } catch (sheetsError) {
-        if (IS_VERCEL) {
-          return NextResponse.json(
-            {
-              ok: false,
-              error: "Unable to persist leaderboard data to Google Sheets. Check spreadsheet sharing and service account permissions.",
-              detail: sheetsError?.message || null,
-              cachedLocally,
-            },
-            { status: 500, headers: corsHeaders }
-          );
-        }
-
-        throw sheetsError;
-      }
-    } else if (hasDriveConfig()) {
-      try {
-        const payload = JSON.stringify(snapshot, null, 2);
-        file = await upsertJsonToDrive(LEADERBOARD_FILE_NAME, payload);
-      } catch (driveError) {
-        console.warn("[LEADERBOARD] Drive sync failed:", driveError.message);
-
-        if (IS_VERCEL) {
-          return NextResponse.json(
-            {
-              ok: false,
-              error: "Unable to persist leaderboard data to Google Drive. Check Drive credentials and folder permissions.",
-              detail: driveError?.message || null,
-              cachedLocally,
-            },
-            { status: 500, headers: corsHeaders }
-          );
-        }
-      }
-    } else if (!cachedLocally) {
-      throw new Error("Unable to save leaderboard snapshot locally.");
-    }
+    const persistence = await persistLeaderboardSnapshot(snapshot);
 
     return NextResponse.json(
       {
@@ -1173,13 +1181,14 @@ export async function POST(request) {
         syncAvailable: true,
         acceptsPost: true,
         canSync: true,
-        savedTo: file?.webViewLink || "/leaderboard-export.json",
+        savedTo: persistence.file?.webViewLink || "/leaderboard-export.json",
         generatedAt: snapshot?.generatedAt || null,
-        cachedLocally,
+        cachedLocally: persistence.cachedLocally,
         database: getStorageMode(),
-        persistedToDatabase: Boolean(file?.id),
-        persistedToSheets: hasSheetsConfig() && Boolean(file?.id),
-        persistedToDrive: !hasSheetsConfig() && Boolean(file?.id),
+        persistedToDatabase: persistence.persistedToSheets || persistence.persistedToDrive,
+        persistedToSheets: persistence.persistedToSheets,
+        persistedToDrive: persistence.persistedToDrive,
+        warnings: persistence.warnings,
         storageMode: getStorageMode(),
       },
       { headers: corsHeaders }
