@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Award, Trophy, Zap, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LeaderboardSnapshotViewer from "@/components/leaderboard/LeaderboardSnapshotViewer";
+import RegistrationLink from "@/components/RegistrationLink";
 
 const seasonOneWinners = {
   "Diesel Modified": [
@@ -444,12 +445,12 @@ export default function LeaderboardPage() {
                           This tab is reserved for season victory summaries, champion highlights, and celebration graphics.
                         </p>
                       </div>
-                      <Link
+                      <RegistrationLink
                         href="/register"
                         className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-black font-black uppercase tracking-[0.35em] text-[10px] hover:scale-105 transition-transform w-fit"
                       >
                         Join the Grid
-                      </Link>
+                      </RegistrationLink>
                     </div>
                   </div>
                 </div>

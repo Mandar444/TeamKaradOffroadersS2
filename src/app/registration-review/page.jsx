@@ -6,25 +6,32 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, CreditCard, ShieldCheck, Zap, User, Car, Users, ClipboardList, Loader2, Activity } from "lucide-react";
 import { CATEGORIES } from "@/config/pricing";
+import RegistrationClosedNotice from "@/components/RegistrationClosedNotice";
+import { useRegistrationDeadline } from "@/lib/use-registration-deadline";
 
 export default function ReviewPage() {
   const router = useRouter();
+  const { isDeadlineReady, isRegistrationOpen } = useRegistrationDeadline();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!isRegistrationOpen) {
+      return;
+    }
+
     const saved = sessionStorage.getItem("tko_reg_draft");
     if (saved) {
       setData(JSON.parse(saved));
     } else {
       router.push("/register");
     }
-  }, [router]);
+  }, [isRegistrationOpen, router]);
 
   const isFree = data && CATEGORIES[data.category]?.fee === 0;
 
   const handleFinalSubmit = async () => {
-    if (!data) return;
+    if (!data || !isRegistrationOpen) return;
     setLoading(true);
     try {
       const response = await fetch("/api/register", {
@@ -53,6 +60,14 @@ export default function ReviewPage() {
       setLoading(false);
     }
   };
+
+  if (!isDeadlineReady) {
+    return null;
+  }
+
+  if (!isRegistrationOpen) {
+    return <RegistrationClosedNotice />;
+  }
 
   if (!data) return null;
 

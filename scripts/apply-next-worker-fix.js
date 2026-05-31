@@ -13,13 +13,20 @@ function patchFile(filePath, replacers, marker) {
 
   let nextSource = source;
   for (const [search, replacement] of replacers) {
+    if (nextSource.includes(replacement)) {
+      continue;
+    }
+
     if (!nextSource.includes(search)) {
-      throw new Error(`Expected to find patch target in ${filePath}`);
+      console.warn(`Skipping missing patch target in ${filePath}`);
+      continue;
     }
     nextSource = nextSource.replace(search, replacement);
   }
 
-  fs.writeFileSync(absPath, nextSource, 'utf8');
+  if (nextSource !== source) {
+    fs.writeFileSync(absPath, nextSource, 'utf8');
+  }
 }
 
 const buildContextPatch = [
@@ -33,7 +40,18 @@ const buildContextPatch = [
   ],
 ];
 
-const exportWorkerPatch = [
+const buildContextPatchEsm = [
+  [
+    '            NextBuildContext.config = config;\n',
+    '            const buildContextConfig = {\n' +
+      '                ...config,\n' +
+      '                generateBuildId: null\n' +
+      '            };\n' +
+      '            NextBuildContext.config = buildContextConfig;\n',
+  ],
+];
+
+const exportWorkerBasePatch = [
   [
     "    const { i18n, images: { loader = 'default', unoptimized } } = nextConfig;\n",
     "    const workerNextConfig = {\n" +
@@ -92,13 +110,21 @@ const exportWorkerPatch = [
       '                renderResumeDataCachesByPage\n' +
       '            })))).flat();\n',
   ],
-  [
-    '            worker = createStaticWorker(nextConfig, {\n',
-    '            worker = createStaticWorker(workerNextConfig, {\n',
-  ],
+];
+
+const exportWorkerPatch = [
+  ...exportWorkerBasePatch,
   [
     '            worker = (0, _build.createStaticWorker)(nextConfig, {\n',
     '            worker = (0, _build.createStaticWorker)(workerNextConfig, {\n',
+  ],
+];
+
+const exportWorkerPatchEsm = [
+  ...exportWorkerBasePatch,
+  [
+    '            worker = createStaticWorker(nextConfig, {\n',
+    '            worker = createStaticWorker(workerNextConfig, {\n',
   ],
 ];
 
@@ -111,7 +137,7 @@ const filesToPatch = [
   {
     filePath: 'node_modules/next/dist/esm/build/index.js',
     marker: 'generateBuildId: null',
-    replacers: buildContextPatch,
+    replacers: buildContextPatchEsm,
   },
   {
     filePath: 'node_modules/next/dist/export/index.js',
@@ -121,7 +147,7 @@ const filesToPatch = [
   {
     filePath: 'node_modules/next/dist/esm/export/index.js',
     marker: 'workerNextConfig',
-    replacers: exportWorkerPatch,
+    replacers: exportWorkerPatchEsm,
   },
 ];
 

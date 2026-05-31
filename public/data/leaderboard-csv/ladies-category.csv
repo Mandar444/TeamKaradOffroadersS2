@@ -1,0 +1,9 @@
+position,category_key,category_label,sticker_number,team_name,driver_name,codriver_name,total_points,total_timing_ms,total_timing_label,k2_time,k2_points,k2_rank,k2_day,everest_time,everest_points,everest_rank,everest_day,sahyadri_time,sahyadri_points,sahyadri_rank,sahyadri_day,himalaya_time,himalaya_points,himalaya_rank,himalaya_day,kalasubai_time,kalasubai_points,kalasubai_rank,kalasubai_day,valmiki_time,valmiki_points,valmiki_rank,valmiki_day,satpuda_time,satpuda_points,satpuda_rank,satpuda_day
+1,LADIES_CATEGORY,Ladies Category,1,SAHYADRI OFFROADERS,Prerana Bhalla,Ravi Bhalla,600,837700,,02:28:67,100,P1,D2,,,,,02:50:63,100,P1,D1,01:41:27,100,P1,D2,01:29:47,100,P1,D1,02:13:07,100,P1,D2,03:14:59,100,P1,D2
+2,LADIES_CATEGORY,Ladies Category,7,Team Nandi ,Rufina Gupte ,Xyz,545,1954830,,05:57:68,90,P3,D2,,,,,05:18:64,90,P3,D1,02:06:75,95,P2,D2,03:39:81,90,P3,D1,06:26:13,90,P3,D2,09:05:82,90,P3,D2
+3,LADIES_CATEGORY,Ladies Category,21,KA28 off-roaders ,Kavita Desai ,Kumar Desai ,475,1308190,,04:46:63,95,P2,D2,,,,,04:37:49,95,P2,D1,,,,,02:44:91,95,P2,D1,04:25:84,95,P2,D2,05:13:32,95,P2,D2
+4,LADIES_CATEGORY,Ladies Category,13,Team 4x4Basics,Ritika Kashyap,Arjun Stephen,368,1370460,,06:17:28,87,P4,D2,,,,,05:42:24,87,P4,D1,,,,,03:43:23,87,P4,D1,07:07:71,87,P4,D2,DNF,20,DNF,D2
+5,LADIES_CATEGORY,Ladies Category,12,Team motoRnation ,Anvita aniket shete,Aniket shete,134,326770,,DNS,0,DNS,D2,,,,,DNF,50,DNF,D1,,,,,05:26:77,84,P5,D1,DNS,0,DNS,D2,DNS,0,DNS,D2
+6,LADIES_CATEGORY,Ladies Category,8,Minal ,Minal shete,Amit shete,20,0,,DNS,0,DNS,D2,,,,,DNS,0,DNS,D1,,,,,DNF,20,DNF,D1,DNS,0,DNS,D2,DNS,0,DNS,D2
+7,LADIES_CATEGORY,Ladies Category,6,Honda ,Yashi bhanushali,Kanu,0,0,,DNS,0,DNS,D2,,,,,DNS,0,DNS,D1,,,,,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2
+8,LADIES_CATEGORY,Ladies Category,9,Cross Over,Jiyaa Gaba ,Ramessh Ahuja,0,0,,DNS,0,DNS,D2,,,,,DNS,0,DNS,D1,,,,,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2

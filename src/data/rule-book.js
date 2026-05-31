@@ -1,5 +1,5 @@
 export const ruleBookIntro = [
-  "The Team Karad Off-Roaders Season 2-2026 Rule Book is designed to ensure fair competition, maximum safety, and a disciplined racing environment for all participants. Off-road motorsport is an extreme adventure sport where vehicles and drivers are pushed to their limits across challenging terrains, making it essential to have clear guidelines and structured rules.",
+  "The Team Karad Off-Roaders Season 2-2026 Rule Book is designed to ensure fair competition, maximum safety, and a disciplined racing environment for all participants. Off-road motorsport is an open adventure sport where vehicles and drivers are pushed to their limits across challenging terrains, making it essential to have clear guidelines and structured rules.",
   "These rules and penalty systems help maintain uniformity, transparency, and sportsmanship, ensuring that every participant competes on equal grounds. From task execution to safety measures like seatbelts, conduct, and vehicle compliance, each guideline is defined to minimize risks and enhance performance standards.",
   "Adhering to this rule book is not just about avoiding penalties, it reflects professionalism, respect for the sport, and responsibility towards safety. We request all participants to thoroughly understand and follow these rules to make Season 2 a safe, fair, and thrilling off-road experience for everyone.",
 ];
@@ -156,7 +156,7 @@ export const ruleBookSections = [
   {
     title: "Winching",
     items: [
-      "Except extreme vehicle category winching will not be the part of competition in any category unless self-recovery only after DNF confirmed by the participant.",
+      "Except open vehicle category winching will not be the part of competition in any category unless self-recovery only after DNF confirmed by the participant.",
     ],
   },
   {

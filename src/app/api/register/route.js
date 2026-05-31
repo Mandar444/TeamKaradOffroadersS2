@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 import { CATEGORIES } from "@/config/pricing";
+import { isRegistrationOpen } from "@/lib/registration-deadline";
 // Registration logic without uuid dependency
 
 export async function POST(request) {
+  if (!isRegistrationOpen()) {
+    return NextResponse.json(
+      { error: "Registrations closed at 12:00 AM IST on 26 May 2026." },
+      { status: 410 }
+    );
+  }
+
   try {
     const data = await request.json();
     await initSheets();

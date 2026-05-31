@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  skipTrailingSlashRedirect: true,
   experimental: {
     workerThreads: true,
     webpackBuildWorker: false,

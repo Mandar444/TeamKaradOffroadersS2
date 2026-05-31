@@ -61,7 +61,7 @@ const beasts = [
     category: "EXPERT",
     type: "EXPERT DIVISION BUILD",
     image: "https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?q=80&w=2070&auto=format&fit=crop",
-    stats: { power: "Extreme", grip: "Pro-Traction", tech: "Expert" }
+    stats: { power: "Open", grip: "Pro-Traction", tech: "Expert" }
   },
   {
     id: "major",

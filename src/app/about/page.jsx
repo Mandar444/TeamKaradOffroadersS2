@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRef } from "react";
-import Link from "next/link";
+import RegistrationLink from "@/components/RegistrationLink";
 import { Target, Shield, Users, Activity, ShieldCheck, Globe, Mail, MapPin, Clock, Send, Instagram, Facebook, Youtube } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,7 @@ const milestones = [
 ];
 
 const values = [
-  { icon: Target, title: "Technical Excellence", desc: "Constant pushing of vehicle engineering and driving performance on extreme, specially designed tracks." },
+  { icon: Target, title: "Technical Excellence", desc: "Constant pushing of vehicle engineering and driving performance on open, specially designed tracks." },
   { icon: ShieldCheck, title: "Social Responsibility", desc: "Using our 4x4 expertise to assist in road accidents, floods, and natural calamities where others cannot reach." },
   { icon: Users, title: "Passionate Community", desc: "A brotherhood of skilled drivers, mechanics, and off-road specialists sharing a deep bond with the terrain." },
   { icon: Globe, title: "Adventure Culture", desc: "Growing the off-road culture in Western Maharashtra and India while promoting responsible off-roading." },
@@ -100,7 +100,7 @@ export default function AboutPage() {
              <div className="space-y-6 text-zinc-400 text-base sm:text-lg leading-relaxed">
                 <p>
                   Our team consists of skilled drivers, co-drivers, mechanics, and off-road specialists 
-                  who share a deep interest in adventure, vehicle engineering, and extreme terrain driving.
+                  who share a deep interest in adventure, vehicle engineering, and open terrain driving.
                 </p>
                  <p>
                    From mud tracks and rocky climbs to riverbeds and lethal obstacle courses, we constantly 
@@ -276,12 +276,12 @@ export default function AboutPage() {
                <p className="text-zinc-300 text-base sm:text-xl max-w-xl mx-auto mb-12 font-medium">
                  Ready to test your limits? Join the Season 2 expansion and become part of India&apos;s most thrilling off-road community.
                </p>
-               <Link
+               <RegistrationLink
                   href="/register"
                   className="inline-flex h-16 px-10 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.4)] transition-all hover:scale-105 active:scale-95 text-sm md:text-base border-none"
                >
                   <span className="whitespace-nowrap">REGISTER NOW</span>
-               </Link>
+               </RegistrationLink>
             </div>
          </motion.div>
       </section>

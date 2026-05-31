@@ -4,7 +4,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, DatabaseZap, Trophy } from "lucide-react";
+import LeaderboardJsonUploader from "@/components/leaderboard/LeaderboardJsonUploader";
 import LeaderboardSnapshotViewer from "@/components/leaderboard/LeaderboardSnapshotViewer";
+import LeaderboardTrackDataUploader from "@/components/leaderboard/LeaderboardTrackDataUploader";
 import LeaderboardVisibilityControl from "@/components/leaderboard/LeaderboardVisibilityControl";
 
 export default function AdminLeaderboardPage() {
@@ -68,6 +70,8 @@ export default function AdminLeaderboardPage() {
         </motion.div>
 
         <LeaderboardVisibilityControl />
+        <LeaderboardJsonUploader />
+        <LeaderboardTrackDataUploader />
 
         <Suspense
           fallback={
@@ -76,7 +80,12 @@ export default function AdminLeaderboardPage() {
             </div>
           }
         >
-          <LeaderboardSnapshotViewer respectVisibility={false} detailReturnHref="/admin/leaderboard" />
+          <LeaderboardSnapshotViewer
+            respectVisibility={false}
+            detailReturnHref="/admin/leaderboard"
+            allowAdminEdit
+            allowAdminDelete
+          />
         </Suspense>
       </div>
     </div>

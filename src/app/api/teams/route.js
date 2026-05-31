@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSheetByName, initSheets } from "@/lib/google-sheets/client";
 import { CATEGORIES } from "@/config/pricing";
+import { PUBLISHED_TEAM_ENTRIES } from "@/data/published-teams";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,24 @@ function buildTeamId(team) {
     normalizeValue(team.category),
     normalizeValue(team.car_number),
   ].join("|");
+}
+
+function applyPublishedTeamCorrection(team) {
+  const isRaviBhallaDieselModifiedEntry =
+    normalizeValue(team.team_name) === "sahyadri offroaders" &&
+    normalizeValue(team.driver_name) === "ravi bhalla" &&
+    team.category === "DIESEL_MODIFIED" &&
+    String(team.car_number).trim() === "1";
+
+  if (!isRaviBhallaDieselModifiedEntry) {
+    return team;
+  }
+
+  return {
+    ...team,
+    category: "STOCK_NDMS",
+    car_number: "10",
+  };
 }
 
 export async function GET() {
@@ -29,21 +48,18 @@ export async function GET() {
       catMap[normalize(CATEGORIES[key].name)] = key;
     });
 
-    // Filter: Show only Authorized teams with explicit UTR (Payment Evidence)
+    // Show verified/authorized participants. Some confirmed rows may not have
+    // a UTR in the public sheet columns, so status is the source of truth here.
     const confirmedTeams = rows
       .filter((row) => {
         const s = (row.get("status") || "").trim().toUpperCase();
-        const utr = (row.get("utr_number") || "").trim();
-        const isVerified = (s === "CONFIRMED" || s === "AUTHORIZED GRID" || s === "AUTHORIZED");
-        
-        // Strict Mode: Must be verified AND have a UTR tracked
-        return isVerified && utr !== "";
+        return ["CONFIRMED", "AUTHORIZED GRID", "AUTHORIZED", "FINALIZED"].includes(s);
       })
       .map((row) => {
         const rawCat = row.get("category");
         const canonicalCat = catMap[normalize(rawCat)] || rawCat;
         
-        return {
+        return applyPublishedTeamCorrection({
           team_name: row.get("team_name"),
           driver_name: row.get("driver_name"),
           driver_blood_group: row.get("driver_blood_group"),
@@ -55,13 +71,13 @@ export async function GET() {
           vehicle_model: row.get("vehicle_model"),
           socials: row.get("socials"),
           status: "CONFIRMED", 
-        };
+        });
       });
 
     const uniqueTeams = [];
     const seenIds = new Set();
 
-    for (const team of confirmedTeams) {
+    for (const team of [...confirmedTeams, ...PUBLISHED_TEAM_ENTRIES]) {
       const recordId = buildTeamId(team);
       if (seenIds.has(recordId)) {
         continue;
@@ -90,6 +106,11 @@ export async function GET() {
     return NextResponse.json({ teams: uniqueTeams });
   } catch (error) {
     console.error("Teams fetch error:", error);
-    return NextResponse.json({ teams: [] });
+    return NextResponse.json({
+      teams: PUBLISHED_TEAM_ENTRIES.map(team => ({
+        ...team,
+        recordId: buildTeamId(team),
+      })),
+    });
   }
 }

@@ -1,0 +1,10 @@
+position,category_key,category_label,sticker_number,team_name,driver_name,codriver_name,total_points,total_timing_ms,total_timing_label,k2_time,k2_points,k2_rank,k2_day,everest_time,everest_points,everest_rank,everest_day,sahyadri_time,sahyadri_points,sahyadri_rank,sahyadri_day,himalaya_time,himalaya_points,himalaya_rank,himalaya_day,kalasubai_time,kalasubai_points,kalasubai_rank,kalasubai_day,valmiki_time,valmiki_points,valmiki_rank,valmiki_day,satpuda_time,satpuda_points,satpuda_rank,satpuda_day
+1,THAR_SUV,Thar SUV,25,Crossover,Sunny Benjamin,Shalom Benjamin,556,1173970,,03:11:54,95,P2,D1,01:32:60,100,P1,D1,04:06:10,84,P5,D2,03:23:68,100,P1,D2,,,,,02:20:54,90,P3,D2,04:59:51,87,P4,D2
+2,THAR_SUV,Thar SUV,12,Crossover ,Syed Wasif Husain,Viraj Shelatkar ,548,1121160,,03:20:41,90,P3,D1,02:07:16,84,P5,D1,02:46:18,95,P2,D2,03:48:22,95,P2,D2,,,,,02:51:88,84,P5,D2,03:47:31,100,P1,D2
+3,THAR_SUV,Thar SUV,18,Team 4x4Basics,Arjun Stephen,Siddharth Bhadauria,535,1199150,,03:45:70,81,P6,D1,01:40:80,90,P3,D1,02:43:19,100,P1,D2,04:56:97,87,P4,D2,,,,,02:28:63,87,P4,D2,04:23:86,90,P3,D2
+4,THAR_SUV,Thar SUV,1,Crossover team,Thomas Cherian,Alex Thomas ,532,1207120,,03:20:57,87,P4,D1,02:16:42,81,P6,D1,02:59:66,90,P3,D2,05:09:01,84,P5,D2,,,,,02:11:42,95,P2,D2,04:10:04,95,P2,D2
+5,THAR_SUV,Thar SUV,45,Crossover ,Vikrant Jamdar,Karthik Kini,489,1675920,,04:02:82,80,P7,D1,03:31:99,80,P7,D1,03:19:45,87,P4,D2,05:19:10,81,P6,D2,,,,,04:23:14,80,P7,D2,07:19:42,81,P6,D2
+6,THAR_SUV,Thar SUV,4,Ka28offroadres,Sameer,Anand,446,1157170,,03:38:83,84,P5,D1,01:45:18,87,P4,D1,DNF,20,DNF,D2,04:04:30,90,P3,D2,,,,,03:53:13,81,P6,D2,05:55:73,84,P5,D2
+7,THAR_SUV,Thar SUV,23, Crossover, Kaustubh Nadgonde, Tushar Sangamnerkar,355,386070,,03:01:33,100,P1,D1,01:35:53,95,P2,D1,DNF,20,DNF,D2,DNF,20,DNF,D2,,,,,01:49:21,100,P1,D2,DNF,20,DNF,D2
+8,THAR_SUV,Thar SUV,9,Shroff,Nimish shroff,Dipali shroff,20,0,,DNF,20,DNF,D1,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2,,,,,DNS,0,DNS,D2,DNS,0,DNS,D2
+9,THAR_SUV,Thar SUV,28,Patil,Narendra Patil,Sagar ,0,0,,DNS,0,DNS,D1,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2,,,,,DNS,0,DNS,D2,DNS,0,DNS,D2

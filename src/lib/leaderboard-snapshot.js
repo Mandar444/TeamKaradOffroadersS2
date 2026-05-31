@@ -6,6 +6,9 @@ export const LEADERBOARD_VISIBILITY_PATH = "/api/leaderboard-visibility";
 
 export const normalizeText = value => String(value || "").trim();
 
+const isPlaceholderTiming = value =>
+  ["", "NA", "N/A", "--"].includes(normalizeText(value).toUpperCase());
+
 export const normalizeTrackKey = value =>
   normalizeText(value)
     .toLowerCase()
@@ -94,7 +97,12 @@ export const normalizeCategoryKey = value => {
   const normalized = String(value || "")
     .trim()
     .toUpperCase()
-    .replace(/\s+/g, "_");
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  if (normalized === "OPEN" || normalized === "OPEN_CATEGORY" || normalized === "EXTREME") {
+    return "EXTREME";
+  }
 
   if (normalized === "LADIES" || normalized === "LADIES_CATEGORY") {
     return "LADIES_CATEGORY";
@@ -172,7 +180,7 @@ export const normalizeResultIdentityKey = item => {
   return [
     normalizeCategoryKey(source?.category || ""),
     normalizeText(source?.track_name || source?.trackName || "").toLowerCase(),
-    normalizeText(source?.sticker_number || source?.stickerNumber || "").toLowerCase(),
+    normalizeText(source?.sticker_number || source?.stickerNumber || source?.car_number || source?.carNumber || "").toLowerCase(),
     normalizeText(source?.driver_name || source?.driverName || "").toLowerCase(),
     dayIdentityKey,
   ].join("|");
@@ -185,7 +193,7 @@ export const normalizeShortIdentityKey = item => {
   return [
     normalizeCategoryKey(source?.category || ""),
     normalizeText(source?.track_name || source?.trackName || "").toLowerCase(),
-    normalizeText(source?.sticker_number || source?.stickerNumber || "").toLowerCase(),
+    normalizeText(source?.sticker_number || source?.stickerNumber || source?.car_number || source?.carNumber || "").toLowerCase(),
     normalizeText(source?.driver_name || source?.driverName || "").toLowerCase(),
     normalizeDayKey(
       source?.selected_day_id ||
@@ -207,23 +215,33 @@ export const formatCategoryLabel = value =>
     .toLowerCase()
     .replace(/\b\w/g, letter => letter.toUpperCase()) || "Category";
 
-export const normalizeTrackEntry = entry => ({
-  key: normalizeText(entry?.key || entry?.identityKey || ""),
-  dayLabel: normalizeText(entry?.dayLabel || entry?.day_label || ""),
-  dayOrder: Number.isFinite(Number(entry?.dayOrder ?? entry?.day_order)) ? Number(entry?.dayOrder ?? entry?.day_order) : null,
-  timingLabel: normalizeText(entry?.timingLabel || entry?.timing_label || entry?.value || "NA") || "NA",
-  pointsLabel: normalizeText(entry?.pointsLabel || entry?.points_label || ""),
-  rankLabel: normalizeText(entry?.rankLabel || entry?.rank_label || ""),
-});
+export const normalizeTrackEntry = entry => {
+  const timingLabel = normalizeText(entry?.timingLabel || entry?.timing_label || entry?.value || "");
+
+  return {
+    key: normalizeText(entry?.key || entry?.identityKey || ""),
+    dayLabel: normalizeText(entry?.dayLabel || entry?.day_label || ""),
+    dayOrder: Number.isFinite(Number(entry?.dayOrder ?? entry?.day_order)) ? Number(entry?.dayOrder ?? entry?.day_order) : null,
+    timingLabel: isPlaceholderTiming(timingLabel) ? "" : timingLabel,
+    pointsLabel: normalizeText(entry?.pointsLabel || entry?.points_label || ""),
+    rankLabel: normalizeText(entry?.rankLabel || entry?.rank_label || ""),
+  };
+};
 
 export const normalizeTrackSummary = (summary, fallbackLabel = "") => {
   const descriptor = normalizeTrackDescriptor(summary, fallbackLabel);
+  const rawEntries = Array.isArray(summary?.entries) ? summary.entries : [];
+  const entries = rawEntries.map(normalizeTrackEntry).filter(entry => !isPlaceholderTiming(entry.timingLabel));
+  const rawTotalPoints = Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0);
+  const totalPoints = entries.length === rawEntries.length
+    ? rawTotalPoints
+    : entries.reduce((total, entry) => total + (Number(String(entry.pointsLabel || "").replace(/[^\d.-]/g, "")) || 0), 0);
 
   return {
     trackKey: descriptor.key,
     trackLabel: descriptor.label,
-    totalPoints: Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0),
-    entries: Array.isArray(summary?.entries) ? summary.entries.map(normalizeTrackEntry) : [],
+    totalPoints,
+    entries,
   };
 };
 
@@ -232,6 +250,10 @@ export const hasDisputePayload = record =>
   Array.isArray(record?.disputeDetails) ||
   (record?.dispute_resolutions && typeof record.dispute_resolutions === "object") ||
   (record?.disputeResolutions && typeof record.disputeResolutions === "object") ||
+  (record?.dispute_signatures && typeof record.dispute_signatures === "object") ||
+  (record?.disputeSignatures && typeof record.disputeSignatures === "object") ||
+  Array.isArray(record?.dispute_signed_by) ||
+  Array.isArray(record?.disputeSignedBy) ||
   Boolean(record?.dispute_resolution_status || record?.disputeResolutionStatus);
 
 export const mergeDetailRecords = (existing, incoming) => {
@@ -254,6 +276,10 @@ export const mergeDetailRecords = (existing, incoming) => {
       disputeResolutionStatus: incoming.disputeResolutionStatus ?? existing.disputeResolutionStatus,
       dispute_resolution_label: incoming.dispute_resolution_label ?? existing.dispute_resolution_label,
       disputeResolutionLabel: incoming.disputeResolutionLabel ?? existing.disputeResolutionLabel,
+      dispute_signatures: incoming.dispute_signatures ?? existing.dispute_signatures,
+      disputeSignatures: incoming.disputeSignatures ?? existing.disputeSignatures,
+      dispute_signed_by: incoming.dispute_signed_by ?? existing.dispute_signed_by,
+      disputeSignedBy: incoming.disputeSignedBy ?? existing.disputeSignedBy,
       __sourceType: existing.__sourceType || incoming.__sourceType,
     };
   }
@@ -270,6 +296,10 @@ export const mergeDetailRecords = (existing, incoming) => {
       disputeResolutionStatus: existing.disputeResolutionStatus ?? incoming.disputeResolutionStatus,
       dispute_resolution_label: existing.dispute_resolution_label ?? incoming.dispute_resolution_label,
       disputeResolutionLabel: existing.disputeResolutionLabel ?? incoming.disputeResolutionLabel,
+      dispute_signatures: existing.dispute_signatures ?? incoming.dispute_signatures,
+      disputeSignatures: existing.disputeSignatures ?? incoming.disputeSignatures,
+      dispute_signed_by: existing.dispute_signed_by ?? incoming.dispute_signed_by,
+      disputeSignedBy: existing.disputeSignedBy ?? incoming.disputeSignedBy,
       __sourceType: incoming.__sourceType || existing.__sourceType,
     };
   }
@@ -295,24 +325,53 @@ export const getTrackSummariesFromRow = row => {
 
 export const normalizeRow = row => {
   const trackSummaries = getTrackSummariesFromRow(row);
+  const summaryTotalPoints = trackSummaries.reduce((total, summary) => total + (Number(summary.totalPoints) || 0), 0);
 
   return {
     vehicleKey:
       row?.vehicleKey ||
-      `${normalizeText(row?.stickerNumber || row?.sticker || "")}-${normalizeText(row?.driverName || row?.driver || "")}`,
-    stickerNumber: normalizeText(row?.stickerNumber || row?.sticker || "--").replace(/^#/, ""),
+      `${normalizeText(row?.stickerNumber || row?.sticker || row?.car_number || row?.carNumber || "")}-${normalizeText(row?.driverName || row?.driver || "")}`,
+    stickerNumber: normalizeText(row?.stickerNumber || row?.sticker || row?.car_number || row?.carNumber || "--").replace(/^#/, ""),
+    teamName: normalizeText(row?.teamName || row?.team_name || row?.team || "--"),
     driverName: normalizeText(row?.driverName || row?.driver || "--"),
     coDriverName: normalizeText(row?.coDriverName || row?.coDriver || "--"),
-    totalPoints: Number.isFinite(Number(row?.totalPoints)) ? Number(row.totalPoints) : Number(row?.total || 0),
+    totalPoints: trackSummaries.length
+      ? summaryTotalPoints
+      : Number.isFinite(Number(row?.totalPoints))
+        ? Number(row.totalPoints)
+        : Number(row?.total || 0),
     totalTimingMs: Number.isFinite(Number(row?.totalTimingMs)) ? Number(row.totalTimingMs) : null,
     totalTimingLabel: normalizeText(row?.totalTimingLabel || row?.totalTimingDisplay || row?.totalTimeDisplay || row?.totalTime || ""),
     trackSummaries,
   };
 };
 
+const sortLeaderboardRows = rows =>
+  [...rows].sort((left, right) => {
+    const pointDelta = (Number(right.totalPoints) || 0) - (Number(left.totalPoints) || 0);
+
+    if (pointDelta !== 0) {
+      return pointDelta;
+    }
+
+    if (left.totalTimingMs !== null && right.totalTimingMs !== null && left.totalTimingMs !== right.totalTimingMs) {
+      return left.totalTimingMs - right.totalTimingMs;
+    }
+
+    if (left.totalTimingMs !== null) {
+      return -1;
+    }
+
+    if (right.totalTimingMs !== null) {
+      return 1;
+    }
+
+    return normalizeText(left.driverName).localeCompare(normalizeText(right.driverName));
+  });
+
 export const normalizeCategory = category => {
   const rawRows = Array.isArray(category?.rows) ? category.rows : [];
-  const rows = rawRows.map(normalizeRow);
+  const rows = sortLeaderboardRows(rawRows.map(normalizeRow));
   const tracks = [];
   const seenTracks = new Set();
   const configuredTracks = Array.isArray(category?.tracks)
@@ -353,14 +412,334 @@ export const normalizeCategory = category => {
   };
 };
 
+const getCategoryKeyFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeCategoryKey(
+    source?.category ||
+      source?.categoryKey ||
+      source?.category_key ||
+      source?.key ||
+      parsedSubmission?.category ||
+      parsedSubmission?.categoryKey ||
+      parsedSubmission?.category_key ||
+      ""
+  );
+};
+
+const getCategoryLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.label ||
+      source?.name ||
+      source?.categoryLabel ||
+      source?.category_label ||
+      source?.category ||
+      parsedSubmission?.categoryLabel ||
+      parsedSubmission?.category_label ||
+      parsedSubmission?.category ||
+      ""
+  );
+};
+
+const getVehicleIdentityFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const mergedSource = { ...parsedSubmission, ...source };
+
+  return {
+    stickerNumber: normalizeText(
+      mergedSource?.stickerNumber ||
+        mergedSource?.sticker_number ||
+        mergedSource?.sticker ||
+        mergedSource?.carNumber ||
+        mergedSource?.car_number ||
+        ""
+    ),
+    teamName: normalizeText(mergedSource?.teamName || mergedSource?.team_name || mergedSource?.team || "--"),
+    driverName: normalizeText(mergedSource?.driverName || mergedSource?.driver_name || mergedSource?.driver || "--"),
+    coDriverName: normalizeText(
+      mergedSource?.coDriverName ||
+        mergedSource?.codriver_name ||
+        mergedSource?.co_driver_name ||
+        mergedSource?.codriver ||
+        mergedSource?.co_driver ||
+        "--"
+    ),
+  };
+};
+
+const getTrackLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.trackLabel ||
+      source?.track_label ||
+      source?.trackName ||
+      source?.track_name ||
+      source?.track ||
+      parsedSubmission?.trackLabel ||
+      parsedSubmission?.track_label ||
+      parsedSubmission?.trackName ||
+      parsedSubmission?.track_name ||
+      parsedSubmission?.track ||
+      ""
+  );
+};
+
+const getDayLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.selectedDayLabel ||
+      source?.selected_day_label ||
+      source?.selectedDayId ||
+      source?.selected_day_id ||
+      parsedSubmission?.selectedDayLabel ||
+      parsedSubmission?.selected_day_label ||
+      parsedSubmission?.selectedDayId ||
+      parsedSubmission?.selected_day_id ||
+      ""
+  );
+};
+
+const getTimingLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+
+  return normalizeText(
+    source?.totalTimeDisplay ||
+      source?.total_time_display ||
+      source?.total_time ||
+      source?.performanceTimeDisplay ||
+      source?.performance_time_display ||
+      source?.performance_time ||
+      source?.completionTime ||
+      source?.completion_time ||
+      parsedSubmission?.totalTimeDisplay ||
+      parsedSubmission?.total_time_display ||
+      parsedSubmission?.total_time ||
+      parsedSubmission?.performanceTimeDisplay ||
+      parsedSubmission?.performance_time_display ||
+      parsedSubmission?.performance_time ||
+      parsedSubmission?.completionTime ||
+      parsedSubmission?.completion_time ||
+      ""
+  );
+};
+
+const getPointsFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const value = getFirstDefinedValue(
+    source?.points,
+    source?.totalPoints,
+    source?.total_points,
+    source?.score,
+    parsedSubmission?.points,
+    parsedSubmission?.totalPoints,
+    parsedSubmission?.total_points,
+    parsedSubmission?.score
+  );
+  const numericValue = Number(String(value || "").replace(/[^\d.-]/g, ""));
+
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
+const getRankLabelFromSource = source => {
+  const parsedSubmission = safeParseJsonObject(source?.submission_json);
+  const rank = normalizeText(source?.rankLabel || source?.rank_label || source?.rank || parsedSubmission?.rankLabel || parsedSubmission?.rank || "");
+
+  if (!rank) {
+    return "";
+  }
+
+  return rank.toUpperCase().startsWith("P") ? rank.toUpperCase() : `P${rank}`;
+};
+
+const ensureCategory = (categoryMap, rawCategory = {}) => {
+  const key = normalizeCategoryKey(rawCategory?.key || rawCategory?.category || rawCategory?.label || rawCategory?.name || "");
+
+  if (!key) {
+    return null;
+  }
+
+  if (!categoryMap.has(key)) {
+    categoryMap.set(key, {
+      key,
+      label: normalizeText(rawCategory?.label || rawCategory?.name || rawCategory?.category || "") || formatCategoryLabel(key),
+      tracks: Array.isArray(rawCategory?.tracks)
+        ? rawCategory.tracks
+        : Array.isArray(rawCategory?.trackOptions)
+          ? rawCategory.trackOptions
+          : [],
+      rows: [],
+    });
+  } else {
+    const existingCategory = categoryMap.get(key);
+    const tracks = Array.isArray(rawCategory?.tracks)
+      ? rawCategory.tracks
+      : Array.isArray(rawCategory?.trackOptions)
+        ? rawCategory.trackOptions
+        : [];
+
+    if (!existingCategory.label || existingCategory.label === formatCategoryLabel(existingCategory.key)) {
+      existingCategory.label = normalizeText(rawCategory?.label || rawCategory?.name || rawCategory?.category || "") || existingCategory.label;
+    }
+
+    if (tracks.length) {
+      existingCategory.tracks = [...(existingCategory.tracks || []), ...tracks];
+    }
+  }
+
+  return categoryMap.get(key);
+};
+
+const addTrackToCategory = (category, trackLabel) => {
+  const descriptor = normalizeTrackDescriptor(trackLabel);
+
+  if (!descriptor.key || !category) {
+    return;
+  }
+
+  const tracks = Array.isArray(category.tracks) ? category.tracks : [];
+  const hasTrack = tracks.some(track => {
+    const existingDescriptor = normalizeTrackDescriptor(track);
+    return existingDescriptor.key === descriptor.key || normalizeTrackKey(existingDescriptor.label) === descriptor.key;
+  });
+
+  if (!hasTrack) {
+    category.tracks = [...tracks, descriptor];
+  }
+};
+
+const getOrCreateCategoryRow = (category, identity, fallbackIndex = 0) => {
+  const stickerNumber = identity.stickerNumber || String(fallbackIndex + 1);
+  const vehicleKey = `${category.key}|${stickerNumber}|${normalizeText(identity.driverName).toLowerCase()}`;
+  let row = category.rows.find(item => item.vehicleKey === vehicleKey);
+
+  if (!row) {
+    row = {
+      vehicleKey,
+      stickerNumber,
+      teamName: identity.teamName || "--",
+      driverName: identity.driverName || "--",
+      coDriverName: identity.coDriverName || "--",
+      totalPoints: 0,
+      totalTimingMs: null,
+      totalTimingLabel: "",
+      trackMap: {},
+      trackSummaries: [],
+    };
+    category.rows.push(row);
+  }
+
+  return row;
+};
+
+const addTeamToCategory = (categoryMap, team, index) => {
+  const key = getCategoryKeyFromSource(team);
+
+  if (!key) {
+    return;
+  }
+
+  const category = ensureCategory(categoryMap, {
+    key,
+    label: getCategoryLabelFromSource(team) || formatCategoryLabel(key),
+  });
+
+  if (category.__hasRenderedRows) {
+    return;
+  }
+
+  getOrCreateCategoryRow(category, getVehicleIdentityFromSource(team), index);
+};
+
+const addResultToCategory = (categoryMap, result, index) => {
+  const key = getCategoryKeyFromSource(result);
+
+  if (!key) {
+    return;
+  }
+
+  const category = ensureCategory(categoryMap, {
+    key,
+    label: getCategoryLabelFromSource(result) || formatCategoryLabel(key),
+  });
+
+  if (category.__hasRenderedRows) {
+    return;
+  }
+
+  const identity = getVehicleIdentityFromSource(result);
+  const row = getOrCreateCategoryRow(category, identity, index);
+  const trackLabel = getTrackLabelFromSource(result);
+
+  if (!trackLabel) {
+    return;
+  }
+
+  const track = normalizeTrackDescriptor(trackLabel);
+  const points = getPointsFromSource(result);
+  const timingLabel = getTimingLabelFromSource(result);
+
+  if (isPlaceholderTiming(timingLabel)) {
+    return;
+  }
+
+  const entry = {
+    key: normalizeResultIdentityKey(result),
+    dayLabel: getDayLabelFromSource(result),
+    dayOrder: null,
+    timingLabel,
+    pointsLabel: `${points} pts`,
+    rankLabel: getRankLabelFromSource(result),
+  };
+
+  addTrackToCategory(category, trackLabel);
+
+  if (!row.trackMap[track.key]) {
+    const summary = {
+      trackKey: track.key,
+      trackLabel: track.label,
+      totalPoints: 0,
+      entries: [],
+    };
+    row.trackMap[track.key] = summary;
+    row.trackSummaries.push(summary);
+  }
+
+  row.trackMap[track.key].entries.push(entry);
+  row.trackMap[track.key].totalPoints += points;
+  row.totalPoints += points;
+};
+
 export const getCategoriesFromSnapshot = snapshot => {
   const sourceCategories = Array.isArray(snapshot?.leaderboard?.categories)
     ? snapshot.leaderboard.categories
     : Array.isArray(snapshot?.categories)
       ? snapshot.categories
       : [];
+  const categoryMap = new Map();
 
-  return sourceCategories.map(normalizeCategory).filter(category => category.key);
+  sourceCategories.forEach(category => {
+    const normalizedCategory = normalizeCategory(category);
+    if (normalizedCategory.key) {
+      normalizedCategory.__hasRenderedRows = normalizedCategory.rows.length > 0;
+      categoryMap.set(normalizedCategory.key, normalizedCategory);
+    }
+  });
+
+  (Array.isArray(snapshot?.categoryOptions) ? snapshot.categoryOptions : []).forEach(categoryOption => {
+    ensureCategory(categoryMap, categoryOption);
+  });
+
+  (Array.isArray(snapshot?.results) ? snapshot.results : []).forEach(addResultToCategory.bind(null, categoryMap));
+  (Array.isArray(snapshot?.disputes) ? snapshot.disputes : []).forEach(addResultToCategory.bind(null, categoryMap));
+  (Array.isArray(snapshot?.teams) ? snapshot.teams : []).forEach(addTeamToCategory.bind(null, categoryMap));
+
+  return [...categoryMap.values()]
+    .map(normalizeCategory)
+    .filter(category => category.key && category.rows.length);
 };
 
 export const buildLeaderboardDetailIndex = snapshot => {
@@ -422,6 +801,15 @@ export const getFirstDefinedValue = (...values) => {
   return 0;
 };
 
+export const getNumericValue = value => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  const matchedValue = String(value || "").match(/-?\d+/);
+  return matchedValue ? Number(matchedValue[0]) : null;
+};
+
 export const getLateStartStatusLabel = record => {
   const status = record?.late_start_status || record?.lateStartStatus;
 
@@ -433,6 +821,30 @@ export const getLateStartStatusLabel = record => {
   return count > 0 ? "Yes" : "No";
 };
 
+export const getLateStartPenaltyPointsValue = record => {
+  const mode = normalizeText(record?.late_start_mode || record?.lateStartMode).toLowerCase();
+  const status = normalizeText(record?.late_start_status || record?.lateStartStatus).toLowerCase();
+  const hasLateStartPenalty = mode === "late_start" || status === "late start";
+
+  if (!hasLateStartPenalty) {
+    return 0;
+  }
+
+  const points = getNumericValue(record?.late_start_penalty_points ?? record?.lateStartPenaltyPoints);
+  return points === null ? 0 : Math.min(100, Math.max(0, points));
+};
+
+export const getLateStartPenaltyDisplay = record => {
+  const penaltyPoints = getLateStartPenaltyPointsValue(record);
+
+  if (penaltyPoints > 0) {
+    return `${penaltyPoints} pts`;
+  }
+
+  const penaltyTime = getFirstDefinedValue(record?.late_start_penalty_time, record?.lateStartPenaltyTime);
+  return penaltyTime ? `${penaltyTime} sec` : "--";
+};
+
 export const isDnsResult = record =>
   getBooleanFlagValue(record?.is_dns ?? record?.isDNS ?? record?.isDns);
 
@@ -441,10 +853,39 @@ export const isDnfResult = record => {
     return true;
   }
 
+  if (getDnfBreakdownLabel(record)) {
+    return true;
+  }
+
   const totalTime = String(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay || "")
     .trim()
     .toUpperCase();
   return totalTime.startsWith("DNF");
+};
+
+export const getDnfBreakdownLabel = record => {
+  const dnfReasonFields = [
+    { label: "Wrong Course", keys: ["wrong_course_selected", "wrongCourseSelected"] },
+    { label: "4th Attempt", keys: ["fourth_attempt_selected", "fourthAttemptSelected"] },
+    { label: "Time Over", keys: ["time_over_selected", "timeOverSelected"] },
+    { label: "Vehicle Out of the Track", keys: ["vehicle_out_of_track_selected", "vehicleOutOfTrackSelected"] },
+    { label: "Vehicle Breakdown", keys: ["vehicle_breakdown_selected", "vehicleBreakdownSelected"] },
+  ];
+  const matchedReason = dnfReasonFields.find(reason => reason.keys.some(key => getBooleanFlagValue(record?.[key])));
+
+  if (matchedReason?.label) {
+    return matchedReason.label;
+  }
+
+  const storedLabel = normalizeText(
+    record?.total_time ||
+      record?.totalTimeDisplay ||
+      record?.performance_time ||
+      record?.performanceTimeDisplay ||
+      ""
+  );
+  const storedReasonMatch = storedLabel.match(/^DNF\s*-\s*(.+)$/i);
+  return storedReasonMatch ? storedReasonMatch[1].trim() : "";
 };
 
 export const getDisputeResolutionLabel = record => {
@@ -621,7 +1062,7 @@ export const buildPenaltyRows = record => [
   {
     label: "Late Start",
     count: getFirstDefinedValue(record?.late_start_count, record?.lateStartCount),
-    penalty: getFirstDefinedValue(record?.late_start_penalty_time, record?.lateStartPenaltyTime),
+    penalty: getLateStartPenaltyDisplay(record),
     note: getLateStartStatusLabel(record),
   },
   {
@@ -652,6 +1093,7 @@ export const buildResultFlagItems = record => [
   { label: "4th Attempt", value: getYesNoLabel(record?.fourth_attempt_selected ?? record?.fourthAttemptSelected) },
   { label: "Time Over", value: getYesNoLabel(record?.time_over_selected ?? record?.timeOverSelected) },
   { label: "Vehicle Out of the Track", value: getYesNoLabel(record?.vehicle_out_of_track_selected ?? record?.vehicleOutOfTrackSelected) },
+  { label: "Vehicle Breakdown", value: getYesNoLabel(record?.vehicle_breakdown_selected ?? record?.vehicleBreakdownSelected) },
   { label: "DNF Selection", value: getRecordValue(record, ["dnf_selection", "dnfSelection"]) },
   { label: "DNF Points", value: getRecordValue(record, ["dnf_points", "dnfPoints"], 0) },
 ];
@@ -671,7 +1113,7 @@ export const buildDetailSections = record => [
       { label: "Status", value: record?.late_start_status || record?.lateStartStatus },
       { label: "Mode", value: record?.late_start_mode || record?.lateStartMode },
       { label: "Count", value: record?.late_start_count || record?.lateStartCount },
-      { label: "Penalty Time", value: record?.late_start_penalty_time || record?.lateStartPenaltyTime },
+      { label: "Penalty Points", value: getLateStartPenaltyDisplay(record) },
     ],
   },
   {
@@ -695,6 +1137,11 @@ const DISPUTE_PARTY_LABEL_BY_KEY = DISPUTE_PARTY_OPTIONS.reduce((acc, item) => {
   acc[item.key] = item.label;
   return acc;
 }, {});
+
+const DISPUTE_SIGNATURE_OPTIONS = [
+  { key: "driver", label: "Driver" },
+  { key: "coDriver", label: "Co-driver" },
+];
 
 const DISPUTE_DETAIL_INPUTLESS_KEYS = new Set(["byTeam", "byOpponent"]);
 
@@ -752,6 +1199,61 @@ export const getDisputeDetailEntries = source => {
 export const getDisputePartyKeysWithDetails = record => {
   const partyKeys = [...new Set(getDisputeDetailEntries(record).map(entry => entry.partyKey).filter(Boolean))];
   return partyKeys.length ? partyKeys : DISPUTE_PARTY_OPTIONS.map(party => party.key);
+};
+
+export const getDisputeSignedByLabels = (record, partyKey = "byTeam") => {
+  if (partyKey !== "byTeam") {
+    return [];
+  }
+
+  const rawSignatures = safeParseJsonValue(record?.disputeSignatures ?? record?.dispute_signatures ?? {});
+  const rawSignedBy = safeParseJsonValue(record?.disputeSignedBy ?? record?.dispute_signed_by ?? []);
+  const byTeamSignature =
+    rawSignatures?.byTeam ||
+    rawSignatures?.by_team ||
+    rawSignatures?.team ||
+    rawSignatures ||
+    {};
+  const signedByMap = {};
+
+  if (byTeamSignature && typeof byTeamSignature === "object" && !Array.isArray(byTeamSignature)) {
+    signedByMap.driver = Boolean(byTeamSignature.driver);
+    signedByMap.coDriver = Boolean(
+      byTeamSignature.coDriver || byTeamSignature.co_driver || byTeamSignature.codriver
+    );
+  }
+
+  const signedByList = Array.isArray(rawSignedBy)
+    ? rawSignedBy
+    : typeof rawSignedBy === "string"
+      ? rawSignedBy.split(",")
+      : [];
+
+  signedByList.forEach(value => {
+    const normalizedValue = normalizeText(value).toLowerCase().replace(/[\s_-]+/g, "");
+
+    if (normalizedValue === "driver") {
+      signedByMap.driver = true;
+    }
+
+    if (normalizedValue === "codriver") {
+      signedByMap.coDriver = true;
+    }
+  });
+
+  return DISPUTE_SIGNATURE_OPTIONS.filter(option => Boolean(signedByMap[option.key])).map(option => option.label);
+};
+
+export const buildDisputeSignatureItems = (record, partyKey = "byTeam", shouldShowUnsigned = true) => {
+  const signedByLabels = getDisputeSignedByLabels(record, partyKey);
+
+  if (signedByLabels.length) {
+    return [{ label: "Dispute Signed In By", value: signedByLabels.join(", ") }];
+  }
+
+  return partyKey === "byTeam" && shouldShowUnsigned
+    ? [{ label: "Dispute Signed In By", value: "Not signed" }]
+    : [];
 };
 
 export const getDisputeResolutionLabelForStatus = status => {
@@ -843,12 +1345,14 @@ export const appendDisputeResolutionSection = record => {
     };
     const resolution = disputeResolutions[partyKey] || {};
     const detailItems = buildDisputeDetailItems(record, partyKey);
+    const hasPartyDispute = Boolean(resolution.status || resolution.label || detailItems.length);
     const statusLabel = resolution.label || (detailItems.length ? "Pending" : "No Dispute Raised");
 
     return {
       title: `Dispute Resolution - ${party.label}`,
       items: [
         { label: "Status", value: statusLabel },
+        ...buildDisputeSignatureItems(record, partyKey, hasPartyDispute),
         ...(resolution.penaltyDecisionLabel && resolution.penaltyDecisionLabel !== statusLabel
           ? [{ label: "TKO Decision", value: resolution.penaltyDecisionLabel }]
           : []),
@@ -880,7 +1384,10 @@ export const appendDisputeDetailsSection = record => {
 
       return {
         title: `Dispute Details - ${party.label}`,
-        items: disputeDetailItems,
+        items: [
+          ...buildDisputeSignatureItems(record, partyKey),
+          ...disputeDetailItems,
+        ],
       };
     })
     .filter(Boolean);
@@ -891,7 +1398,8 @@ export const buildRawRecordItems = record => [
   { label: "Total Penalties", value: record?.total_penalties_time || record?.totalPenaltiesTime },
   { label: "Total Time", value: record?.total_time || record?.totalTimeDisplay },
   { label: "Late Start Status", value: record?.late_start_status || record?.lateStartStatus },
-  { label: "Late Start Penalty", value: record?.late_start_penalty_time || record?.lateStartPenaltyTime },
+  { label: "Late Start Penalty", value: getLateStartPenaltyDisplay(record) },
+  { label: "DNF Reason", value: getDnfBreakdownLabel(record) },
   { label: "DNF Points", value: record?.dnf_points ?? record?.dnfPoints },
 ];
 

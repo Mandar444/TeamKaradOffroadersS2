@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Trophy, Users, Calendar, MapPin } from "lucide-react";
+import RegistrationLink from "@/components/RegistrationLink";
 
 function RealisticTrophyIcon({ className = "" }) {
   return (
@@ -246,7 +247,7 @@ export default function Hero() {
     ["SUV Jimny", "12,000", "10,000", "7,000"],
     ["SUV Modified", "15,000", "12,000", "10,000"],
     ["NDMS Category", "10,000", "7,000", "5,000"],
-    ["Extreme Category", "25,000", "20,000", "15,000"],
+    ["Open Category", "25,000", "20,000", "15,000"],
     ["Ladies Category", "Trophy", "Trophy", "Trophy"],
   ];
   const prizeGifts = ["Tyre Set", "Rim Sets", "Locker", "Many More Gifts"];
@@ -342,12 +343,12 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
-              <Link 
+              <RegistrationLink
                 href="/register" 
                 className={cn(buttonVariants({ size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold rounded-none skew-x-[-12deg] neon-glow bg-primary text-black inline-flex items-center justify-center w-full max-w-sm sm:w-auto")}
               >
                 <span className="skew-x-[12deg] whitespace-nowrap uppercase">REGISTER NOW</span>
-              </Link>
+              </RegistrationLink>
             <Link 
               href="/teams" 
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-14 md:h-16 px-6 md:px-10 text-sm md:text-lg font-bold border-zinc-700 hover:bg-white/5 transition-colors w-full sm:w-auto flex items-center justify-center")}
@@ -468,13 +469,10 @@ export default function Hero() {
 
           <div className="mt-10 space-y-2 pointer-events-none">
              <p className="text-white font-black text-xs md:text-lg tracking-[0.2em] uppercase drop-shadow-glow">
-                EARLY ENTRY: 19 MARCH — 15 MAY
-             </p>
-             <p className="text-primary font-black text-xs md:text-lg tracking-[0.2em] uppercase drop-shadow-glow">
-                LATE ENTRY: 16 MAY — 22 MAY
+                ENTRY: 19 MARCH — 25 MAY
              </p>
              <p className="text-zinc-500 font-bold text-[10px] md:text-sm tracking-[0.4em] uppercase mt-4">
-                FINAL DEADLINE: 22 MAY 2026
+                FINAL DEADLINE: 25 MAY 2026
              </p>
           </div>
         </motion.div>

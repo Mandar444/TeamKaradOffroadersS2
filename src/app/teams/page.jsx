@@ -20,7 +20,7 @@ const CATEGORY_STYLES = {
   "SUV_MODIFIED": "from-zinc-600 to-zinc-900",
   "JIMNY_SUV": "from-green-500 to-green-700",
   "STOCK_NDMS": "from-emerald-500 to-teal-600",
-  "EXTREME": "from-purple-600 to-red-600",
+  "OPEN": "from-purple-600 to-red-600",
   "LADIES": "from-pink-500 to-rose-600"
 };
 
@@ -30,13 +30,6 @@ export default function TeamsPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("ALL");
   const [selectedTeam, setSelectedTeam] = useState(null);
-
-  const DEMO_TEAMS = [
-    { car_number: 7, team_name: "Sahyadri Warriors", driver_name: "Mandar Karad", codriver_name: "Akshay Patil", category: "DIESEL_MODIFIED", vehicle_name: "Mahindra Thar", vehicle_model: "CRDe 2024", driver_blood_group: "O+", codriver_blood_group: "A+", socials: "@mandarkarad" },
-    { car_number: 24, team_name: "Thunder Bolts", driver_name: "Rohan Deshmukh", codriver_name: "Vikram Jadhav", category: "PETROL_MODIFIED", vehicle_name: "Maruti Gypsy", vehicle_model: "King 1.3", driver_blood_group: "B+", codriver_blood_group: "AB+", socials: "@thunderracing" },
-    { car_number: 99, team_name: "Mud Raiders", driver_name: "Amit Patil", codriver_name: "Sagar Shinde", category: "STOCK_NDMS", vehicle_name: "Force Gurkha", vehicle_model: "5-Door 2024", driver_blood_group: "O-", codriver_blood_group: "O+", socials: "@mudraiders" },
-    { car_number: 1, team_name: "Apex Raptors", driver_name: "Suresh Gupta", codriver_name: "Sameer Khan", category: "EXTREME", vehicle_name: "Custom Monster", vehicle_model: "2024 Build", driver_blood_group: "A+", codriver_blood_group: "B+", socials: "@apexraptors" },
-  ];
 
   useEffect(() => {
     fetch("/api/teams")
@@ -121,6 +114,21 @@ export default function TeamsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {loading ? (
+            <div className="col-span-full rounded-[2rem] border border-white/10 bg-zinc-950/70 p-8 text-center text-sm font-black uppercase tracking-[0.18em] text-primary">
+              Loading participants...
+            </div>
+          ) : null}
+
+          {!loading && filteredTeams.length === 0 ? (
+            <div className="col-span-full rounded-[2rem] border border-white/10 bg-zinc-950/70 p-8 text-center">
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-primary">Participants</p>
+              <p className="mt-3 text-sm font-bold uppercase tracking-[0.12em] text-zinc-400">
+                No participant data matched the current filters.
+              </p>
+            </div>
+          ) : null}
+
           {filteredTeams.map((team, idx) => (
             <motion.div
               layout

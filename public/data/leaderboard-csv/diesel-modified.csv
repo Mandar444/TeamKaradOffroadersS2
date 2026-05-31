@@ -1,0 +1,15 @@
+position,category_key,category_label,sticker_number,team_name,driver_name,codriver_name,total_points,total_timing_ms,total_timing_label,shivneri_time,shivneri_points,shivneri_rank,shivneri_day,raigad_time,raigad_points,raigad_rank,raigad_day,paratapgad_time,paratapgad_points,paratapgad_rank,paratapgad_day,harihar_time,harihar_points,harihar_rank,harihar_day,vasota_time,vasota_points,vasota_rank,vasota_day,lohgad_time,lohgad_points,lohgad_rank,lohgad_day,sarasgad_time,sarasgad_points,sarasgad_rank,sarasgad_day
+1,DIESEL_MODIFIED,Diesel Modified,21,Accelerator Boyz goa,Steven Fernandes,Balwant Jagram,582,1462330,,06:13:83,100,P1,D1,,,,,05:13:57,95,P2,D2,04:48:54,87,P4,D2,02:32:53,100,P1,D1,03:07:81,100,P1,D2,02:26:05,100,P1,D2
+2,DIESEL_MODIFIED,Diesel Modified,44,SAHYADRI OFFROADERS,SARJERAO KAWADE,RUSHI,492,1285370,,06:46:79,95,P2,D1,,,,,04:18:69,100,P1,D2,02:56:91,100,P1,D2,03:21:53,87,P4,D1,04:01:45,90,P3,D2,DNF,20,DNF,D2
+3,DIESEL_MODIFIED,Diesel Modified,32,Sahyadri Offroaders,Prakash Salunkhe,Nilkil Bhadale,436,1783220,,09:12:05,87,P4,D1,,,,,DNF,20,DNF,D2,04:07:08,90,P3,D2,05:36:74,79,P8,D1,05:23:25,80,P7,D2,05:24:10,80,P7,D2
+4,DIESEL_MODIFIED,Diesel Modified,9,Team Goa,Abhishek pawar ,Nijen Cardozo ,382,1114550,,06:53:32,90,P3,D1,,,,,,,,,03:46:68,95,P2,D2,DNF,20,DNF,D1,04:50:30,87,P4,D2,03:04:25,90,P3,D2
+5,DIESEL_MODIFIED,Diesel Modified,90,WESTERN GHATS OFFROAD CLUB GOA,Sairaj Sinai Budkuley,Mohak pai Kuchelkar ,375,956820,,DNF,20,DNF,D1,,,,,,,,,05:11:73,84,P5,D2,04:07:30,81,P6,D1,03:34:89,95,P2,D2,03:02:90,95,P2,D2
+6,DIESEL_MODIFIED,Diesel Modified,23,DAKKHAN OFFROADERS,SHREYES,DR.RAHOUL,357,1086710,,DNF,20,DNF,D1,,,,,,,,,05:23:35,81,P6,D2,03:14:76,90,P3,D1,05:43:95,79,P8,D2,03:44:65,87,P4,D2
+7,DIESEL_MODIFIED,Diesel Modified,55,TEAM GOA,MOHAMMED MANTAKI,RUTHIK DABOLKAR,282,579200,,DNF,20,DNF,D1,,,,,,,,,DNF,50,DNF,D2,DNF,50,DNF,D1,05:11:00,81,P6,D2,04:28:20,81,P6,D2
+8,DIESEL_MODIFIED,Diesel Modified,28,TEAM KOLHAPUR,Digvijay Lolage,Varad Nakate,280,1175080,,DNF,20,DNF,D1,,,,,,,,,08:06:67,79,P8,D2,DNF,20,DNF,D1,07:23:31,77,P10,D2,04:05:10,84,P5,D2
+9,DIESEL_MODIFIED,Diesel Modified,72,DAKKHAN OFFROADERS,SANKET PATIL,YASHRAJ PATIL,277,1077610,,DNF,20,DNF,D1,,,,,,,,,05:36:13,80,P7,D2,06:11:11,78,P9,D1,DNF,20,DNF,D2,06:10:37,79,P8,D2
+10,DIESEL_MODIFIED,Diesel Modified,25,Team Danav,Subhash Utekar,Cyril Dmello,199,453720,,DNF,20,DNF,D1,,,,,,,,,DNS,0,DNS,D2,02:36:68,95,P2,D1,04:57:04,84,P5,D2,DNS,0,DNS,D2
+11,DIESEL_MODIFIED,Diesel Modified,99,TEAM BULLET YADAV,BULLET YADAV,MANOJ DESAI,178,717090,,DNF,20,DNF,D1,,,,,,,,,DNS,0,DNS,D2,04:57:72,80,P7,D1,06:59:37,78,P9,D2,DNS,0,DNS,D2
+12,DIESEL_MODIFIED,Diesel Modified,79,KA28offroaders,Manoj,Aditya N,124,234080,,DNF,20,DNF,D1,,,,,,,,,DNS,0,DNS,D2,03:54:08,84,P5,D1,DNF,20,DNF,D2,DNS,0,DNS,D2
+13,DIESEL_MODIFIED,Diesel Modified,27,BAAZ,Malkit Singh Saini,Gurdeep Singh Saini,0,0,,DNS,0,DNS,D1,,,,,,,,,DNS,0,DNS,D2,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2
+14,DIESEL_MODIFIED,Diesel Modified,04,Satara Offroaders,Pratikraj Aaba Mohite,Asif Faras,0,0,,DNS,0,DNS,D1,,,,,DNS,0,DNS,D2,DNS,0,DNS,D2,DNS,0,DNS,D1,DNS,0,DNS,D2,DNS,0,DNS,D2

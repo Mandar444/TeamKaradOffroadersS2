@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, ClipboardList } from "lucide-react";
+import { BookOpen, CalendarDays, ClipboardList, Clock, MapPin } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   penaltySummaryRows,
@@ -9,6 +9,104 @@ import {
   ruleBookIntro,
   ruleBookSections,
 } from "@/data/rule-book";
+
+const eventScheduleDays = [
+  {
+    day: "Day 1",
+    date: "29/05/2026",
+    tracks: "2 competition tracks for day one.",
+    items: [
+      {
+        time: "8:00 AM - 10:00 AM",
+        detail:
+          "Registration, scrutiny and distribution of stickers. Welcome, event introduction, safety briefing, participant guidelines, regulations, verbal technical checks, and vehicle standards review.",
+      },
+      {
+        time: "10:30 AM",
+        detail: "Convoy moves to the track location after flag off.",
+      },
+      {
+        time: "11:15 AM",
+        detail: "Reach track location.",
+      },
+      {
+        time: "11:30 AM",
+        detail:
+          "Briefing and walkthrough starts on the respective tracks. Walkthrough and briefing will be given only once strictly.",
+      },
+      {
+        time: "11:45 AM",
+        detail: "Event starts on the respective tracks. Track 1 begins.",
+      },
+      {
+        time: "1:30 PM - 2:00 PM",
+        detail: "Lunch. Track 2 follows.",
+      },
+      {
+        time: "Evening",
+        detail: "Announcement of Day 1 results on the respective WhatsApp group.",
+      },
+    ],
+  },
+  {
+    day: "Day 2",
+    date: "30/05/2026",
+    tracks: "4 competition tracks for day two.",
+    items: [
+      {
+        time: "8:30 AM - 9:00 AM",
+        detail: "Reporting at the track location.",
+      },
+      {
+        time: "9:30 AM",
+        detail: "Competition rounds start on the respective tracks. 2 tracks begin.",
+      },
+      {
+        time: "1:00 PM - 1:30 PM",
+        detail: "Lunch break.",
+      },
+      {
+        time: "1:45 PM - 6:00 PM",
+        detail: "Next rounds of the competition start. 2 tracks continue.",
+      },
+      {
+        time: "6:30 PM",
+        detail: "Day 2 concludes.",
+      },
+      {
+        time: "Evening",
+        detail: "Announcement of Day 2 results on the respective WhatsApp groups.",
+      },
+    ],
+  },
+  {
+    day: "Day 3",
+    date: "31/05/2026",
+    tracks: "1/2 competition tracks for day three.",
+    items: [
+      {
+        time: "8:30 AM - 9:00 AM",
+        detail: "Reporting at the track location.",
+      },
+      {
+        time: "9:30 AM",
+        detail: "Competition rounds start on the respective tracks.",
+      },
+      {
+        time: "1:00 PM",
+        detail: "Track ends.",
+      },
+      {
+        time: "2:00 PM",
+        detail: "Lunch at flag off location.",
+      },
+      {
+        time: "3:00 PM",
+        detail: "Prize distribution and farewell.",
+      },
+    ],
+  },
+];
 
 const expertColumns = [
   "Description",
@@ -575,18 +673,103 @@ function RuleList({ items }) {
   );
 }
 
+function EventSchedulePanel() {
+  return (
+    <div className="space-y-8">
+      <div className="rounded-[2rem] border border-[#ff8a00]/25 bg-zinc-950/80 p-5 shadow-[0_0_35px_rgba(255,138,0,0.08)] sm:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#ff8a00]">
+              Team Karad Offroaders Season 2
+            </p>
+            <h2 className="mt-3 font-heading text-3xl uppercase italic leading-none text-white sm:text-5xl">
+              Event Schedule
+            </h2>
+          </div>
+          <div className="grid gap-3 text-sm text-zinc-300 sm:grid-cols-2 md:min-w-[26rem]">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/50 px-4 py-3">
+              <CalendarDays className="h-5 w-5 shrink-0 text-[#ff8a00]" />
+              <span className="font-black uppercase tracking-[0.14em]">29/30/31 May 2026</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/50 px-4 py-3">
+              <MapPin className="h-5 w-5 shrink-0 text-[#ff8a00]" />
+              <span className="font-black uppercase tracking-[0.14em]">Karad, Maharashtra</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-3 text-sm leading-7 text-zinc-300 sm:text-base">
+          <p>
+            This is the official schedule for Karad Offroad Season 2 scheduled on 29th, 30th and 31st May 2026 at Karad,
+            Maharashtra.
+          </p>
+          <p>
+            All participants are requested to strictly follow the event schedule for smooth functioning, coordination, and
+            flow of the competition throughout all three days.
+          </p>
+          <p className="font-bold text-zinc-100">
+            Kindly report on time for registrations, briefings, walkthroughs, and competition rounds. Track walkthroughs
+            and briefings will be conducted only once as per the schedule.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        {eventScheduleDays.map((day) => (
+          <section
+            key={day.day}
+            className="rounded-[2rem] border border-white/10 bg-zinc-950/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-6"
+          >
+            <div className="border-b border-white/10 pb-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff8a00]">{day.date}</p>
+              <h3 className="mt-2 font-heading text-3xl uppercase italic text-white">{day.day}</h3>
+              <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-zinc-500">{day.tracks}</p>
+            </div>
+
+            <ol className="mt-5 space-y-4">
+              {day.items.map((item) => (
+                <li key={`${day.day}-${item.time}`} className="flex gap-3">
+                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ff8a00]/15 text-[#ff8a00]">
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs font-black uppercase tracking-[0.12em] text-[#ffb25a]">
+                      {item.time}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-zinc-300">{item.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
+
+      <div className="rounded-[2rem] border border-white/10 bg-black/70 p-5 text-center text-sm leading-7 text-zinc-300 sm:p-8 sm:text-base">
+        Your cooperation and discipline will help us conduct a safe, professional, and exciting offroad event for everyone.
+        <span className="block font-bold text-white">Thank you for your support. Team Karad Off-roaders.</span>
+      </div>
+    </div>
+  );
+}
+
 export default function RegulationsPage() {
   const [activeTab, setActiveTab] = useState("vehicle-specifications");
   const isRuleBookTab = activeTab === "rule-book";
+  const isScheduleTab = activeTab === "event-schedule";
 
   return (
     <main className="min-h-screen bg-black px-4 pb-20 pt-24 text-white sm:px-6 md:pt-32">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(255,138,0,0.18),transparent_62%)]" />
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mb-10 max-w-4xl">
-          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.5em] text-[#ff8a00]">Regulations</p>
+          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.5em] text-[#ff8a00]">Event Regulatory</p>
           <h1 className="font-heading text-5xl uppercase leading-none tracking-tight sm:text-7xl md:text-8xl">
-            {isRuleBookTab ? (
+            {isScheduleTab ? (
+              <>
+                Event <span className="text-[#ff8a00] italic">Schedule</span>
+              </>
+            ) : isRuleBookTab ? (
               <span className="text-[#ff8a00] italic">Rulebook</span>
             ) : (
               <>
@@ -595,9 +778,11 @@ export default function RegulationsPage() {
             )}
           </h1>
           <p className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-            {isRuleBookTab
-              ? "Team Karad Offroaders Season 2 - 2026 penalty and details competition rules."
-              : "Team Karad Offroaders Season 2 - 2026 specification tables reproduced from the official PDF."}
+            {isScheduleTab
+              ? "Team Karad Offroaders Season 2 - 2026 official three-day event schedule."
+              : isRuleBookTab
+                ? "Team Karad Offroaders Season 2 - 2026 penalty and details competition rules."
+                : "Team Karad Offroaders Season 2 - 2026 specification tables reproduced from the official PDF."}
           </p>
         </div>
 
@@ -618,18 +803,25 @@ export default function RegulationsPage() {
                 <BookOpen className="h-5 w-5" />
                 Rule Book
               </TabsTrigger>
+              <TabsTrigger
+                value="event-schedule"
+                className="gap-3 rounded-2xl border border-transparent px-5 py-4 font-heading text-[11px] uppercase tracking-[0.2em] text-zinc-300 transition-all hover:border-[#ff8a00]/30 hover:text-white data-[state=active]:border-[#ffb25a] data-[state=active]:bg-[#ff8a00] data-[state=active]:text-black data-[state=active]:shadow-[0_0_28px_rgba(255,138,0,0.35)] sm:px-7 sm:text-sm"
+              >
+                <CalendarDays className="h-5 w-5" />
+                Event Schedule
+              </TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="vehicle-specifications" className="space-y-10">
             <SpecTable
-              title="TEAM KARAD OFFROADERS SEASON 2 - 2026 EXPERT, MODIFIED, EXTREME CLASS CATEGORIZATION"
+              title="TEAM KARAD OFFROADERS SEASON 2 - 2026 EXPERT, MODIFIED, OPEN CLASS CATEGORIZATION"
               columns={expertColumns}
               groups={[
                 { label: "Description", span: 1 },
                 { label: "Expert Class", span: 2 },
                 { label: "Modified Class", span: 2 },
-                { label: "Extreme", span: 1 },
+                { label: "Open", span: 1 },
               ]}
               rows={expertRows}
             />
@@ -671,6 +863,10 @@ export default function RegulationsPage() {
 
           <TabsContent value="rule-book" className="space-y-10">
             <RuleBookPanel />
+          </TabsContent>
+
+          <TabsContent value="event-schedule" className="space-y-10">
+            <EventSchedulePanel />
           </TabsContent>
         </Tabs>
       </div>

@@ -6,6 +6,7 @@ import { Gauge, Fuel, Cog, Zap, ShieldCheck, Trophy, Info, ChevronLeft, LayoutGr
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import RegistrationLink from "@/components/RegistrationLink";
 
 const beastData = {
     "stallion": {
@@ -33,7 +34,7 @@ const beastData = {
     specs: [
       { label: "Engine", value: "Engineered High-Torque", icon: Fuel },
       { label: "Performance", value: "Lockers / Fiddle Brakes", icon: Zap },
-      { label: "Stability", value: "Extreme Climbing", icon: Gauge },
+      { label: "Stability", value: "Open Climbing", icon: Gauge },
       { label: "Tactical", value: "High performance offroad", icon: Cog },
     ],
     gallery: [
@@ -66,7 +67,7 @@ const beastData = {
      type: "MODIFIED & PRO-MODIFIED",
      category: "MODIFIED / PRO-MODIFIED",
      heroImage: "/images/beasts/jeep3210/jeep3210-hero.jpg",
-     desc: "3210 is another formidable off-road machine from Team Karad Offroaders, engineered to perform in the most demanding off-road racing environments. Built with extensive professional modifications, this jeep is designed to deliver exceptional power, control, and reliability while tackling extreme terrains and technical obstacles. What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles.",
+     desc: "3210 is another formidable off-road machine from Team Karad Offroaders, engineered to perform in the most demanding off-road racing environments. Built with extensive professional modifications, this jeep is designed to deliver exceptional power, control, and reliability while tackling open terrains and technical obstacles. What truly sets 3210 apart is its reverse steering capability, a specialized feature that provides superior maneuverability in tight and technical obstacles.",
      specs: [
        { label: "Maneuver", value: "REVERSE STEERING", icon: Activity },
        { label: "Control", value: "FIDDLE BRAKES / LOCKERS", icon: Zap },
@@ -119,7 +120,7 @@ const beastData = {
      type: "EXPERT DIVISION BUILD",
      category: "EXPERT",
      heroImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop",
-     desc: "Major is the expert level warrior, proving that true capability lies in simplicity and skill. Pushing it through extreme off-road challenges is a test of both the vehicle and the driver's confidence.",
+     desc: "Major is the expert level warrior, proving that true capability lies in simplicity and skill. Pushing it through open off-road challenges is a test of both the vehicle and the driver's confidence.",
      specs: [
        { label: "OEM", value: "Expert Tuning", icon: Fuel },
        { label: "Core", value: "Reinforced Structure", icon: Zap },
@@ -302,9 +303,9 @@ export default function BeastDetailPage() {
       <section className="py-20 px-6">
          <div className="max-w-4xl mx-auto p-12 bg-primary/5 border border-primary/10 rounded-[3rem] text-center">
              <h2 className="text-4xl font-heading text-white uppercase italic mb-8">BUILD YOUR OWN <span className="text-primary"> LEGEND?</span></h2>
-             <Link href="/register" className="inline-flex h-16 px-12 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-all text-sm">
+             <RegistrationLink href="/register" className="inline-flex h-16 px-12 items-center justify-center bg-primary text-black font-black uppercase tracking-widest rounded-2xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-all text-sm">
                 JOIN SEASON 2 GRID
-             </Link>
+             </RegistrationLink>
          </div>
       </section>
     </div>
