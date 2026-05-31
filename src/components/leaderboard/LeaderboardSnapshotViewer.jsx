@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Info, Pencil, RefreshCw, Trash2 } from "lucide-react";
-import { CATEGORY_PREFIXES } from "@/config/pricing";
 import {
   fetchLeaderboardSnapshot,
   fetchLeaderboardVisibility,
@@ -14,6 +13,7 @@ import {
   normalizeShortIdentityKey,
   normalizeTrackKey,
 } from "@/lib/leaderboard-snapshot";
+import { formatStickerNumber, normalizeStickerIdentity } from "@/lib/sticker-number";
 
 function TotalCell({ total, maxPoints }) {
   const totalLabel = Number.isFinite(Number(maxPoints)) && Number(maxPoints) > 0
@@ -55,34 +55,6 @@ const normalizeParticipantCategoryKey = value => {
   return normalized;
 };
 
-const getStickerPrefixForCategory = categoryKey => {
-  const normalized = normalizeParticipantCategoryKey(categoryKey);
-
-  if (normalized === "LADIES_CATEGORY") {
-    return CATEGORY_PREFIXES.LADIES || "LC";
-  }
-
-  return CATEGORY_PREFIXES[normalized] || "";
-};
-
-const formatDisplayStickerNumber = (categoryKey, stickerNumber) => {
-  const rawSticker = String(stickerNumber || "")
-    .trim()
-    .replace(/^#/, "")
-    .replace(/\s+/g, "")
-    .toUpperCase();
-
-  if (!rawSticker) {
-    return "";
-  }
-
-  if (/^[A-Z]+/.test(rawSticker)) {
-    return rawSticker;
-  }
-
-  return `${getStickerPrefixForCategory(categoryKey)}${rawSticker}`;
-};
-
 const getParticipantCarNumber = participant =>
   String(participant?.car_number ?? participant?.sticker_number ?? participant?.stickerNumber ?? "")
     .trim()
@@ -90,7 +62,7 @@ const getParticipantCarNumber = participant =>
 
 const getParticipantMatchKeys = ({ categoryKey, stickerNumber, driverName, coDriverName }) => {
   const category = normalizeParticipantCategoryKey(categoryKey);
-  const sticker = normalizeParticipantCompactValue(String(stickerNumber || "").replace(/^#/, ""));
+  const sticker = normalizeParticipantCompactValue(normalizeStickerIdentity(categoryKey, stickerNumber));
   const driver = normalizeParticipantCompactValue(driverName);
   const coDriver = normalizeParticipantCompactValue(coDriverName);
 
@@ -958,7 +930,7 @@ export default function LeaderboardSnapshotViewer({
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <span className="font-mono text-[17px] font-black text-[#fff7ef]">
-                      #{formatDisplayStickerNumber(activeCategory?.key, row.stickerNumber) || "--"}
+                      #{formatStickerNumber(activeCategory?.key, row.stickerNumber) || "--"}
                     </span>
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">

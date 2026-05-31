@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Clock, Minus, Plus, RefreshCw, Send, Upload } from "lucide-react";
-import { CATEGORY_PREFIXES } from "@/config/pricing";
 import { LEADERBOARD_CSV_CATEGORIES } from "@/lib/leaderboard-csv";
+import { formatStickerNumber } from "@/lib/sticker-number";
 
 const COUNTERS = [
   { key: "bunting_count", label: "Bunting Cut", seconds: 20, group: "Penalties" },
@@ -54,34 +54,6 @@ const getParticipantSticker = participant =>
   String(participant?.car_number || participant?.sticker_number || participant?.stickerNumber || "")
     .trim()
     .replace(/^#/, "");
-
-const getStickerPrefixForCategory = categoryKey => {
-  const normalized = normalizeCategoryKey(categoryKey);
-
-  if (normalized === "LADIES_CATEGORY") {
-    return CATEGORY_PREFIXES.LADIES || "LC";
-  }
-
-  return CATEGORY_PREFIXES[normalized] || "";
-};
-
-const formatStickerNumber = (categoryKey, stickerNumber) => {
-  const rawSticker = String(stickerNumber || "")
-    .trim()
-    .replace(/^#/, "")
-    .replace(/\s+/g, "")
-    .toUpperCase();
-
-  if (!rawSticker) {
-    return "";
-  }
-
-  if (/^[A-Z]+/.test(rawSticker)) {
-    return rawSticker;
-  }
-
-  return `${getStickerPrefixForCategory(categoryKey)}${rawSticker}`;
-};
 
 const INITIAL_FORM = {
   team_name: "",

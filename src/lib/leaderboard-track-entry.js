@@ -7,6 +7,7 @@ import {
   normalizeResultIdentityKey,
   normalizeShortIdentityKey,
 } from "@/lib/leaderboard-snapshot";
+import { normalizeStickerIdentity } from "@/lib/sticker-number";
 
 const POINTS_BY_PLACE = [100, 95, 90, 87, 84, 81];
 
@@ -108,14 +109,14 @@ const getVehicleKey = (item, fallbackCategoryKey = "") => {
       fallbackCategoryKey ||
       ""
   );
-  const stickerNumber = normalizeText(
+  const stickerNumber = normalizeStickerIdentity(categoryKey,
     item?.sticker_number ||
       item?.stickerNumber ||
       item?.sticker ||
       item?.car_number ||
       item?.carNumber ||
       ""
-  ).replace(/^#/, "");
+  );
   const driverName = normalizeText(item?.driver_name || item?.driverName || item?.driver || "").toLowerCase();
 
   if (categoryKey && stickerNumber) {
@@ -220,6 +221,35 @@ const cloneRow = row => {
     coDriverName: normalizeText(row?.coDriverName || row?.codriver_name || row?.co_driver_name || row?.codriver || row?.co_driver || "--") || "--",
     trackMap,
     trackSummaries,
+  };
+};
+
+const mergeVehicleRows = (existingRow, incomingRow) => {
+  const summariesByTrack = new Map();
+
+  [...getRowSummaries(existingRow), ...getRowSummaries(incomingRow)].forEach(summary => {
+    const key = getTrackMergeKey(summary);
+
+    if (key) {
+      summariesByTrack.set(key, summary);
+    }
+  });
+
+  const trackSummaries = [...summariesByTrack.values()];
+
+  return {
+    ...existingRow,
+    ...incomingRow,
+    trackSummaries,
+    trackMap: trackSummaries.reduce((acc, summary) => {
+      const key = getTrackMergeKey(summary);
+
+      if (key) {
+        acc[key] = summary;
+      }
+
+      return acc;
+    }, {}),
   };
 };
 
@@ -493,13 +523,13 @@ const isMatchingDeleteTarget = (record, payload) => {
   const source = getResultSource(record);
   const categoryKey = normalizeCsvCategoryKey(payload?.categoryKey || payload?.category_key || payload?.category || "");
   const trackKey = normalizeTrackKey(payload?.trackName || payload?.track_name || payload?.track || payload?.trackKey || "");
-  const stickerNumber = normalizeText(payload?.stickerNumber || payload?.sticker_number || payload?.sticker || "").replace(/^#/, "");
+  const stickerNumber = normalizeStickerIdentity(categoryKey, payload?.stickerNumber || payload?.sticker_number || payload?.sticker || "");
   const driverName = normalizeText(payload?.driverName || payload?.driver_name || payload?.driver || "").toLowerCase();
   const dayKey = getDayId(payload?.day || payload?.dayLabel || payload?.selectedDayLabel || payload?.selected_day_label || "");
   const sourceCategoryKey = getCategoryKey(source);
-  const sourceStickerNumber = normalizeText(
+  const sourceStickerNumber = normalizeStickerIdentity(sourceCategoryKey,
     source?.sticker_number || source?.stickerNumber || source?.sticker || source?.car_number || source?.carNumber || ""
-  ).replace(/^#/, "");
+  );
   const sourceDriverName = normalizeText(source?.driver_name || source?.driverName || source?.driver || "").toLowerCase();
   const sourceDayKey = getDayId(getDayLabel(source));
 
@@ -833,7 +863,9 @@ export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload
     const key = getVehicleKey(clonedRow, category.key);
 
     if (key) {
-      rowsByVehicle.set(key, clonedRow);
+      rowsByVehicle.set(key, rowsByVehicle.has(key)
+        ? mergeVehicleRows(rowsByVehicle.get(key), clonedRow)
+        : clonedRow);
     }
   });
 

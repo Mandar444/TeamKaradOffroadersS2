@@ -4,6 +4,7 @@ import {
   normalizeTrackKey,
   safeParseJsonObject,
 } from "@/lib/leaderboard-snapshot";
+import { normalizeStickerIdentity } from "@/lib/sticker-number";
 
 const normalizeText = value => String(value || "").trim();
 
@@ -225,16 +226,18 @@ const getTotalPenaltySeconds = breakdown =>
 const getRecordCategoryKey = record =>
   normalizeCategoryKey(record?.categoryKey || record?.category_key || record?.category || "");
 
-const getRecordSticker = record =>
-  normalizeText(record?.sticker_number || record?.stickerNumber || record?.sticker || record?.car_number || record?.carNumber || "")
-    .replace(/^#/, "");
+const getRecordSticker = (record, fallbackCategoryKey = "") =>
+  normalizeStickerIdentity(
+    getRecordCategoryKey(record) || fallbackCategoryKey,
+    record?.sticker_number || record?.stickerNumber || record?.sticker || record?.car_number || record?.carNumber || ""
+  );
 
 const getRecordDriver = record =>
   normalizeText(record?.driver_name || record?.driverName || record?.driver || "").toLowerCase();
 
 const getVehicleKey = (record, fallbackCategoryKey = "") => {
   const categoryKey = getRecordCategoryKey(record) || fallbackCategoryKey;
-  const sticker = getRecordSticker(record);
+  const sticker = getRecordSticker(record, categoryKey);
   const driver = getRecordDriver(record);
 
   if (categoryKey && sticker) {
@@ -331,7 +334,7 @@ const isMatchingRecord = (record, payload) => {
   const dayKey = normalizeText(payload.day || payload.selectedDayLabel || "").toLowerCase();
 
   return (
-    getVehicleKey(record, categoryKey) === `${categoryKey}|${normalizeText(payload.sticker || payload.stickerNumber).replace(/^#/, "")}` &&
+    getVehicleKey(record, categoryKey) === `${categoryKey}|${normalizeStickerIdentity(categoryKey, payload.sticker || payload.stickerNumber)}` &&
     getTrackKeyFromRecord(record) === trackKey &&
     (!dayKey || getDayKey(record) === dayKey)
   );

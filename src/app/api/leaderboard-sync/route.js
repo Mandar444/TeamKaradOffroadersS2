@@ -29,6 +29,7 @@ import {
   cleanStoredLeaderboardSnapshot,
   preserveMissingLeaderboardCategories,
 } from "@/lib/leaderboard-category-preserver";
+import { normalizeStickerIdentity } from "@/lib/sticker-number";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -269,14 +270,14 @@ const getVehicleMergeKey = (source, fallbackCategory = "") => {
       fallbackCategory ||
       ""
   );
-  const sticker = normalizeIdentityValue(
+  const sticker = normalizeStickerIdentity(category,
     mergedSource?.stickerNumber ||
       mergedSource?.sticker_number ||
       mergedSource?.sticker ||
       mergedSource?.carNumber ||
       mergedSource?.car_number ||
       ""
-  ).replace(/^#/, "");
+  );
   const driver = normalizeIdentityValue(
     mergedSource?.driverName ||
       mergedSource?.driver_name ||
