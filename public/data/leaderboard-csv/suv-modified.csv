@@ -1,1 +1,8 @@
 position,category_key,category_label,sticker_number,team_name,driver_name,codriver_name,total_points,total_timing_ms,total_timing_label,tamhini_time,tamhini_points,tamhini_rank,tamhini_day,amboli_time,amboli_points,amboli_rank,amboli_day,sahyadri_time,sahyadri_points,sahyadri_rank,sahyadri_day,pasarani_time,pasarani_points,pasarani_rank,pasarani_day,kalasubai_time,kalasubai_points,kalasubai_rank,kalasubai_day,valmiki_time,valmiki_points,valmiki_rank,valmiki_day,satpuda_time,satpuda_points,satpuda_rank,satpuda_day
+1,SUV_MODIFIED,SUV Modified,SM23,NEXON CUSTOM,AMIT SHETE,RAKESH KULYE,277,984520,16:24:52,05:02:84,90,P3,D1,,,,,,,,,,,,,,,,,07:00:47,87,P4,D1,04:21:21,100,P1,D1
+2,SUV_MODIFIED,SUV Modified,SM4,TEAM MOTORNATION,ANIKET SHETE,ANVITA SHETE,260,525570,08:45:57,04:21:12,95,P2,D1,,,,,,,,,,,,,DNF,50,DNF,D2,04:24:45,95,P2,D1,DNF,20,DNF,D1
+3,SUV_MODIFIED,SUV Modified,SM9,KA 28 OFFROADERS,ULHAS PATIL,PRAKASH,205,760330,12:40:33,DNF,20,DNF,D1,,,,,,,,,,,,,,,,,05:50:98,90,P3,D1,06:49:35,95,P2,D1
+4,SUV_MODIFIED,SUV Modified,7,HK/ Ka28_offroaders,Harsh,Manthan,200,466220,07:46:22,03:41:38,100,P1,D1,,,,,,,,,,,,,,,,,04:04:84,100,P1,D1,,,,
+5,SUV_MODIFIED,SUV Modified,SM1,MUD MONSTER,ADITYA JAYANTRAO NIKAM,PAHILWAN SHREYASBHAU KIKALE,177,902580,15:02:58,05:37:62,87,P4,D1,,,,,,,,,,,,,,,,,DNS,0,DNS,D1,09:24:96,90,P3,D1
+6,SUV_MODIFIED,SUV Modified,8,MMC,Tejas Patil,Karan Patil,0,0,00:00:00,DNS,0,DNS,D1,,,,,,,,,,,,,,,,,DNS,0,DNS,D1,,,,
+7,SUV_MODIFIED,SUV Modified,100,Team Pune Offroaders,Ritesh Bire,Shaurya Bire,0,0,00:00:00,DNS,0,DNS,D1,,,,,,,,,,,,,,,,,DNS,0,DNS,D1,,,,
