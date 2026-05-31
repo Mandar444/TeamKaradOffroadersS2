@@ -381,10 +381,7 @@ const isAdminEditedEntry = entry =>
 const hasTrackEntryData = entry =>
   Boolean(entry && typeof entry === "object" && Object.keys(entry).length) &&
   (
-    hasAnyText(entry?.key || entry?.identityKey) ||
-    hasAnyText(entry?.dayLabel || entry?.day_label || entry?.day) ||
-    hasAnyText(entry?.timingLabel || entry?.timing_label || entry?.value) ||
-    hasAnyText(entry?.pointsLabel || entry?.points_label) ||
+    hasMeaningfulText(entry?.timingLabel || entry?.timing_label || entry?.value) ||
     hasAnyText(entry?.rankLabel || entry?.rank_label || entry?.rank) ||
     getNumericValue(entry?.points) !== 0 ||
     getNumericValue(entry?.totalPoints || entry?.total_points) !== 0
@@ -856,9 +853,7 @@ const isLeaderboardSnapshotPayload = payload =>
     Array.isArray(payload?.leaderboard?.categories) ||
     payload?.schemaVersion !== undefined ||
     payload?.generatedAt !== undefined ||
-    payload?.focusCategory !== undefined ||
-    payload?.categoryKey !== undefined ||
-    payload?.category_key !== undefined
+    payload?.focusCategory !== undefined
   );
 
 const unwrapIncomingSnapshot = payload => {
@@ -927,6 +922,31 @@ const getSingleResultPoints = payload => {
   return Number.isFinite(numericValue) ? numericValue : 0;
 };
 
+const isTruthyPayloadValue = value =>
+  value === true ||
+  value === 1 ||
+  value === "1" ||
+  ["true", "yes", "y", "on"].includes(String(value || "").trim().toLowerCase());
+
+const getSingleResultTimingLabel = payload => {
+  const timing = String(
+    getFirstPayloadValue(payload, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay", "completion_time", "completionTime"]) || ""
+  ).trim();
+
+  if (hasMeaningfulText(timing)) {
+    return timing;
+  }
+
+  if (isTruthyPayloadValue(getFirstPayloadValue(payload, ["is_dns", "isDNS", "isDns"]))) {
+    return "DNS";
+  }
+
+  const dnfSelection = String(getFirstPayloadValue(payload, ["dnf_selection", "dnfSelection"]) || "").trim();
+  const isDnf = isTruthyPayloadValue(getFirstPayloadValue(payload, ["is_dnf", "isDNF", "isDnf"])) || Boolean(dnfSelection);
+
+  return isDnf ? `DNF${dnfSelection ? ` - ${dnfSelection}` : ""}` : "";
+};
+
 const isSingleLeaderboardResultPayload = payload => {
   if (!payload || typeof payload !== "object" || Array.isArray(payload) || isLeaderboardSnapshotPayload(payload)) {
     return false;
@@ -936,9 +956,22 @@ const isSingleLeaderboardResultPayload = payload => {
   const track = getFirstPayloadValue(payload, ["track_name", "trackName", "track_label", "trackLabel", "track"]);
   const sticker = getFirstPayloadValue(payload, ["sticker_number", "stickerNumber", "sticker", "car_number", "carNumber"]);
   const driver = getFirstPayloadValue(payload, ["driver_name", "driverName", "driver"]);
-  const timing = getFirstPayloadValue(payload, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay", "completion_time", "completionTime"]);
+  const timing = getSingleResultTimingLabel(payload);
 
-  return Boolean(category && track && (sticker || driver || timing || getSingleResultPoints(payload) !== 0));
+  return Boolean(category && track && (sticker || driver) && timing);
+};
+
+const isIncompleteSingleLeaderboardResultPayload = payload => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload) || isLeaderboardSnapshotPayload(payload)) {
+    return false;
+  }
+
+  const category = normalizeCategoryKey(getFirstPayloadValue(payload, ["category", "categoryKey", "category_key", "categoryLabel", "category_label"]));
+  const track = getFirstPayloadValue(payload, ["track_name", "trackName", "track_label", "trackLabel", "track"]);
+  const sticker = getFirstPayloadValue(payload, ["sticker_number", "stickerNumber", "sticker", "car_number", "carNumber"]);
+  const driver = getFirstPayloadValue(payload, ["driver_name", "driverName", "driver"]);
+
+  return Boolean(category && track && (sticker || driver) && !getSingleResultTimingLabel(payload));
 };
 
 const createSnapshotFromSingleResult = payload => {
@@ -951,7 +984,7 @@ const createSnapshotFromSingleResult = payload => {
   const teamName = getFirstPayloadValue(payload, ["team_name", "teamName", "team"]) || "--";
   const coDriverName = getFirstPayloadValue(payload, ["codriver_name", "coDriverName", "co_driver_name", "codriver", "co_driver"]) || "--";
   const dayLabel = getFirstPayloadValue(payload, ["selected_day_label", "selectedDayLabel", "selected_day_id", "selectedDayId", "day", "day_label"]) || "D1";
-  const timingLabel = getFirstPayloadValue(payload, ["total_time", "totalTimeDisplay", "performance_time", "performanceTimeDisplay", "completion_time", "completionTime"]) || "NA";
+  const timingLabel = getSingleResultTimingLabel(payload);
   const points = getSingleResultPoints(payload);
   const rankLabel = getFirstPayloadValue(payload, ["rank", "rank_label", "rankLabel", "position"]);
   const result = {
@@ -1026,9 +1059,11 @@ const createSnapshotFromSingleResult = payload => {
 const normalizeIncomingSnapshot = payload => {
   const unwrappedPayload = unwrapIncomingSnapshot(payload);
 
-  return isSingleLeaderboardResultPayload(unwrappedPayload)
-    ? createSnapshotFromSingleResult(unwrappedPayload)
-    : unwrappedPayload;
+  if (isSingleLeaderboardResultPayload(unwrappedPayload)) {
+    return createSnapshotFromSingleResult(unwrappedPayload);
+  }
+
+  return isIncompleteSingleLeaderboardResultPayload(unwrappedPayload) ? null : unwrappedPayload;
 };
 
 async function readOptionalJsonBody(request) {

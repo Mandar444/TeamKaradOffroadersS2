@@ -17,6 +17,9 @@ const POINTS_BY_PLACE = [100, 95, 90, 87, 84, 81];
 
 const normalizeText = value => String(value || "").trim();
 
+const isPlaceholderTiming = value =>
+  ["", "NA", "N/A", "--"].includes(normalizeText(value).toUpperCase());
+
 const parseBooleanValue = value => {
   if (typeof value === "boolean") {
     return value;
@@ -378,7 +381,7 @@ const createInputRecord = (payload, category, track) => {
     ? "DNS"
     : isDnf
       ? `DNF${dnfSelection ? ` - ${dnfSelection}` : ""}`
-      : computedTotalTimeLabel || providedTotalTime || formatTimingMs(totalTimeMs) || completionTime || "NA";
+      : computedTotalTimeLabel || providedTotalTime || formatTimingMs(totalTimeMs) || completionTime;
   const stickerNumber = normalizeText(payload.sticker_number || payload.stickerNumber || payload.sticker || payload.car_number || payload.carNumber).replace(/^#/, "").toUpperCase();
   const driverName = (normalizeText(payload.driver_name || payload.driverName || payload.driver || "--") || "--").toUpperCase();
   const coDriverName = (normalizeText(payload.codriver_name || payload.coDriverName || payload.co_driver_name || payload.codriver || payload.co_driver || "--") || "--").toUpperCase();
@@ -677,7 +680,17 @@ const getResultTrackDefinition = (source, fallbackTrack = null) => {
 
 const buildEntryFromResultRecord = record => {
   const source = getResultSource(record);
-  const timingLabel = normalizeText(source.total_time || source.totalTimeDisplay || source.performance_time || source.performanceTimeDisplay) || "NA";
+  const { isDns, isDnf } = getResultStatus(source);
+  const rawTimingLabel = normalizeText(source.total_time || source.totalTimeDisplay || source.performance_time || source.performanceTimeDisplay);
+  const timingLabel = isDns
+    ? "DNS"
+    : isDnf
+      ? rawTimingLabel.toUpperCase().startsWith("DNF")
+        ? rawTimingLabel
+        : `DNF${normalizeText(source.dnf_selection || source.dnfSelection) ? ` - ${normalizeText(source.dnf_selection || source.dnfSelection)}` : ""}`
+      : isPlaceholderTiming(rawTimingLabel)
+        ? ""
+        : rawTimingLabel;
 
   return {
     key: getResultMergeKey(source, getCategoryKey(source)),
@@ -698,8 +711,9 @@ const buildCategoryRowsFromResults = ({ category, results, existingCategory }) =
   results.forEach(record => {
     const source = getResultSource(record);
     const vehicleKey = getVehicleKey(source, category.key);
+    const entry = buildEntryFromResultRecord(record);
 
-    if (!vehicleKey) {
+    if (!vehicleKey || isPlaceholderTiming(entry.timingLabel)) {
       return;
     }
 
@@ -729,7 +743,7 @@ const buildCategoryRowsFromResults = ({ category, results, existingCategory }) =
       entries: [],
     };
 
-    summary.entries = [...(summary.entries || []), buildEntryFromResultRecord(record)]
+    summary.entries = [...(summary.entries || []), entry]
       .sort((left, right) => (left.dayOrder || 0) - (right.dayOrder || 0));
     summary.totalPoints = summary.entries.reduce((total, entry) => total + (parseNumericValue(entry.pointsLabel) || 0), 0);
     row.trackMap[track.key] = summary;
@@ -994,6 +1008,10 @@ export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload
     throw new Error("Sticker number and driver name are required.");
   }
 
+  if (!inputRecord.is_dns && !inputRecord.is_dnf && isPlaceholderTiming(inputRecord.total_time)) {
+    throw new Error("Enter completion time or select DNF / DNS.");
+  }
+
   const existing = existingSnapshot || {};
   const existingCategories = Array.isArray(existing.leaderboard?.categories) ? existing.leaderboard.categories : [];
   const existingCategory = existingCategories.find(item => getCategoryKey(item) === category.key) || null;
@@ -1051,7 +1069,7 @@ export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload
       const summary = getRowTrackSummary(currentRow, track.key);
       const entry = summary?.entries?.[0];
 
-      if (!summary || !entry) {
+      if (!summary || !entry || isPlaceholderTiming(entry.timingLabel)) {
         return null;
       }
 

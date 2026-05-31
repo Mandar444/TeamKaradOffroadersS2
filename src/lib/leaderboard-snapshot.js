@@ -6,6 +6,9 @@ export const LEADERBOARD_VISIBILITY_PATH = "/api/leaderboard-visibility";
 
 export const normalizeText = value => String(value || "").trim();
 
+const isPlaceholderTiming = value =>
+  ["", "NA", "N/A", "--"].includes(normalizeText(value).toUpperCase());
+
 export const normalizeTrackKey = value =>
   normalizeText(value)
     .toLowerCase()
@@ -212,23 +215,33 @@ export const formatCategoryLabel = value =>
     .toLowerCase()
     .replace(/\b\w/g, letter => letter.toUpperCase()) || "Category";
 
-export const normalizeTrackEntry = entry => ({
-  key: normalizeText(entry?.key || entry?.identityKey || ""),
-  dayLabel: normalizeText(entry?.dayLabel || entry?.day_label || ""),
-  dayOrder: Number.isFinite(Number(entry?.dayOrder ?? entry?.day_order)) ? Number(entry?.dayOrder ?? entry?.day_order) : null,
-  timingLabel: normalizeText(entry?.timingLabel || entry?.timing_label || entry?.value || "NA") || "NA",
-  pointsLabel: normalizeText(entry?.pointsLabel || entry?.points_label || ""),
-  rankLabel: normalizeText(entry?.rankLabel || entry?.rank_label || ""),
-});
+export const normalizeTrackEntry = entry => {
+  const timingLabel = normalizeText(entry?.timingLabel || entry?.timing_label || entry?.value || "");
+
+  return {
+    key: normalizeText(entry?.key || entry?.identityKey || ""),
+    dayLabel: normalizeText(entry?.dayLabel || entry?.day_label || ""),
+    dayOrder: Number.isFinite(Number(entry?.dayOrder ?? entry?.day_order)) ? Number(entry?.dayOrder ?? entry?.day_order) : null,
+    timingLabel: isPlaceholderTiming(timingLabel) ? "" : timingLabel,
+    pointsLabel: normalizeText(entry?.pointsLabel || entry?.points_label || ""),
+    rankLabel: normalizeText(entry?.rankLabel || entry?.rank_label || ""),
+  };
+};
 
 export const normalizeTrackSummary = (summary, fallbackLabel = "") => {
   const descriptor = normalizeTrackDescriptor(summary, fallbackLabel);
+  const rawEntries = Array.isArray(summary?.entries) ? summary.entries : [];
+  const entries = rawEntries.map(normalizeTrackEntry).filter(entry => !isPlaceholderTiming(entry.timingLabel));
+  const rawTotalPoints = Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0);
+  const totalPoints = entries.length === rawEntries.length
+    ? rawTotalPoints
+    : entries.reduce((total, entry) => total + (Number(String(entry.pointsLabel || "").replace(/[^\d.-]/g, "")) || 0), 0);
 
   return {
     trackKey: descriptor.key,
     trackLabel: descriptor.label,
-    totalPoints: Number.isFinite(Number(summary?.totalPoints)) ? Number(summary.totalPoints) : Number(summary?.total || 0),
-    entries: Array.isArray(summary?.entries) ? summary.entries.map(normalizeTrackEntry) : [],
+    totalPoints,
+    entries,
   };
 };
 
@@ -312,6 +325,7 @@ export const getTrackSummariesFromRow = row => {
 
 export const normalizeRow = row => {
   const trackSummaries = getTrackSummariesFromRow(row);
+  const summaryTotalPoints = trackSummaries.reduce((total, summary) => total + (Number(summary.totalPoints) || 0), 0);
 
   return {
     vehicleKey:
@@ -321,7 +335,11 @@ export const normalizeRow = row => {
     teamName: normalizeText(row?.teamName || row?.team_name || row?.team || "--"),
     driverName: normalizeText(row?.driverName || row?.driver || "--"),
     coDriverName: normalizeText(row?.coDriverName || row?.coDriver || "--"),
-    totalPoints: Number.isFinite(Number(row?.totalPoints)) ? Number(row.totalPoints) : Number(row?.total || 0),
+    totalPoints: trackSummaries.length
+      ? summaryTotalPoints
+      : Number.isFinite(Number(row?.totalPoints))
+        ? Number(row.totalPoints)
+        : Number(row?.total || 0),
     totalTimingMs: Number.isFinite(Number(row?.totalTimingMs)) ? Number(row.totalTimingMs) : null,
     totalTimingLabel: normalizeText(row?.totalTimingLabel || row?.totalTimingDisplay || row?.totalTimeDisplay || row?.totalTime || ""),
     trackSummaries,
@@ -505,7 +523,7 @@ const getTimingLabelFromSource = source => {
       parsedSubmission?.performance_time ||
       parsedSubmission?.completionTime ||
       parsedSubmission?.completion_time ||
-      "NA"
+      ""
   );
 };
 
@@ -663,6 +681,11 @@ const addResultToCategory = (categoryMap, result, index) => {
   const track = normalizeTrackDescriptor(trackLabel);
   const points = getPointsFromSource(result);
   const timingLabel = getTimingLabelFromSource(result);
+
+  if (isPlaceholderTiming(timingLabel)) {
+    return;
+  }
+
   const entry = {
     key: normalizeResultIdentityKey(result),
     dayLabel: getDayLabelFromSource(result),

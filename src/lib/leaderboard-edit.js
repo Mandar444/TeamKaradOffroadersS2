@@ -302,7 +302,7 @@ const getTimingLabel = record => {
     return reason ? `DNF - ${reason}` : "DNF";
   }
 
-  return "NA";
+  return "";
 };
 
 const getStickerSortValue = record => parseOptionalNumber(getRecordSticker(record)) ?? Number.MAX_SAFE_INTEGER;
@@ -356,6 +356,11 @@ const updateRecord = (record, values) => {
   const points = isDnf && !hasSubmittedPoints ? dnfPoints : parseNumber(values.points);
   const performanceTime = normalizeText(values.performanceTime || values.timing || record?.performance_time || record?.performanceTimeDisplay || record?.total_time || record?.totalTimeDisplay);
   const performanceMs = parseTimingMs(performanceTime);
+
+  if (!isDns && !isDnf && performanceMs === null) {
+    throw new Error("Enter performance time or select DNF / DNS.");
+  }
+
   const penaltyBreakdown = getPenaltyBreakdown(record, values);
   const totalPenaltySeconds = getTotalPenaltySeconds(penaltyBreakdown);
   const totalPenaltyLabel = String(totalPenaltySeconds);

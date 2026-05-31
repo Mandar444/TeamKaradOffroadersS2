@@ -656,6 +656,7 @@ export default function LeaderboardTrackDataUploader() {
                   onChange={event => updateForm("completion_time", event.target.value)}
                   placeholder="00:18:24"
                   disabled={form.is_dns || form.is_dnf || Boolean(form.dnf_selection)}
+                  required={!form.is_dns && !form.is_dnf && !form.dnf_selection}
                   className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-white px-3 font-mono text-[14px] font-black text-slate-950 outline outline-1 outline-[#ff7a00]/60 focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
                 />
               </label>

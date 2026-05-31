@@ -305,11 +305,11 @@ function TrackCell({
   deletingEntryKey,
 }) {
   if (!summary) {
-    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">NA</span>;
+    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">--</span>;
   }
 
   if (!summary.entries || summary.entries.length === 0) {
-    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">NA</span>;
+    return <span className="block text-[13px] font-black uppercase text-[#d9a36d]">--</span>;
   }
 
   return (
@@ -347,7 +347,7 @@ function TrackCell({
             className="rounded-xl border border-transparent py-1"
           >
             <p className="font-mono text-[15px] font-black uppercase text-[#fff7ef]">
-              {entry.timingLabel || "NA"}
+              {entry.timingLabel || "--"}
             </p>
             <p className="mt-1 text-[10px] font-black uppercase text-[#d9a36d]">
               {entry.pointsLabel && entry.pointsLabel !== "--" ? entry.pointsLabel : `${summary.totalPoints || 0} pts`}
