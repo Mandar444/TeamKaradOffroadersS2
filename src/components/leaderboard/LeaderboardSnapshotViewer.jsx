@@ -410,6 +410,7 @@ export default function LeaderboardSnapshotViewer({
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [deletingEntryKey, setDeletingEntryKey] = useState("");
+  const [deletingRecordKey, setDeletingRecordKey] = useState("");
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [participants, setParticipants] = useState([]);
 
@@ -540,6 +541,59 @@ export default function LeaderboardSnapshotViewer({
       });
     } finally {
       setDeletingEntryKey("");
+    }
+  }, [allowAdminDelete]);
+
+  const deleteVehicleRecord = useCallback(async (category, row) => {
+    if (!allowAdminDelete || !category) {
+      return;
+    }
+
+    const payload = {
+      mode: "record",
+      categoryKey: category.key,
+      sticker: row?.stickerNumber || "",
+      driver: row?.driverName || "",
+      vehicleKey: row?.vehicleKey || "",
+    };
+    const deleteKey = [
+      payload.categoryKey,
+      payload.sticker,
+      payload.driver,
+      payload.vehicleKey,
+    ].filter(Boolean).join("|");
+    const confirmed = window.confirm(
+      `Delete the complete leaderboard record for #${formatStickerNumber(category.key, payload.sticker) || "--"} ${payload.driver || "participant"}? This removes all track data for this record.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingRecordKey(deleteKey);
+    setDeleteStatus(null);
+
+    try {
+      const response = await fetch("/api/admin/leaderboard-track-entry", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: payload }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || "Unable to delete leaderboard record.");
+      }
+
+      setDeleteStatus({ type: "success", message: "Complete duplicate leaderboard record deleted." });
+      window.dispatchEvent(new Event("leaderboard-snapshot-updated"));
+    } catch (deleteError) {
+      setDeleteStatus({
+        type: "error",
+        message: deleteError?.message || "Unable to delete leaderboard record.",
+      });
+    } finally {
+      setDeletingRecordKey("");
     }
   }, [allowAdminDelete]);
 
@@ -935,6 +989,25 @@ export default function LeaderboardSnapshotViewer({
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.teamName}</p>
+                    {allowAdminDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => deleteVehicleRecord(activeCategory, row)}
+                        disabled={Boolean(deletingRecordKey)}
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-red-500/45 bg-red-500/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-red-200 transition-colors hover:border-red-300 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        title="Delete complete duplicate leaderboard record"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        {deletingRecordKey === [
+                          activeCategory?.key,
+                          row?.stickerNumber,
+                          row?.driverName,
+                          row?.vehicleKey,
+                        ].filter(Boolean).join("|")
+                          ? "Deleting Record"
+                          : "Delete Record"}
+                      </button>
+                    ) : null}
                   </td>
                   <td className="border-y border-[#2b1709] bg-[#151515] px-4 py-11 align-middle">
                     <p className="font-mono text-[15px] font-black text-[#fff7ef]">{row.driverName}</p>

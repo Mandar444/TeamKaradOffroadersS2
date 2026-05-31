@@ -26,6 +26,7 @@ import {
 import {
   buildLeaderboardSnapshotFromTrackEntry,
   deleteLeaderboardTrackEntry,
+  deleteLeaderboardVehicleRecord,
 } from "@/lib/leaderboard-track-entry";
 
 export const runtime = "nodejs";
@@ -302,7 +303,9 @@ export async function DELETE(request) {
     const existingSnapshot = await readSharedSnapshot({ optional: true });
     const resetMarker = await getResetMarker(existingSnapshot);
     const currentExistingSnapshot = getCurrentSnapshot(existingSnapshot, resetMarker);
-    const deletedSnapshot = deleteLeaderboardTrackEntry(currentExistingSnapshot, target);
+    const deletedSnapshot = target?.mode === "record"
+      ? deleteLeaderboardVehicleRecord(currentExistingSnapshot, target)
+      : deleteLeaderboardTrackEntry(currentExistingSnapshot, target);
     const snapshot = applyLeaderboardResetMarker(await preserveLeaderboardVisibility(deletedSnapshot), resetMarker);
     const latestSnapshot = await readSharedSnapshot({ optional: true });
     const latestResetMarker = await getResetMarker(latestSnapshot);
@@ -345,7 +348,7 @@ export async function DELETE(request) {
     return NextResponse.json(
       {
         ok: false,
-        error: error?.message || "Unable to delete track data.",
+        error: error?.message || "Unable to delete leaderboard data.",
       },
       { status: 500 }
     );

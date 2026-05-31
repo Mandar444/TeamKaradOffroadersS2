@@ -7,6 +7,10 @@ import {
   normalizeResultIdentityKey,
   normalizeShortIdentityKey,
 } from "@/lib/leaderboard-snapshot";
+import {
+  createLeaderboardVehicleDeletion,
+  removeLeaderboardVehicleDeletion,
+} from "@/lib/leaderboard-record-deletions";
 import { normalizeStickerIdentity } from "@/lib/sticker-number";
 
 const POINTS_BY_PLACE = [100, 95, 90, 87, 84, 81];
@@ -544,6 +548,40 @@ const isMatchingDeleteTarget = (record, payload) => {
   );
 };
 
+const isMatchingVehicleDeleteTarget = (item, payload) => {
+  const source = getResultSource(item);
+  const categoryKey = normalizeCsvCategoryKey(payload?.categoryKey || payload?.category_key || payload?.category || "");
+  const stickerNumber = normalizeText(payload?.stickerNumber || payload?.sticker_number || payload?.sticker || "")
+    .replace(/^#/, "")
+    .toUpperCase();
+  const driverName = normalizeText(payload?.driverName || payload?.driver_name || payload?.driver || "").toLowerCase();
+  const vehicleKey = normalizeText(payload?.vehicleKey || payload?.vehicle_key || "");
+  const sourceCategoryKey = getCategoryKey(source);
+  const sourceStickerNumber = normalizeText(
+    source?.sticker_number || source?.stickerNumber || source?.sticker || source?.car_number || source?.carNumber || ""
+  ).replace(/^#/, "").toUpperCase();
+  const sourceDriverName = normalizeText(source?.driver_name || source?.driverName || source?.driver || "").toLowerCase();
+  const sourceVehicleKey = normalizeText(source?.vehicleKey || source?.vehicle_key || "");
+
+  if (categoryKey && sourceCategoryKey !== categoryKey) {
+    return false;
+  }
+
+  if (vehicleKey && sourceVehicleKey && sourceVehicleKey === vehicleKey) {
+    return true;
+  }
+
+  if (stickerNumber && sourceStickerNumber !== stickerNumber) {
+    return false;
+  }
+
+  if (driverName && sourceDriverName !== driverName) {
+    return false;
+  }
+
+  return Boolean(stickerNumber || driverName);
+};
+
 const getRecordTimingMs = record =>
   parseNumericValue(record?.total_time_ms || record?.totalTimeMilliseconds) ??
   parseTimingMs(record?.total_time || record?.totalTimeDisplay || record?.performance_time || record?.performanceTimeDisplay);
@@ -822,6 +860,110 @@ export function deleteLeaderboardTrackEntry(snapshot, payload = {}) {
   };
 }
 
+export function deleteLeaderboardVehicleRecord(snapshot, payload = {}) {
+  const existingSnapshot = snapshot || {};
+  const results = Array.isArray(existingSnapshot.results) ? existingSnapshot.results : [];
+  const removedResults = results.filter(record => isMatchingVehicleDeleteTarget(record, payload));
+  const categoryKey = normalizeCsvCategoryKey(
+    payload?.categoryKey ||
+      payload?.category_key ||
+      payload?.category ||
+      getCategoryKey(getResultSource(removedResults[0])) ||
+      ""
+  );
+  const existingCategories = Array.isArray(existingSnapshot.leaderboard?.categories)
+    ? existingSnapshot.leaderboard.categories
+    : [];
+  const existingCategory = existingCategories.find(category => getCategoryKey(category) === categoryKey) || null;
+  const matchingRows = (Array.isArray(existingCategory?.rows) ? existingCategory.rows : [])
+    .filter(row => isMatchingVehicleDeleteTarget({ ...row, category_key: categoryKey }, payload));
+
+  if (!categoryKey || (!removedResults.length && !matchingRows.length)) {
+    throw new Error("Leaderboard participant record was not found.");
+  }
+
+  const categoryDefinition = getCategoryDefinition(categoryKey);
+  const category = {
+    key: categoryKey,
+    label: existingCategory?.label || categoryDefinition?.label || formatCategoryLabel(categoryKey),
+    tracks: (existingCategory?.tracks?.length ? existingCategory.tracks : categoryDefinition?.tracks || [])
+      .map(track => getResultTrackDefinition({ track_name: track })),
+  };
+  const affectedTrackKeys = [...new Set(
+    removedResults
+      .map(record => getTrackMergeKey(getResultSource(record)))
+      .filter(Boolean)
+  )];
+  const nextResults = affectedTrackKeys.reduce(
+    (currentResults, trackKey) => rescoreTrackResults(currentResults, categoryKey, trackKey),
+    results.filter(record => !isMatchingVehicleDeleteTarget(record, payload))
+  );
+  const nextDisputes = Array.isArray(existingSnapshot.disputes)
+    ? existingSnapshot.disputes.filter(record => !isMatchingVehicleDeleteTarget(record, payload))
+    : [];
+  const categoryResults = nextResults.filter(record => getCategoryKey(getResultSource(record)) === categoryKey);
+  const rebuiltCategory = categoryResults.length
+    ? buildCategoryRowsFromResults({ category, results: categoryResults, existingCategory })
+    : null;
+  const nextCategories = [
+    ...existingCategories.filter(categoryItem => getCategoryKey(categoryItem) !== categoryKey),
+    ...(rebuiltCategory ? [rebuiltCategory] : []),
+  ];
+  const teamsByVehicle = new Map();
+
+  (Array.isArray(existingSnapshot.teams) ? existingSnapshot.teams : []).forEach(team => {
+    const teamCategoryKey = getCategoryKey(team);
+    const key = getVehicleKey(team, teamCategoryKey || categoryKey);
+
+    if (key && (teamCategoryKey !== categoryKey || !isMatchingVehicleDeleteTarget(team, payload))) {
+      teamsByVehicle.set(key, team);
+    }
+  });
+
+  (rebuiltCategory?.rows || []).forEach((row, index) => {
+    const key = getVehicleKey(row, categoryKey);
+
+    if (key) {
+      teamsByVehicle.set(key, {
+        id: `${categoryKey}-${row.stickerNumber || index + 1}`,
+        team_name: row.teamName,
+        driver_name: row.driverName,
+        codriver_name: row.coDriverName,
+        car_number: row.stickerNumber,
+        category: categoryKey,
+        status: "ACTIVE",
+      });
+    }
+  });
+
+  const nextCategoryOptions = (Array.isArray(existingSnapshot.categoryOptions) ? existingSnapshot.categoryOptions : [])
+    .filter(option => getCategoryKey(option) !== categoryKey);
+
+  if (rebuiltCategory) {
+    nextCategoryOptions.push({ key: categoryKey, label: rebuiltCategory.label || formatCategoryLabel(categoryKey) });
+  }
+  const deletion = createLeaderboardVehicleDeletion(payload);
+
+  return {
+    ...existingSnapshot,
+    generatedAt: new Date().toISOString(),
+    source: "admin-vehicle-record-delete",
+    focusCategory: rebuiltCategory ? categoryKey : nextCategories[0]?.key || "",
+    teams: [...teamsByVehicle.values()],
+    results: nextResults,
+    disputes: nextDisputes,
+    deletedVehicleRecords: [
+      ...removeLeaderboardVehicleDeletion(existingSnapshot.deletedVehicleRecords, deletion),
+      deletion,
+    ],
+    categoryOptions: nextCategoryOptions,
+    leaderboard: {
+      ...(existingSnapshot.leaderboard || {}),
+      categories: nextCategories,
+    },
+  };
+}
+
 export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload = {}) {
   const categoryDefinition = getCategoryDefinition(payload.categoryKey || payload.category_key || payload.category);
 
@@ -1091,6 +1233,7 @@ export function buildLeaderboardSnapshotFromTrackEntry(existingSnapshot, payload
       ...affectedResults,
     ],
     disputes: Array.isArray(existing.disputes) ? existing.disputes : [],
+    deletedVehicleRecords: removeLeaderboardVehicleDeletion(existing.deletedVehicleRecords, inputRecord, category.key),
     categoryOptions: [...nextCategoryOptions.values()],
     leaderboard: {
       ...(existing.leaderboard || {}),

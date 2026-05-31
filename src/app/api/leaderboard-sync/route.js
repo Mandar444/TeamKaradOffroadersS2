@@ -29,6 +29,7 @@ import {
   cleanStoredLeaderboardSnapshot,
   preserveMissingLeaderboardCategories,
 } from "@/lib/leaderboard-category-preserver";
+import { filterDeletedLeaderboardVehicleRecords } from "@/lib/leaderboard-record-deletions";
 import { normalizeStickerIdentity } from "@/lib/sticker-number";
 
 export const runtime = "nodejs";
@@ -1195,10 +1196,10 @@ export async function POST(request) {
       ? mergeSnapshotCategory(currentExistingSnapshot, incomingSnapshot)
       : incomingSnapshot;
     const snapshot = applyLeaderboardResetMarker(
-      await preserveLeaderboardVisibility({
+      await preserveLeaderboardVisibility(filterDeletedLeaderboardVehicleRecords({
         ...mergedSnapshot,
         generatedAt: new Date().toISOString(),
-      }),
+      })),
       resetMarker
     );
     const latestSnapshot = await readSharedSnapshot({ optional: true });
