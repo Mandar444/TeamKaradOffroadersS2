@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Clock, Minus, Plus, RefreshCw, Send, Upload } from "lucide-react";
+import { ChevronDown, Clock, Minus, Plus, RefreshCw, Send, Upload, UserPlus, Users } from "lucide-react";
 import { LEADERBOARD_CSV_CATEGORIES } from "@/lib/leaderboard-csv";
-import { formatStickerNumber } from "@/lib/sticker-number";
+import { formatStickerNumber, getStickerPrefixForCategory } from "@/lib/sticker-number";
 
 const COUNTERS = [
   { key: "bunting_count", label: "Bunting Cut", seconds: 20, group: "Penalties" },
@@ -157,6 +157,7 @@ function CounterCard({ item, value, onChange }) {
 
 export default function LeaderboardTrackDataUploader() {
   const [open, setOpen] = useState(false);
+  const [participantMode, setParticipantMode] = useState("existing");
   const [selectedCategory, setSelectedCategory] = useState(LEADERBOARD_CSV_CATEGORIES[0]?.key || "");
   const [selectedTrack, setSelectedTrack] = useState(LEADERBOARD_CSV_CATEGORIES[0]?.tracks?.[0] || "");
   const [participants, setParticipants] = useState([]);
@@ -178,6 +179,7 @@ export default function LeaderboardTrackDataUploader() {
     () => categoryParticipants.find(participant => getParticipantId(participant) === selectedParticipantId) || null,
     [categoryParticipants, selectedParticipantId]
   );
+  const canEnterTrackData = participantMode === "new" || Boolean(selectedParticipant);
   const penaltySeconds = useMemo(
     () => COUNTERS.reduce((total, item) => total + (Number(form[item.key]) || 0) * item.seconds, 0),
     [form]
@@ -263,6 +265,17 @@ export default function LeaderboardTrackDataUploader() {
     setStatus(null);
   };
 
+  const selectParticipantMode = mode => {
+    setParticipantMode(mode);
+    setSelectedParticipantId("");
+    resetEntryFields({});
+    setStatus(null);
+  };
+
+  const updateNewParticipantField = (key, value) => {
+    updateForm(key, String(value || "").toUpperCase());
+  };
+
   const selectDnfReason = reason => {
     setForm(current => {
       const isSelected = current.dnf_selection === reason.value;
@@ -322,12 +335,16 @@ export default function LeaderboardTrackDataUploader() {
     setStatus(null);
 
     try {
+      const submittedForm = {
+        ...form,
+        sticker_number: formatStickerNumber(selectedCategory, form.sticker_number),
+      };
       const response = await fetch("/api/admin/leaderboard-track-entry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           entry: {
-            ...form,
+            ...submittedForm,
             categoryKey: selectedCategory,
             trackName: selectedTrack,
             total_time: computedTotalTime,
@@ -342,9 +359,12 @@ export default function LeaderboardTrackDataUploader() {
 
       setStatus({
         type: "success",
-        message: `${activeCategory?.label || "Category"} ${selectedTrack} saved. Leaderboard refreshed.`,
+        message: participantMode === "new"
+          ? `New participant added to ${activeCategory?.label || "category"}. Leaderboard refreshed.`
+          : `${activeCategory?.label || "Category"} ${selectedTrack} saved. Leaderboard refreshed.`,
       });
       setSelectedParticipantId("");
+      setParticipantMode("existing");
       setForm(INITIAL_FORM);
       window.dispatchEvent(new Event("leaderboard-snapshot-updated"));
     } catch (error) {
@@ -429,38 +449,70 @@ export default function LeaderboardTrackDataUploader() {
               <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#7f8ca3]">Participant Record</p>
               <div className="h-px flex-1 bg-[#7f8ca3]/45" />
             </div>
-            <label className="block">
-              <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">Driver Name</span>
-              <select
-                value={selectedParticipantId}
-                onChange={event => selectParticipant(event.target.value)}
-                className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 transition-colors focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
-              >
-                <option value="">
-                  {participantsLoading
-                    ? "Loading participants..."
-                    : categoryParticipants.length
-                      ? "Select driver"
-                      : "No participants in this category"}
-                </option>
-                {categoryParticipants.map(participant => {
-                  const sticker = formatStickerNumber(participant.category || selectedCategory, getParticipantSticker(participant));
-                  const label = [
-                    sticker ? `#${sticker}` : "",
-                    participant.driver_name || "Driver",
-                    participant.team_name || "Team",
-                  ].filter(Boolean).join(" - ");
+            <div className="mb-4 grid grid-cols-2 gap-2 rounded-[14px] border border-[#3a210f] bg-black p-1.5 sm:max-w-[520px]">
+              {[
+                { key: "existing", label: "Existing Participant", icon: Users },
+                { key: "new", label: "New Participant", icon: UserPlus },
+              ].map(option => {
+                const Icon = option.icon;
+                const active = participantMode === option.key;
 
-                  return (
-                    <option key={getParticipantId(participant)} value={getParticipantId(participant)}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => selectParticipantMode(option.key)}
+                    className={`flex min-h-11 items-center justify-center gap-2 rounded-[10px] border px-3 py-2 font-mono text-[9px] font-black uppercase tracking-[0.12em] transition-colors ${
+                      active
+                        ? "border-[#ff7a00] bg-[#ff7a00] text-black"
+                        : "border-transparent bg-[#101010] text-[#d9a36d] hover:border-[#ff7a00]/60 hover:text-[#fff7ef]"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
 
-            {selectedParticipant ? (
+            {participantMode === "existing" ? (
+              <label className="block">
+                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">Driver Name</span>
+                <select
+                  value={selectedParticipantId}
+                  onChange={event => selectParticipant(event.target.value)}
+                  className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 transition-colors focus:border-[#ff7a00] focus:outline-2 focus:outline-[#ff7a00]"
+                >
+                  <option value="">
+                    {participantsLoading
+                      ? "Loading participants..."
+                      : categoryParticipants.length
+                        ? "Select driver"
+                        : "No participants in this category"}
+                  </option>
+                  {categoryParticipants.map(participant => {
+                    const sticker = formatStickerNumber(participant.category || selectedCategory, getParticipantSticker(participant));
+                    const label = [
+                      sticker ? `#${sticker}` : "",
+                      participant.driver_name || "Driver",
+                      participant.team_name || "Team",
+                    ].filter(Boolean).join(" - ");
+
+                    return (
+                      <option key={getParticipantId(participant)} value={getParticipantId(participant)}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </label>
+            ) : (
+              <p className="rounded-[14px] border border-[#ff7a00]/25 bg-[#ff7a00]/10 px-3 py-3 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[#ffb35c]">
+                Add a new participant directly to {activeCategory?.label || "the selected category"}.
+              </p>
+            )}
+
+            {selectedParticipant || participantMode === "new" ? (
               <div className="mt-4 grid gap-3 md:grid-cols-4">
                 {[
                   ["Team Name", "team_name"],
@@ -472,7 +524,15 @@ export default function LeaderboardTrackDataUploader() {
                     <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.24em] text-[#d9a36d]">{label}</span>
                     <input
                       value={form[key]}
-                      readOnly
+                      onChange={participantMode === "new" ? event => updateNewParticipantField(key, event.target.value) : undefined}
+                      onBlur={participantMode === "new" && key === "sticker_number"
+                        ? event => updateNewParticipantField(key, formatStickerNumber(selectedCategory, event.target.value))
+                        : undefined}
+                      placeholder={participantMode === "new" && key === "sticker_number"
+                        ? `${getStickerPrefixForCategory(selectedCategory)}77`
+                        : ""}
+                      readOnly={participantMode !== "new"}
+                      required={participantMode === "new"}
                       className="h-12 w-full rounded-2xl border border-[#ff7a00]/70 bg-black px-3 font-mono text-[12px] font-black uppercase text-[#fff7ef] outline outline-1 outline-[#ff7a00]/60 placeholder:text-[#5f4326]"
                     />
                   </label>
@@ -481,7 +541,7 @@ export default function LeaderboardTrackDataUploader() {
             ) : null}
           </div>
 
-          {selectedParticipant ? (
+          {canEnterTrackData ? (
             <>
           {["Penalties", "Skipped"].map(group => (
             <div key={group}>
@@ -635,7 +695,7 @@ export default function LeaderboardTrackDataUploader() {
             </>
           ) : (
             <div className="rounded-[18px] border border-[#ff7a00]/25 bg-[#ff7a00]/10 px-4 py-5 text-center font-mono text-[11px] font-black uppercase tracking-[0.16em] text-[#ffb35c]">
-              Select category, track, and driver record to add missing leaderboard data.
+              Select an existing participant or choose new participant to add leaderboard data.
             </div>
           )}
 
