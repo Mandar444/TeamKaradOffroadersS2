@@ -50,7 +50,7 @@ const WINNER_CATEGORIES = [
     winners: [
       { driver: "Prerana Bhalla", coDriver: "Ravi Bhalla" },
       { driver: "Kavita Desai", coDriver: "Kumar Desai" },
-      { driver: "Rufina Gupta", coDriver: "Ivin" },
+      { driver: "Rufina Gupte", coDriver: "Ivin" },
     ],
   },
 ];
