@@ -40,7 +40,7 @@ const WINNER_CATEGORIES = [
   {
     name: "Diesel Modified",
     winners: [
-      { driver: "Steven Fernandes", coDriver: "Imsan" },
+      { driver: "Steven Fernandes", coDriver: "Imran" },
       { driver: "Sarjerao Kawade", coDriver: "Rushi" },
       { driver: "Abhishek Pawar", coDriver: "Nijen Cardozo" },
     ],
@@ -50,7 +50,7 @@ const WINNER_CATEGORIES = [
     winners: [
       { driver: "Prerana Bhalla", coDriver: "Ravi Bhalla" },
       { driver: "Kavita Desai", coDriver: "Kumar Desai" },
-      { driver: "Archana Gupta", coDriver: "Jvin" },
+      { driver: "Rufina Gupta", coDriver: "Ivin" },
     ],
   },
 ];
