@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { useRef } from "react";
@@ -329,18 +330,35 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mb-6 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl animate-pulse">
-             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-             <p className="text-primary text-[10px] font-black uppercase tracking-[0.6em] leading-none">Elite Grid Status: Online</p>
+          <div className="mb-10 max-w-4xl text-center">
+            <div className="mb-5 flex items-center justify-center gap-3 md:gap-5">
+              <Image
+                src="/images/racing-flags-3d.png"
+                alt=""
+                width={96}
+                height={96}
+                aria-hidden="true"
+                className="h-12 w-12 shrink-0 object-contain sm:h-16 sm:w-16 md:h-24 md:w-24"
+              />
+              <h2 className="font-heading text-3xl font-black uppercase leading-none tracking-tight text-white drop-shadow-[0_0_34px_rgba(255,138,0,0.35)] sm:text-5xl md:text-7xl">
+                Grand <span className="text-primary italic">Success</span>
+              </h2>
+              <Image
+                src="/images/racing-flags-3d.png"
+                alt=""
+                width={96}
+                height={96}
+                aria-hidden="true"
+                className="h-12 w-12 shrink-0 scale-x-[-1] object-contain sm:h-16 sm:w-16 md:h-24 md:w-24"
+              />
+            </div>
+            <p className="text-xl font-black uppercase tracking-[0.12em] text-primary md:text-3xl">
+              Congratulations Winners !!!
+            </p>
+            <p className="mx-auto mt-4 max-w-3xl text-sm font-semibold leading-relaxed text-zinc-300 md:text-2xl">
+              THANK YOU TO PARTICIPANTS AND VIEWERS FOR MAKING THE EVENT SPECIAL AND GLORIOUS.
+            </p>
           </div>
-
-          <span className="inline-block px-4 py-1.5 mb-6 text-[10px] md:text-sm font-semibold tracking-widest text-primary border border-primary/30 rounded-full bg-primary/10 backdrop-blur-md uppercase text-center max-w-[90vw]">
-            29/30/31st MAY • VENUE: KARAD, MAHARASHTRA
-          </span>
-
-          <p className="text-sm md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-            Join 160+ professional drivers and co-drivers in our elite Season 2 championship. Register now to claim your legendary sticker number.
-          </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
               <RegistrationLink
